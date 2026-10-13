@@ -64,98 +64,94 @@
     <!--              USER APP WRAPPER              -->
     <!-- ========================================== -->
     <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
+        
         <!-- Auth Modal -->
-        <div id="authModal" class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden flex justify-center items-center z-[200] p-4 backdrop-blur-md">
-            <div class="bg-[#111827] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-800 p-6 md:p-8">
+        <div id="authModal" class="fixed inset-0 bg-[#0b1120] bg-opacity-95 hidden flex justify-center items-center z-[200] p-4 backdrop-blur-md">
+            <div class="bg-[#1e293b] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-700 p-6 md:p-8 relative">
                 
                 <!-- Dynamic Header Section -->
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="relative shrink-0">
-                        <!-- Custom Admin Logo -->
-                        <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border border-gray-700">
-                        <!-- Default Green Icon -->
-                        <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-3xl shadow-lg shadow-green-500/30 text-white">
-                            <i id="authIconFA" class="fa-solid fa-right-to-bracket"></i>
-                        </div>
+                <div class="flex flex-col items-center mb-6">
+                    <!-- Custom Admin Logo or Default Icon -->
+                    <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-gray-600 mb-3">
+                    <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-[#00c853] flex items-center justify-center text-3xl shadow-lg shadow-green-500/20 text-white mb-3">
+                        <i id="authIconFA" class="fa-solid fa-right-to-bracket"></i>
                     </div>
-                    <div>
-                        <h2 id="authTitle" class="text-[22px] font-black tracking-wide text-white">লগইন করুন</h2>
-                        <p id="authDynamicText" class="text-xs text-gray-400 mt-1 font-bold">আপনার একাউন্টে প্রবেশ করুন</p>
-                    </div>
+                    <h2 id="authTitle" class="text-2xl font-black tracking-wide text-white">লগইন করুন</h2>
+                    <p id="authDynamicText" class="text-xs text-gray-400 mt-1 font-medium">আপনার একাউন্টে প্রবেশ করুন</p>
                 </div>
 
                 <!-- Login Form -->
                 <div id="loginFormArea" class="space-y-4">
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-user"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">ইউজারনেইম</label>
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
                             <input type="text" id="loginUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার ইউজারনেইম লিখুন">
                         </div>
                     </div>
                     
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">পাসওয়ার্ড</label>
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
                             <input type="password" id="loginPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeLogin" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeLogin" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <button onclick="handleAuth('login')" class="w-full bg-green-500 text-white font-black text-lg py-3.5 rounded-[16px] shadow-lg shadow-green-500/30 hover:bg-green-600 transition mt-4 flex justify-center items-center gap-2">
+                    <button onclick="handleAuth('login')" class="w-full bg-[#00c853] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-green-500/20 hover:bg-green-600 transition mt-6 flex justify-center items-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i> লগইন করুন
                     </button>
                     
                     <div class="text-center mt-5">
-                        <span class="text-xs text-gray-400 font-bold">একাউন্ট নেই?</span> 
-                        <button onclick="switchAuthTab('register')" class="text-xs text-green-500 font-black hover:underline ml-1">নতুন একাউন্ট খুলুন</button>
+                        <span class="text-xs text-gray-400 font-medium">একাউন্ট নেই?</span> 
+                        <button onclick="switchAuthTab('register')" class="text-xs text-[#00c853] font-bold hover:underline ml-1">নতুন একাউন্ট খুলুন</button>
                     </div>
                 </div>
 
                 <!-- Register Form -->
                 <div id="registerFormArea" class="hidden space-y-3">
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-user"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">ইউজারনেইম</label>
-                            <input type="text" id="regUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার পছন্দের ইউজারনেইম লিখুন">
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
+                            <input type="text" id="regUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার পছন্দের ইউজারনেইম">
                         </div>
                     </div>
                     
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-id-card"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">নাম</label>
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">নাম</label>
                             <input type="text" id="regName" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার নাম লিখুন">
                         </div>
                     </div>
                     
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">পাসওয়ার্ড</label>
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
                             <input type="password" id="regPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
-                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">কনফার্ম পাসওয়ার্ড</label>
+                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">কনফার্ম পাসওয়ার্ড</label>
                             <input type="password" id="regConfirmPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আবার পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeReg2" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeReg2" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <button onclick="handleAuth('register')" class="w-full bg-green-500 text-white font-black text-lg py-3.5 rounded-[16px] shadow-lg shadow-green-500/30 hover:bg-green-600 transition mt-4 flex justify-center items-center gap-2">
+                    <button onclick="handleAuth('register')" class="w-full bg-[#00c853] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-green-500/20 hover:bg-green-600 transition mt-6 flex justify-center items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন করুন
                     </button>
                     
                     <div class="text-center mt-5">
-                        <span class="text-xs text-gray-400 font-bold">ইতিমধ্যে একাউন্ট আছে?</span> 
-                        <button onclick="switchAuthTab('login')" class="text-xs text-green-500 font-black hover:underline ml-1">লগইন করুন</button>
+                        <span class="text-xs text-gray-400 font-medium">ইতিমধ্যে একাউন্ট আছে?</span> 
+                        <button onclick="switchAuthTab('login')" class="text-xs text-[#00c853] font-bold hover:underline ml-1">লগইন করুন</button>
                     </div>
                 </div>
                 
@@ -164,7 +160,7 @@
         </div>
 
         <!-- Floating History Button -->
-        <div class="fixed bottom-4 left-4 z-50">
+        <div class="fixed bottom-4 right-4 z-50">
             <button onclick="openUserHistoryModal()" class="bg-white dark:bg-gray-800 text-brand dark:text-brand-light p-3 rounded-full shadow-lg border-2 border-brand-light dark:border-gray-600 flex items-center justify-center cursor-pointer hover:scale-110 transition" title="হিস্ট্রি">
                 <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             </button>
@@ -242,7 +238,6 @@
                                 <div id="dynamic-coin-list" class="grid grid-cols-2 gap-3 ml-0 sm:ml-8"></div>
                                 <input type="hidden" id="coinType">
                                 <input type="hidden" id="selectedCoinRate">
-                                <input type="hidden" id="selectedUsername">
                             </div>
 
                             <!-- Step 2 -->
@@ -331,12 +326,12 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="button" id="submitBtn" class="w-full py-3 mt-4 rounded-lg shadow-md text-lg font-bold text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center">
+                            <button type="button" id="submitBtn" class="w-full py-3.5 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center">
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
                             <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button) -->
-                            <div class="mt-6 flex justify-center items-center gap-4 pt-2" id="horizontalSupportLinks">
+                            <div class="mt-6 flex flex-row items-center justify-center gap-4" id="horizontalSocialLinks">
                                 <!-- Links injected here by JS: YouTube -> Facebook -> Telegram -> WhatsApp -->
                             </div>
                         </div>
@@ -360,6 +355,7 @@
     <!--              ADMIN APP WRAPPER             -->
     <!-- ========================================== -->
     <div id="admin-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
+        
         <nav class="bg-brand dark:bg-brand-dark text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 <div class="flex flex-col sm:flex-row justify-between items-center py-1.5 sm:h-14 gap-1">
@@ -667,7 +663,7 @@
                                     <button onclick="saveLimits()" class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                                 </div>
                                 <div>
-                                    <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-dollar-sign mr-1"></i> <span class="lang-str" data-bn="বাইনান্স ডলার রেট" data-en="Binance Dollar Rate">বাইনান্স ডলার রেট</span></h3>
+                                    <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-dollar-sign mr-1"></i> <span class="lang-str" data-bn="বাইনান্স ডলার (USDT) রেট" data-en="Binance USDT Rate">বাইনান্স ডলার (USDT) রেট</span></h3>
                                     <div class="mb-3">
                                         <label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="প্রতি ডলার (৳):" data-en="Per Dollar (৳):">প্রতি ডলার (৳):</span></label>
                                         <input type="number" id="setBinanceRate" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500" placeholder="127">
@@ -824,7 +820,6 @@
     <!--            MAIN JAVASCRIPT LOGIC           -->
     <!-- ========================================== -->
     <script type="module">
-        // Safe App Init variables
         let app, db, auth;
         let initializeApp, getAuth, signInAnonymously, getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc;
 
@@ -838,21 +833,15 @@
         };
         
         let appId = 'ns-top-coin-app';
-        
         let currentUser = null;
         let isAppAdminMode = false;
         
-        // Safe check for admin mode
         try { isAppAdminMode = window.location.search.includes('admin') || window.location.hash === '#admin'; } catch(e) {}
 
         let currentLang = 'bn';
         try { currentLang = localStorage.getItem('nsCoin_lang') || 'bn'; } catch(e) {}
-        
         window.t = function(bnStr, enStr) { return currentLang === 'en' ? enStr : bnStr; }
 
-        // ==========================================
-        // SAFE ZERO-SECOND LOAD ARCHITECTURE (Bulletproof Try-Catch)
-        // ==========================================
         let globalSettings = { 
             siteName: 'NS & Top Coin', 
             binanceRate: 127, 
@@ -866,16 +855,11 @@
             successSms: "SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।" 
         };
         
-        try {
-            let cachedSettings = localStorage.getItem('nsCoin_globalSettings');
-            if (cachedSettings) globalSettings = JSON.parse(cachedSettings);
-        } catch(e) { console.warn("Cache Setting Error", e); }
+        // ZERO-SECOND LOAD CACHE
+        try { let cachedSettings = localStorage.getItem('nsCoin_globalSettings'); if (cachedSettings) globalSettings = JSON.parse(cachedSettings); } catch(e) {}
         
         let allRequests = [];
-        try {
-            let cachedRequests = localStorage.getItem('nsCoin_cachedRequests');
-            if (cachedRequests) allRequests = JSON.parse(cachedRequests);
-        } catch(e) { console.warn("Cache Requests Error", e); }
+        try { let cachedRequests = localStorage.getItem('nsCoin_cachedRequests'); if (cachedRequests) allRequests = JSON.parse(cachedRequests); } catch(e) {}
         
         let allUsers = [];
         let uploadedImageBase64 = null; 
@@ -894,11 +878,9 @@
         let siteLogoBase64 = null;
         let authLogoBase64 = null;
         
-        // Sound is optional, catch error if fails
         let notificationSound = null;
         try { notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); } catch(e) {}
 
-        // --- INIT APP ---
         async function loadFirebaseInstantly() {
             try {
                 const fbApp = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
@@ -917,7 +899,6 @@
                 if (!isAppAdminMode && loggedInUserId) { verifyUserInDB(loggedInUserId); }
             } catch (error) { 
                 console.error("Firebase load error:", error); 
-                // Show fallback if firebase completely fails
                 setTimeout(() => { if(document.getElementById('js-error-fallback')) document.getElementById('js-error-fallback').classList.remove('hidden'); }, 5000);
             }
         }
@@ -925,21 +906,16 @@
         function startMergedRealtimeListeners() {
             if (!currentUser) return;
             
-            // Settings Listener
             const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
             onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
                     globalSettings = docSnap.data();
                     try { localStorage.setItem('nsCoin_globalSettings', JSON.stringify(globalSettings)); } catch(e) {}
-                    
                     if(isAppAdminMode) updateSettingsUIAdmin();
                     else { updateNavbarBranding(); applySettingsDataToUser(); calculateTotalUser(); }
-                } else {
-                    if(isAppAdminMode) setDoc(settingsRef, globalSettings);
-                }
-            }, (err) => { console.error(err); });
+                } else { if(isAppAdminMode) setDoc(settingsRef, globalSettings); }
+            }, (err) => {});
 
-            // Requests Listener
             const requestsRef = collection(db, 'artifacts', appId, 'public', 'data', 'requests');
             onSnapshot(requestsRef, (snapshot) => {
                 allRequests = [];
@@ -959,20 +935,18 @@
                     renderUserPendingButton();
                     renderUserHistoryModal();
                 }
-            }, (err) => { console.error(err); });
+            }, (err) => {});
 
-            // Admin Users Listener
             if(isAppAdminMode) {
                 const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
                 onSnapshot(usersRef, (snapshot) => {
                     allUsers = [];
                     snapshot.forEach((doc) => { allUsers.push({ dbId: doc.id, ...doc.data() }); });
                     renderUsersTable();
-                }, (err) => { console.error(err); });
+                }, (err) => {});
             }
         }
 
-        // --- SHARED UI LOGIC ---
         window.setLang = function(langCode) {
             currentLang = langCode; 
             try { localStorage.setItem('nsCoin_lang', langCode); } catch(e) {}
@@ -1025,10 +999,7 @@
                     const canvas = document.createElement('canvas'); let width = img.width, height = img.height; const MAX_SIZE = 500;
                     if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                     canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); callback(canvas.toDataURL('image/jpeg', 0.5));
-                }; img.onerror = () => { 
-                    alert(window.t('ছবি সাপোর্ট করছে না!', 'Not Supported!'));
-                };
-                img.src = event.target.result;
+                }; img.onerror = () => { alert(window.t('ছবি সাপোর্ট করছে না!', 'Not Supported!')); }; img.src = event.target.result;
             }; reader.readAsDataURL(file);
         }
 
@@ -1037,9 +1008,6 @@
             if(isAppAdminMode) window.adminCustomAlert(window.t('সফল', 'Success'), window.t(`কপি করা হয়েছে:\n${text}`, `Copied:\n${text}`)); 
         }
 
-        // ==========================================
-        //              USER LOGIC 
-        // ==========================================
         function checkUserLoginStatus() {
             if(!loggedInUserId) {
                 document.getElementById('authModal').classList.remove('hidden');
@@ -1064,11 +1032,10 @@
                     showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। দয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
                     logoutUser();
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         window.switchAuthTab = function(tab) {
-            const loginBtn = document.getElementById('tabLoginBtn'); const regBtn = document.getElementById('tabRegBtn');
             const loginForm = document.getElementById('loginFormArea'); const regForm = document.getElementById('registerFormArea');
             const errEl = document.getElementById('authErrorMsg');
             errEl.classList.add('hidden'); errEl.innerText = '';
@@ -1081,28 +1048,19 @@
                 if(authTitle) authTitle.innerText = window.t('লগইন করুন', 'Login');
                 if(authIconFA) authIconFA.className = 'fa-solid fa-right-to-bracket';
                 if(authDynamicText) authDynamicText.innerText = globalSettings.authText ? globalSettings.authText : window.t('আপনার একাউন্টে প্রবেশ করুন', 'Login to your account');
-                
                 loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
             } else {
                 if(authTitle) authTitle.innerText = window.t('রেজিস্ট্রেশন করুন', 'Register');
                 if(authIconFA) authIconFA.className = 'fa-solid fa-user-plus';
-                if(authDynamicText) authDynamicText.innerText = globalSettings.authText ? globalSettings.authText : window.t('একাউন্ট তৈরি করে এখনই শুরু করুন', 'Create an account to start');
-                
+                if(authDynamicText) authDynamicText.innerText = window.t('একাউন্ট তৈরি করে এখনই শুরু করুন', 'Create an account to start');
                 regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
             }
         }
 
         window.togglePassword = function(inputId, iconId) {
             let inp = document.getElementById(inputId); let icon = document.getElementById(iconId);
-            if(inp.type === "password") { 
-                inp.type = "text"; 
-                icon.classList.remove("fa-eye-slash"); 
-                icon.classList.add("fa-eye", "text-green-400");
-            } else { 
-                inp.type = "password"; 
-                icon.classList.remove("fa-eye", "text-green-400"); 
-                icon.classList.add("fa-eye-slash"); 
-            }
+            if(inp.type === "password") { inp.type = "text"; icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye", "text-[#00c853]"); } 
+            else { inp.type = "password"; icon.classList.remove("fa-eye", "text-[#00c853]"); icon.classList.add("fa-eye-slash"); }
         }
 
         window.handleAuth = async function(action) {
@@ -1115,8 +1073,17 @@
                     if(pass !== cPass) { errEl.innerText = window.t("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!", "Passwords do not match!"); errEl.classList.remove('hidden'); return; }
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId); const userDoc = await getDoc(userRef);
                     if(userDoc.exists()) { errEl.innerText = window.t("এই ইউজারনেমটি আগেই নেওয়া হয়েছে। অন্য নাম দিন।", "Username already exists."); errEl.classList.remove('hidden'); return; }
+                    
+                    // Create User in DB
                     await setDoc(userRef, { name: name, password: pass, blocked: false, createdAt: Date.now() });
-                    finishLogin(uId);
+                    
+                    // Force User to Login Screen (No Auto-Login)
+                    showAlert('success', window.t('সফল!', 'Success!'), window.t('রেজিস্ট্রেশন সফল হয়েছে। দয়া করে এখন লগইন করুন।', 'Registration successful. Please login now.'));
+                    document.getElementById('loginUserId').value = uId; 
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regConfirmPassword').value = '';
+                    switchAuthTab('login');
+                    
                 } else if(action === 'login') {
                     let uId = document.getElementById('loginUserId').value.trim(); let pass = document.getElementById('loginPassword').value;
                     if(!uId || !pass) { errEl.innerText = window.t("ইউজারনেম এবং পাসওয়ার্ড দিন!", "Enter Username and Password!"); errEl.classList.remove('hidden'); return; }
@@ -1125,17 +1092,14 @@
                     let data = userDoc.data();
                     if(data.password !== pass) { errEl.innerText = window.t("পাসওয়ার্ড ভুল হয়েছে!", "Incorrect Password!"); errEl.classList.remove('hidden'); return; }
                     if(data.blocked) { errEl.innerText = window.t("আপনার অ্যাকাউন্ট ব্লক করা হয়েছে!", "Account blocked!"); errEl.classList.remove('hidden'); return; }
-                    finishLogin(uId);
+                    
+                    loggedInUserId = uId; 
+                    try { localStorage.setItem('nsCoin_loggedInUser', uId); } catch(e) {}
+                    document.getElementById('authErrorMsg').classList.add('hidden');
+                    document.getElementById('loginPassword').value = ''; 
+                    checkUserLoginStatus(); renderUserPendingButton(); renderUserHistoryModal();
                 }
             } catch(e) { errEl.innerText = "Error: " + e.message; errEl.classList.remove('hidden'); }
-        }
-
-        function finishLogin(uId) {
-            loggedInUserId = uId; 
-            try { localStorage.setItem('nsCoin_loggedInUser', uId); } catch(e) {}
-            document.getElementById('authErrorMsg').classList.add('hidden');
-            document.getElementById('loginPassword').value = ''; document.getElementById('regPassword').value = ''; document.getElementById('regConfirmPassword').value = '';
-            checkUserLoginStatus(); renderUserPendingButton(); renderUserHistoryModal();
         }
 
         window.logoutUser = function() { 
@@ -1189,11 +1153,22 @@
                 let nagadActive = typeof globalSettings.methods?.nagad === 'object' ? globalSettings.methods.nagad.active : globalSettings.methods?.nagad;
                 let rocketActive = typeof globalSettings.methods?.rocket === 'object' ? globalSettings.methods.rocket.active : globalSettings.methods?.rocket;
                 let binanceActive = typeof globalSettings.methods?.binance === 'object' ? globalSettings.methods.binance.active : globalSettings.methods?.binance;
+                
+                let bkashCharge = typeof globalSettings.methods?.bkash === 'object' ? parseFloat(globalSettings.methods.bkash.charge) || 0 : 0;
+                let nagadCharge = typeof globalSettings.methods?.nagad === 'object' ? parseFloat(globalSettings.methods.nagad.charge) || 0 : 0;
+                let rocketCharge = typeof globalSettings.methods?.rocket === 'object' ? parseFloat(globalSettings.methods.rocket.charge) || 0 : 0;
+                let binanceRate = globalSettings.binanceRate || 127;
 
-                if(bkashActive) methodSelect.innerHTML += `<option value="Bkash" ${currentMethod === 'Bkash' ? 'selected' : ''}>${window.t('বিকাশ', 'bKash')}</option>`;
-                if(nagadActive) methodSelect.innerHTML += `<option value="Nagad" ${currentMethod === 'Nagad' ? 'selected' : ''}>${window.t('নগদ', 'Nagad')}</option>`;
-                if(rocketActive) methodSelect.innerHTML += `<option value="Rocket" ${currentMethod === 'Rocket' ? 'selected' : ''}>${window.t('রকেট', 'Rocket')}</option>`;
-                if(binanceActive !== false) methodSelect.innerHTML += `<option value="Binance" ${currentMethod === 'Binance' ? 'selected' : ''}>${window.t('বাইনান্স', 'Binance')}</option>`;
+                // Add texts with charge/rate
+                let bkashText = bkashCharge > 0 ? `${window.t('bKash', 'bKash')} (-৳${bkashCharge} চার্জ)` : window.t('bKash', 'bKash');
+                let nagadText = nagadCharge > 0 ? `${window.t('Nagad', 'Nagad')} (-৳${nagadCharge} চার্জ)` : window.t('Nagad', 'Nagad');
+                let rocketText = rocketCharge > 0 ? `${window.t('Rocket', 'Rocket')} (-৳${rocketCharge} চার্জ)` : window.t('Rocket', 'Rocket');
+                let binanceText = `${window.t('Binance', 'Binance')} (USDT: ৳${binanceRate})`;
+
+                if(bkashActive) methodSelect.innerHTML += `<option value="Bkash" ${currentMethod === 'Bkash' ? 'selected' : ''}>${bkashText}</option>`;
+                if(nagadActive) methodSelect.innerHTML += `<option value="Nagad" ${currentMethod === 'Nagad' ? 'selected' : ''}>${nagadText}</option>`;
+                if(rocketActive) methodSelect.innerHTML += `<option value="Rocket" ${currentMethod === 'Rocket' ? 'selected' : ''}>${rocketText}</option>`;
+                if(binanceActive !== false) methodSelect.innerHTML += `<option value="Binance" ${currentMethod === 'Binance' ? 'selected' : ''}>${binanceText}</option>`;
                 
                 if (methodSelect.value !== currentMethod && currentMethod !== "") methodSelect.value = "";
                 window.updateAccountPlaceholder();
@@ -1203,37 +1178,37 @@
             if(document.getElementById('limitWarningText')) document.getElementById('limitWarningText').textContent = `${window.t('লিমিট', 'Limit')}: ${minL}k - ${maxL}k`;
             if(document.getElementById('coinAmount') && document.activeElement !== document.getElementById('coinAmount')){ document.getElementById('coinAmount').min = minL; document.getElementById('coinAmount').max = maxL; }
 
-            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER (Requested Order: YouTube 🔴, Facebook 🔵, Telegram ✈️, WhatsApp 🟢)
-            const horizContainer = document.getElementById('horizontalSupportLinks'); 
+            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER 🔴🔵✈️🟢
+            const horizContainer = document.getElementById('horizontalSocialLinks'); 
             if(horizContainer) {
                 let supHtml = '';
                 
-                // 1. YouTube
+                // 1. YouTube 🔴
                 let ytLink = globalSettings.support?.yt || '';
                 if(ytLink) { 
                     if(!ytLink.startsWith('http')) { if(ytLink.startsWith('@')) ytLink = 'https://youtube.com/' + ytLink.trim(); else ytLink = 'https://youtube.com/@' + ytLink.trim(); } 
-                    supHtml += `<a href="${ytLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white text-2xl shadow-lg hover:scale-110 transition" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
+                    supHtml += `<a href="${ytLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white text-2xl shadow-lg hover:scale-110 transition z-[4]" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
                 }
                 
-                // 2. Facebook
+                // 2. Facebook 🔵
                 let fbLink = globalSettings.support?.fb || '';
                 if(fbLink) { 
                     if(!fbLink.startsWith('http')) { fbLink = 'https://facebook.com/' + fbLink.trim(); } 
-                    supHtml += `<a href="${fbLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white text-2xl shadow-lg hover:scale-110 transition" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
+                    supHtml += `<a href="${fbLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white text-2xl shadow-lg hover:scale-110 transition z-[3]" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
                 }
 
-                // 3. Telegram
+                // 3. Telegram ✈️
                 let tgLink = globalSettings.support?.tg || '';
                 if(tgLink) { 
                     if(!tgLink.startsWith('http')) { tgLink = 'https://t.me/' + tgLink.replace('@', '').trim(); } 
-                    supHtml += `<a href="${tgLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-2xl shadow-lg hover:scale-110 transition" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
+                    supHtml += `<a href="${tgLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-2xl shadow-lg hover:scale-110 transition z-[2]" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
                 }
                 
-                // 4. WhatsApp
+                // 4. WhatsApp 🟢
                 let waLink = globalSettings.support?.wa || '';
                 if(waLink) { 
                     if(!waLink.startsWith('http')) { let cWa = waLink.replace(/[^0-9+]/g, ''); if(cWa.startsWith('01') && cWa.length === 11) cWa = '88' + cWa; waLink = 'https://wa.me/' + cWa; } 
-                    supHtml += `<a href="${waLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366] text-white text-2xl shadow-lg hover:scale-110 transition" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`; 
+                    supHtml += `<a href="${waLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366] text-white text-2xl shadow-lg hover:scale-110 transition z-[1]" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`; 
                 }
                 
                 horizContainer.innerHTML = supHtml;
@@ -1252,7 +1227,6 @@
                 if(globalSettings.noticeActive && globalSettings.noticeText) { document.getElementById('notice-banner').classList.remove('hidden'); document.getElementById('notice-text').textContent = globalSettings.noticeText; } else { document.getElementById('notice-banner').classList.add('hidden'); }
             }
             
-            // Appy Auth Settings UI to User
             if(globalSettings.authLogo) {
                 if(document.getElementById('authTopLogo')) { document.getElementById('authTopLogo').src = globalSettings.authLogo; document.getElementById('authTopLogo').classList.remove('hidden'); }
                 if(document.getElementById('authDefaultIcon')) document.getElementById('authDefaultIcon').classList.add('hidden');
@@ -1315,7 +1289,7 @@
                     currentNetAmountDisplay = `৳${netTk % 1 !== 0 ? netTk.toFixed(2) : netTk}`; 
                     
                     if (charge > 0) {
-                        currentPaymentNote = window.t(`(-${charge} টাকা সেন্ড মানি চার্জ)`, `(-${charge} Tk Send Money Charge)`);
+                        currentPaymentNote = window.t(`(-${charge} টাকা চার্জ)`, `(-${charge} Tk Charge)`);
                         noteEl.textContent = currentPaymentNote; 
                         noteEl.classList.remove('hidden');
                     } else {
@@ -1468,7 +1442,6 @@
 
                     if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#4f46e5', '#10b981', '#f59e0b', '#e11d48'] });
                     
-                    // Show success with copyable order ID
                     const modal = document.getElementById('customAlert'), icon = document.getElementById('alertIcon'), btnContainer = document.getElementById('alertButtons');
                     document.getElementById('alertTitle').textContent = window.t('রিকোয়েস্ট সফল হয়েছে!', 'Request Successful!'); 
                     document.getElementById('alertMessage').innerHTML = window.t(
@@ -1482,7 +1455,7 @@
 
                     setTimeout(() => { document.getElementById('activePendingSection').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1200);
 
-                } catch (err) { console.error(err); showAlert('error', window.t('সমস্যা হয়েছে!', 'Error Occurred!'), window.t('রিকোয়েস্ট সাবমিট করা যাচ্ছে পরিচয়।', 'Cannot submit request.')); 
+                } catch (err) { showAlert('error', window.t('সমস্যা হয়েছে!', 'Error Occurred!'), window.t('রিকোয়েস্ট সাবমিট করা যাচ্ছে পরিচয়।', 'Cannot submit request.')); 
                 } finally { btnText.innerHTML = window.t('রিকোয়েস্ট পাঠিয়ে দিন', 'Send Request'); document.getElementById('submitBtn').disabled = false; }
             });
         }
@@ -1528,7 +1501,6 @@
             }
         }
 
-        // --- NEW: INDIVIDUAL DELETE FUNCTION ---
         window.handleDeleteHistory = async function(dbId) {
             if (!currentUser) return;
             if(await window.adminCustomConfirm(window.t("সতর্কতা!", "Warning!"), window.t("আপনি কি এই হিস্ট্রি ডিলিট করতে চান?", "Are you sure you want to delete this specific request?"))) {
@@ -1580,13 +1552,12 @@
                 let statusBadge = user.blocked ? `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-red-200">Blocked</span>` : `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-green-200">Active</span>`;
                 let actionBtn = user.blocked ? `<button onclick="toggleUserBlock('${user.dbId}', true)" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-green-600 w-14">Unblock</button>` : `<button onclick="toggleUserBlock('${user.dbId}', false)" class="bg-red-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-red-600 w-14">Block</button>`;
                 let copyBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.dbId}')" title="Copy Username"></i>`;
-                let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i>Delete</button>`;
+                let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
 
                 uBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
             });
         }
 
-        // Search specific order from all requests
         window.handleAdminCheckOrder = function() {
             const searchId = document.getElementById('adminCheckOrderId').value.trim().toUpperCase();
             const resultArea = document.getElementById('checkOrderResultArea');
@@ -1720,11 +1691,8 @@
         window.confirmApproval = async function() {
             if (!currentUser) return;
             const file = document.getElementById('adminProofInput').files[0]; 
-            if(file) {
-                window.compressImage(file, async (res) => { await updateReqStatus(currentApproveId, 'paid', res); });
-            } else {
-                if(await window.adminCustomConfirm(window.t("সতর্কতা", "Warning"), window.t("প্রুফ ছবি ছাড়াই পেমেন্ট কনফার্ম করবেন?", "Confirm payment without proof image?"))) await updateReqStatus(currentApproveId, 'paid', null); 
-            }
+            if(file) { window.compressImage(file, async (res) => { await updateReqStatus(currentApproveId, 'paid', res); });
+            } else { if(await window.adminCustomConfirm(window.t("সতর্কতা", "Warning"), window.t("প্রুফ ছবি ছাড়াই পেমেন্ট কনফার্ম করবেন?", "Confirm payment without proof image?"))) await updateReqStatus(currentApproveId, 'paid', null); }
         }
 
         async function updateReqStatus(dbId, status, proof, rejectReason = null) {
@@ -1795,7 +1763,6 @@
             document.getElementById('setMinLimit').value = globalSettings.limits?.min || 1; document.getElementById('setMaxLimit').value = globalSettings.limits?.max || 100;
             document.getElementById('setBinanceRate').value = globalSettings.binanceRate || 127;
             
-            // Payment Methods Update
             let bkashObj = typeof globalSettings.methods?.bkash === 'object' ? globalSettings.methods.bkash : { active: globalSettings.methods?.bkash, charge: 0 };
             let nagadObj = typeof globalSettings.methods?.nagad === 'object' ? globalSettings.methods.nagad : { active: globalSettings.methods?.nagad, charge: 0 };
             let rocketObj = typeof globalSettings.methods?.rocket === 'object' ? globalSettings.methods.rocket : { active: globalSettings.methods?.rocket, charge: 0 };
@@ -1809,7 +1776,6 @@
             document.getElementById('chargeRocket').value = rocketObj.charge || '';
             document.getElementById('payBinance').checked = binanceActive;
 
-            // Support Links Update
             document.getElementById('linkFb').value = globalSettings.support?.fb || ''; 
             document.getElementById('linkWa').value = globalSettings.support?.wa || ''; 
             document.getElementById('linkTg').value = globalSettings.support?.tg || '';
@@ -1827,7 +1793,7 @@
             await setDoc(settingsRef, globalSettings);
         }
 
-        function forceSaveAndAlert(message) { updateGlobalSettingsFirestore().then(() => { window.adminCustomAlert(window.t('সফল!', 'Success!'), message); }).catch(e => { window.adminCustomAlert(window.t('ডাটাবেস এরর!', 'Database Error!'), window.t('ডাটা সেভ হয়নি। ইন্টারনেট কানেকশন চেক করুন।', 'Data not saved. Check connection.')); }); }
+        function forceSaveAndAlert(message) { updateGlobalSettingsFirestore().then(() => { window.adminCustomAlert(window.t('সফল!', 'Success!'), message); }).catch(e => {}); }
 
         window.saveSiteInfo = function() { globalSettings.siteName = document.getElementById('setSiteName').value || 'NS & Top Coin'; globalSettings.siteLogo = siteLogoBase64; globalSettings.noticeActive = document.getElementById('setNoticeActive').checked; globalSettings.noticeText = document.getElementById('setNoticeText').value; globalSettings.tgRequired = document.getElementById('setTgRequired').checked; forceSaveAndAlert(window.t('সাইট ইনফো সেভ হয়েছে!', 'Site Info Saved!')); }
         window.saveAuthSettings = function() { globalSettings.authText = document.getElementById('setAuthText').value; globalSettings.authLogo = authLogoBase64; forceSaveAndAlert(window.t('লগইন সেটিংস সেভ হয়েছে!', 'Auth Settings Saved!')); }
