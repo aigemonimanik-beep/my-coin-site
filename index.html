@@ -66,74 +66,100 @@
     <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
         <!-- Auth Modal -->
         <div id="authModal" class="fixed inset-0 bg-gray-900 bg-opacity-95 hidden flex justify-center items-center z-[200] p-4 backdrop-blur-md">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden border dark:border-gray-700">
-                <div class="bg-brand text-white p-4 text-center">
-                    <i class="fa-solid fa-coins text-3xl mb-2 text-yellow-300"></i>
-                    <h2 class="text-xl font-bold"><span class="lang-str" data-bn="স্বাগতম!" data-en="Welcome!">স্বাগতম!</span></h2>
-                    <p class="text-xs font-medium text-brand-light"><span class="lang-str" data-bn="অনুগ্রহ করে অ্যাকাউন্ট লগইন বা রেজিস্টার করুন" data-en="Please login or register to continue">অনুগ্রহ করে অ্যাকাউন্ট লগইন বা রেজিস্টার করুন</span></p>
-                </div>
+            <div class="bg-[#111827] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-800 p-6 md:p-8">
                 
-                <div class="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                    <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-3 text-sm font-black text-brand border-b-2 border-brand transition"><span class="lang-str" data-bn="লগইন করুন" data-en="Login">লগইন করুন</span></button>
-                    <button id="tabRegBtn" onclick="switchAuthTab('register')" class="flex-1 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-brand transition"><span class="lang-str" data-bn="রেজিস্টার করুন" data-en="Register">রেজিস্টার করুন</span></button>
+                <!-- Dynamic Header Section -->
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="relative shrink-0">
+                        <!-- Custom Admin Logo -->
+                        <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border border-gray-700">
+                        <!-- Default Green Icon -->
+                        <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-3xl shadow-lg shadow-green-500/30 text-white">
+                            <i id="authIconFA" class="fa-solid fa-right-to-bracket"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 id="authTitle" class="text-[22px] font-black tracking-wide text-white">লগইন করুন</h2>
+                        <p id="authDynamicText" class="text-xs text-gray-400 mt-1 font-bold">আপনার একাউন্টে প্রবেশ করুন</p>
+                    </div>
                 </div>
 
-                <div class="p-6">
-                    <!-- Login Form -->
-                    <div id="loginFormArea" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-user mr-1 text-brand"></i> <span class="lang-str" data-bn="ইউজারনেম" data-en="Username">ইউজারনেম</span></label>
-                            <input type="text" id="loginUserId" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="e.g. rohim123">
+                <!-- Login Form -->
+                <div id="loginFormArea" class="space-y-4">
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-user"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">ইউজারনেইম</label>
+                            <input type="text" id="loginUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার ইউজারনেইম লিখুন">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-lock mr-1 text-brand"></i> <span class="lang-str" data-bn="পাসওয়ার্ড" data-en="Password">পাসওয়ার্ড</span></label>
-                            <div class="relative">
-                                <input type="password" id="loginPassword" class="w-full pl-3 pr-10 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="••••••••">
-                                <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand">
-                                    <i id="eyeLogin" class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button onclick="handleAuth('login')" class="w-full bg-brand text-white font-bold py-2.5 rounded-lg shadow-md hover:bg-brand-dark transition text-sm mt-2">
-                            <span class="lang-str" data-bn="লগইন করুন" data-en="Login">লগইন করুন</span>
-                        </button>
-                    </div>
-
-                    <!-- Register Form -->
-                    <div id="registerFormArea" class="hidden space-y-3">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-address-card mr-1 text-brand"></i> <span class="lang-str" data-bn="আপনার নাম" data-en="Your Name">আপনার নাম</span></label>
-                            <input type="text" id="regName" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="e.g. Md Rohim">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-user mr-1 text-brand"></i> <span class="lang-str" data-bn="ইউজারনেম (লগইন করার জন্য)" data-en="Username (For Login)">ইউজারনেম (লগইন করার জন্য)</span></label>
-                            <input type="text" id="regUserId" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="e.g. rohim123">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-lock mr-1 text-brand"></i> <span class="lang-str" data-bn="পাসওয়ার্ড" data-en="Password">পাসওয়ার্ড</span></label>
-                            <div class="relative">
-                                <input type="password" id="regPassword" class="w-full pl-3 pr-10 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="••••••••">
-                                <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand">
-                                    <i id="eyeReg1" class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><i class="fa-solid fa-lock mr-1 text-brand"></i> <span class="lang-str" data-bn="কনফার্ম পাসওয়ার্ড" data-en="Confirm Password">কনফার্ম পাসওয়ার্ড</span></label>
-                            <div class="relative">
-                                <input type="password" id="regConfirmPassword" class="w-full pl-3 pr-10 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm focus:border-brand" placeholder="••••••••">
-                                <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-brand">
-                                    <i id="eyeReg2" class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button onclick="handleAuth('register')" class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-2.5 rounded-lg shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition border border-gray-300 dark:border-gray-600 text-sm mt-2">
-                            <span class="lang-str" data-bn="রেজিস্টার করুন" data-en="Register">রেজিস্টার করুন</span>
-                        </button>
                     </div>
                     
-                    <p id="authErrorMsg" class="text-xs text-red-600 bg-red-100 border border-red-300 p-2 rounded font-bold text-center hidden mt-3"></p>
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">পাসওয়ার্ড</label>
+                            <input type="password" id="loginPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
+                        </div>
+                        <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeLogin" class="fa-solid fa-eye-slash"></i></button>
+                    </div>
+                    
+                    <button onclick="handleAuth('login')" class="w-full bg-green-500 text-white font-black text-lg py-3.5 rounded-[16px] shadow-lg shadow-green-500/30 hover:bg-green-600 transition mt-4 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> লগইন করুন
+                    </button>
+                    
+                    <div class="text-center mt-5">
+                        <span class="text-xs text-gray-400 font-bold">একাউন্ট নেই?</span> 
+                        <button onclick="switchAuthTab('register')" class="text-xs text-green-500 font-black hover:underline ml-1">নতুন একাউন্ট খুলুন</button>
+                    </div>
                 </div>
+
+                <!-- Register Form -->
+                <div id="registerFormArea" class="hidden space-y-3">
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-user"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">ইউজারনেইম</label>
+                            <input type="text" id="regUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার পছন্দের ইউজারনেইম লিখুন">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-id-card"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">নাম</label>
+                            <input type="text" id="regName" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার নাম লিখুন">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">পাসওয়ার্ড</label>
+                            <input type="password" id="regPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
+                        </div>
+                        <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
+                    </div>
+                    
+                    <div class="bg-[#1f2937] rounded-[16px] p-3 flex items-center gap-3 border border-transparent focus-within:border-gray-600 transition">
+                        <div class="w-8 flex justify-center text-gray-400 text-lg"><i class="fa-solid fa-lock"></i></div>
+                        <div class="flex-1">
+                            <label class="block text-[11px] text-gray-400 font-bold mb-0.5">কনফার্ম পাসওয়ার্ড</label>
+                            <input type="password" id="regConfirmPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আবার পাসওয়ার্ড লিখুন">
+                        </div>
+                        <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="text-gray-400 hover:text-white px-2 transition"><i id="eyeReg2" class="fa-solid fa-eye-slash"></i></button>
+                    </div>
+                    
+                    <button onclick="handleAuth('register')" class="w-full bg-green-500 text-white font-black text-lg py-3.5 rounded-[16px] shadow-lg shadow-green-500/30 hover:bg-green-600 transition mt-4 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন করুন
+                    </button>
+                    
+                    <div class="text-center mt-5">
+                        <span class="text-xs text-gray-400 font-bold">ইতিমধ্যে একাউন্ট আছে?</span> 
+                        <button onclick="switchAuthTab('login')" class="text-xs text-green-500 font-black hover:underline ml-1">লগইন করুন</button>
+                    </div>
+                </div>
+                
+                <p id="authErrorMsg" class="text-xs text-red-300 bg-red-900/40 border border-red-800/50 p-2.5 rounded-lg font-bold text-center hidden mt-5"></p>
             </div>
         </div>
 
@@ -606,7 +632,31 @@
                             <button onclick="saveSiteInfo()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700">
+                        <!-- NEW: Auth / Login Settings UI -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mt-4">
+                            <h3 class="text-sm font-bold text-gray-800 dark:text-white mb-3"><i class="fa-solid fa-id-card text-brand mr-2"></i> <span class="lang-str" data-bn="লগইন পেজ ডিজাইন" data-en="Login Page Design">লগইন পেজ ডিজাইন</span></h3>
+                    
+                            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                                <div class="flex-grow">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লেখা (Sub-title):" data-en="Login Page Text:">লগইন পেজের লেখা (Sub-title):</span></label>
+                                    <input type="text" id="setAuthText" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="একাউন্ট তৈরি করে এখনই শুরু করুন">
+                                </div>
+                                <div class="w-full md:w-40 shrink-0">
+                                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লোগো:" data-en="Login Page Logo:">লগইন পেজের লোগো:</span></label>
+                                    <label class="flex flex-col items-center justify-center w-full h-[34px] border border-gray-300 dark:border-gray-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 transition overflow-hidden relative">
+                                        <div class="flex items-center justify-center space-x-2" id="authLogoPreviewContainer">
+                                            <i class="fa-solid fa-image text-gray-400 text-xs"></i>
+                                            <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400"><span class="lang-str" data-bn="লোগো আপলোড" data-en="Upload Logo">লোগো আপলোড</span></span>
+                                        </div>
+                                        <input type="file" id="authLogoInput" accept="image/*" class="hidden">
+                                    </label>
+                                    <button type="button" onclick="removeAuthLogo()" class="text-[10px] text-red-500 hover:text-red-700 mt-1 font-bold w-full text-right hidden" id="removeAuthLogoBtn"><i class="fa-solid fa-trash-can mr-0.5"></i><span class="lang-str" data-bn="রিমুভ" data-en="Remove">রিমুভ</span></button>
+                                </div>
+                            </div>
+                            <button onclick="saveAuthSettings()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
+                        </div>
+
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mt-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-scale-balanced mr-1"></i> <span class="lang-str" data-bn="সেলের লিমিট (Min/Max)" data-en="Sale Limits (Min/Max)">সেলের লিমিট (Min/Max)</span></h3>
@@ -842,6 +892,7 @@
         let currentRejectId = null; 
         let newCoinUploadedLogo = null; 
         let siteLogoBase64 = null;
+        let authLogoBase64 = null;
         
         // Sound is optional, catch error if fails
         let notificationSound = null;
@@ -995,6 +1046,7 @@
                 document.getElementById('displayUserId').classList.add('hidden');
                 document.getElementById('logoutBtn').classList.add('hidden');
                 document.getElementById('navDivider').classList.add('hidden');
+                switchAuthTab('login');
             } else {
                 document.getElementById('authModal').classList.add('hidden');
                 document.getElementById('displayUserId').classList.remove('hidden');
@@ -1020,21 +1072,37 @@
             const loginForm = document.getElementById('loginFormArea'); const regForm = document.getElementById('registerFormArea');
             const errEl = document.getElementById('authErrorMsg');
             errEl.classList.add('hidden'); errEl.innerText = '';
+            
+            const authTitle = document.getElementById('authTitle');
+            const authIconFA = document.getElementById('authIconFA');
+            const authDynamicText = document.getElementById('authDynamicText');
+            
             if(tab === 'login') {
-                loginBtn.className = "flex-1 py-3 text-sm font-black text-brand border-b-2 border-brand transition";
-                regBtn.className = "flex-1 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-brand transition";
+                if(authTitle) authTitle.innerText = window.t('লগইন করুন', 'Login');
+                if(authIconFA) authIconFA.className = 'fa-solid fa-right-to-bracket';
+                if(authDynamicText) authDynamicText.innerText = globalSettings.authText ? globalSettings.authText : window.t('আপনার একাউন্টে প্রবেশ করুন', 'Login to your account');
+                
                 loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
             } else {
-                regBtn.className = "flex-1 py-3 text-sm font-black text-brand border-b-2 border-brand transition";
-                loginBtn.className = "flex-1 py-3 text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-brand transition";
+                if(authTitle) authTitle.innerText = window.t('রেজিস্ট্রেশন করুন', 'Register');
+                if(authIconFA) authIconFA.className = 'fa-solid fa-user-plus';
+                if(authDynamicText) authDynamicText.innerText = globalSettings.authText ? globalSettings.authText : window.t('একাউন্ট তৈরি করে এখনই শুরু করুন', 'Create an account to start');
+                
                 regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
             }
         }
 
         window.togglePassword = function(inputId, iconId) {
             let inp = document.getElementById(inputId); let icon = document.getElementById(iconId);
-            if(inp.type === "password") { inp.type = "text"; icon.classList.remove("fa-eye"); icon.classList.add("fa-eye-slash"); icon.classList.add("text-brand");
-            } else { inp.type = "password"; icon.classList.remove("fa-eye-slash", "text-brand"); icon.classList.add("fa-eye"); }
+            if(inp.type === "password") { 
+                inp.type = "text"; 
+                icon.classList.remove("fa-eye-slash"); 
+                icon.classList.add("fa-eye", "text-green-400");
+            } else { 
+                inp.type = "password"; 
+                icon.classList.remove("fa-eye", "text-green-400"); 
+                icon.classList.add("fa-eye-slash"); 
+            }
         }
 
         window.handleAuth = async function(action) {
@@ -1183,6 +1251,20 @@
             if(document.getElementById('notice-banner')) {
                 if(globalSettings.noticeActive && globalSettings.noticeText) { document.getElementById('notice-banner').classList.remove('hidden'); document.getElementById('notice-text').textContent = globalSettings.noticeText; } else { document.getElementById('notice-banner').classList.add('hidden'); }
             }
+            
+            // Appy Auth Settings UI to User
+            if(globalSettings.authLogo) {
+                if(document.getElementById('authTopLogo')) { document.getElementById('authTopLogo').src = globalSettings.authLogo; document.getElementById('authTopLogo').classList.remove('hidden'); }
+                if(document.getElementById('authDefaultIcon')) document.getElementById('authDefaultIcon').classList.add('hidden');
+            } else {
+                if(document.getElementById('authTopLogo')) document.getElementById('authTopLogo').classList.add('hidden');
+                if(document.getElementById('authDefaultIcon')) document.getElementById('authDefaultIcon').classList.remove('hidden');
+            }
+            
+            if(document.getElementById('authDynamicText') && globalSettings.authText) {
+                document.getElementById('authDynamicText').textContent = globalSettings.authText;
+            }
+
             if(document.getElementById('active-system-container')) {
                 if(globalSettings.systemActive === false) { document.getElementById('active-system-container').classList.add('hidden'); document.getElementById('hero-header').classList.add('hidden'); document.getElementById('trust-indicator').classList.add('hidden'); document.getElementById('system-stopped-container').classList.remove('hidden'); document.getElementById('system-stopped-text').textContent = globalSettings.stopMsg || window.t("বর্তমানে আমাদের কয়েন সেল বন্ধ আছে।", "Our coin sales are currently closed."); } else { document.getElementById('active-system-container').classList.remove('hidden'); document.getElementById('hero-header').classList.remove('hidden'); document.getElementById('trust-indicator').classList.remove('hidden'); document.getElementById('system-stopped-container').classList.add('hidden'); }
             }
@@ -1680,9 +1762,35 @@
 
         window.removeSiteLogo = function() { siteLogoBase64 = null; document.getElementById('siteLogoInput').value = ''; document.getElementById('siteLogoPreviewContainer').innerHTML = `<i class="fa-solid fa-image text-gray-400"></i><span class="text-xs font-bold text-gray-500 dark:text-gray-400 ml-2">${window.t('লোগো আপলোড', 'Upload Logo')}</span>`; document.getElementById('removeSiteLogoBtn').classList.add('hidden'); }
 
+        if(document.getElementById('authLogoInput')) {
+            document.getElementById('authLogoInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas'); let width = img.width, height = img.height; const MAX_SIZE = 200; 
+                            if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                            canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); 
+                            authLogoBase64 = canvas.toDataURL('image/png', 0.8);
+                            document.getElementById('authLogoPreviewContainer').innerHTML = `<img src="${authLogoBase64}" class="h-8 w-8 object-cover rounded-full shadow-sm"><span class="text-xs font-bold text-green-600 ml-2">Ok</span>`;
+                            document.getElementById('removeAuthLogoBtn').classList.remove('hidden');
+                        }; img.src = e.target.result;
+                    }; reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        window.removeAuthLogo = function() { authLogoBase64 = null; document.getElementById('authLogoInput').value = ''; document.getElementById('authLogoPreviewContainer').innerHTML = `<i class="fa-solid fa-image text-gray-400"></i><span class="text-xs font-bold text-gray-500 dark:text-gray-400 ml-2">${window.t('লোগো আপলোড', 'Upload Logo')}</span>`; document.getElementById('removeAuthLogoBtn').classList.add('hidden'); }
+
         function updateSettingsUIAdmin() {
             document.getElementById('setSiteName').value = globalSettings.siteName || 'NS & Top Coin';
             if(globalSettings.siteLogo) { siteLogoBase64 = globalSettings.siteLogo; document.getElementById('siteLogoPreviewContainer').innerHTML = `<img src="${globalSettings.siteLogo}" class="h-8 w-8 object-contain"><span class="text-xs font-bold text-green-600 ml-2">Ok</span>`; document.getElementById('removeSiteLogoBtn').classList.remove('hidden'); } else { window.removeSiteLogo(); }
+            
+            document.getElementById('setAuthText').value = globalSettings.authText || '';
+            if(globalSettings.authLogo) { authLogoBase64 = globalSettings.authLogo; document.getElementById('authLogoPreviewContainer').innerHTML = `<img src="${globalSettings.authLogo}" class="h-8 w-8 object-cover rounded-full shadow-sm"><span class="text-xs font-bold text-green-600 ml-2">Ok</span>`; document.getElementById('removeAuthLogoBtn').classList.remove('hidden'); } else { window.removeAuthLogo(); }
+
             document.getElementById('setNoticeActive').checked = globalSettings.noticeActive || false; document.getElementById('setNoticeText').value = globalSettings.noticeText || '';
             document.getElementById('setMinLimit').value = globalSettings.limits?.min || 1; document.getElementById('setMaxLimit').value = globalSettings.limits?.max || 100;
             document.getElementById('setBinanceRate').value = globalSettings.binanceRate || 127;
@@ -1722,6 +1830,7 @@
         function forceSaveAndAlert(message) { updateGlobalSettingsFirestore().then(() => { window.adminCustomAlert(window.t('সফল!', 'Success!'), message); }).catch(e => { window.adminCustomAlert(window.t('ডাটাবেস এরর!', 'Database Error!'), window.t('ডাটা সেভ হয়নি। ইন্টারনেট কানেকশন চেক করুন।', 'Data not saved. Check connection.')); }); }
 
         window.saveSiteInfo = function() { globalSettings.siteName = document.getElementById('setSiteName').value || 'NS & Top Coin'; globalSettings.siteLogo = siteLogoBase64; globalSettings.noticeActive = document.getElementById('setNoticeActive').checked; globalSettings.noticeText = document.getElementById('setNoticeText').value; globalSettings.tgRequired = document.getElementById('setTgRequired').checked; forceSaveAndAlert(window.t('সাইট ইনফো সেভ হয়েছে!', 'Site Info Saved!')); }
+        window.saveAuthSettings = function() { globalSettings.authText = document.getElementById('setAuthText').value; globalSettings.authLogo = authLogoBase64; forceSaveAndAlert(window.t('লগইন সেটিংস সেভ হয়েছে!', 'Auth Settings Saved!')); }
         window.saveLimits = function() { globalSettings.limits = { min: parseFloat(document.getElementById('setMinLimit').value) || 1, max: parseFloat(document.getElementById('setMaxLimit').value) || 100 }; forceSaveAndAlert(window.t('লিমিট সেভ হয়েছে!', 'Limits Saved!')); }
         window.saveBinanceRate = function() { globalSettings.binanceRate = parseFloat(document.getElementById('setBinanceRate').value) || 127; forceSaveAndAlert(window.t('বাইনান্স রেট সেভ হয়েছে!', 'Binance Rate Saved!')); }
         
