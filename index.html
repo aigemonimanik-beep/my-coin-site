@@ -270,12 +270,22 @@
                                     <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold tracking-wider text-sm" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
                                 </div>
                                 
-                                <!-- Calculation Area -->
-                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 rounded p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-sm">
-                                    <span class="text-green-800 dark:text-green-200 font-bold text-sm"><span class="lang-str" data-bn="মোট পাবেন:" data-en="You will receive:">মোট পাবেন:</span></span>
-                                    <div class="text-right mt-1 sm:mt-0">
-                                        <div id="totalAmount" class="text-xl font-black text-green-700 dark:text-green-400 leading-tight">৳০</div>
-                                        <div id="paymentNoteText" class="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 hidden"></div>
+                                <!-- Detailed Calculation Area (Receipt Style) -->
+                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm flex flex-col space-y-2">
+                                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
+                                        <span class="text-gray-600 dark:text-gray-400 text-[11px] font-bold"><span class="lang-str" data-bn="কয়েনের মূল্য:" data-en="Coin Value:">কয়েনের মূল্য:</span></span>
+                                        <span id="calcBaseAmount" class="text-gray-800 dark:text-gray-200 text-xs font-black tracking-wide">৳0</span>
+                                    </div>
+                                    <div id="calcChargeRow" class="flex justify-between items-center hidden pb-2 border-b border-gray-100 dark:border-gray-700">
+                                        <span id="calcChargeLabel" class="text-red-500 dark:text-red-400 text-[11px] font-bold">সেন্ড মানি চার্জ:</span>
+                                        <span id="calcChargeAmount" class="text-red-500 dark:text-red-400 text-xs font-black tracking-wide">-৳0</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-1">
+                                        <span class="text-green-700 dark:text-green-500 text-sm font-black"><span class="lang-str" data-bn="সর্বমোট পাবেন:" data-en="Total Receive:">সর্বমোট পাবেন:</span></span>
+                                        <div class="text-right">
+                                            <div id="totalAmount" class="text-xl font-black text-green-700 dark:text-green-400 leading-tight">৳০</div>
+                                            <div id="paymentNoteText" class="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 hidden"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1264,12 +1274,18 @@
             const amount = parseFloat(document.getElementById('coinAmount').value) || 0; 
             const price = parseFloat(document.getElementById('selectedCoinRate').value) || 0; 
             const method = document.getElementById('paymentMethod').value; 
-            const noteEl = document.getElementById('paymentNoteText');
+            
+            const calcBaseAmount = document.getElementById('calcBaseAmount');
+            const calcChargeRow = document.getElementById('calcChargeRow');
+            const calcChargeLabel = document.getElementById('calcChargeLabel');
+            const calcChargeAmount = document.getElementById('calcChargeAmount');
             const totalAmountDisplay = document.getElementById('totalAmount');
             const calculatorDisplay = document.getElementById('calculatorDisplay');
             
             if (document.getElementById('coinType').value && amount > 0) {
                 let baseTotalTk = price * amount;
+                let formattedBase = baseTotalTk % 1 !== 0 ? baseTotalTk.toFixed(2) : baseTotalTk;
+                if(calcBaseAmount) calcBaseAmount.textContent = `৳${formattedBase}`;
                 
                 if(method === 'Binance') {
                     let rate = globalSettings.binanceRate || 127; 
@@ -1277,8 +1293,14 @@
                     currentNetAmountDisplay = `$${dollars}`; 
                     currentPaymentNote = window.t(`(রেট: ৳${rate}/$)`, `(Rate: ৳${rate}/$)`);
                     totalAmountDisplay.textContent = currentNetAmountDisplay; 
-                    noteEl.textContent = currentPaymentNote; 
-                    noteEl.classList.remove('hidden');
+                    
+                    if(calcChargeRow) {
+                        calcChargeLabel.textContent = window.t("বাইনান্স ডলার রেট:", "Binance Dollar Rate:");
+                        calcChargeLabel.className = "text-blue-600 dark:text-blue-400 text-[11px] font-bold";
+                        calcChargeAmount.textContent = `৳${rate} / $1`;
+                        calcChargeAmount.className = "text-blue-600 dark:text-blue-400 text-xs font-black tracking-wide";
+                        calcChargeRow.classList.remove('hidden');
+                    }
                 } else if (method === 'Bkash' || method === 'Nagad' || method === 'Rocket') {
                     let charge = 0;
                     if(method === 'Bkash' && typeof globalSettings.methods?.bkash === 'object') charge = parseFloat(globalSettings.methods.bkash.charge) || 0;
@@ -1290,18 +1312,23 @@
                     
                     if (charge > 0) {
                         currentPaymentNote = window.t(`(-${charge} টাকা চার্জ)`, `(-${charge} Tk Charge)`);
-                        noteEl.textContent = currentPaymentNote; 
-                        noteEl.classList.remove('hidden');
+                        if(calcChargeRow) {
+                            calcChargeLabel.textContent = window.t("সেন্ড মানি চার্জ:", "Send Money Charge:");
+                            calcChargeLabel.className = "text-red-500 dark:text-red-400 text-[11px] font-bold";
+                            calcChargeAmount.textContent = `-৳${charge}`;
+                            calcChargeAmount.className = "text-red-500 dark:text-red-400 text-xs font-black tracking-wide";
+                            calcChargeRow.classList.remove('hidden');
+                        }
                     } else {
                         currentPaymentNote = '';
-                        noteEl.classList.add('hidden');
+                        if(calcChargeRow) calcChargeRow.classList.add('hidden');
                     }
                     totalAmountDisplay.textContent = currentNetAmountDisplay; 
                 } else {
                     currentNetAmountDisplay = `৳${baseTotalTk % 1 !== 0 ? baseTotalTk.toFixed(2) : baseTotalTk}`; 
                     currentPaymentNote = '';
                     totalAmountDisplay.textContent = currentNetAmountDisplay; 
-                    noteEl.classList.add('hidden');
+                    if(calcChargeRow) calcChargeRow.classList.add('hidden');
                 }
                 calculatorDisplay.classList.remove('hidden'); 
             } else { calculatorDisplay.classList.add('hidden'); }
