@@ -219,32 +219,32 @@
 
         <nav class="bg-brand dark:bg-brand-dark text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <div class="flex flex-col sm:flex-row justify-between items-center py-1.5 sm:h-14 gap-1">
+                <div class="flex flex-col sm:flex-row justify-between items-center py-2 sm:h-16 gap-1">
                     <div class="flex items-center select-none w-full sm:w-auto justify-between sm:justify-start">
                         <div class="flex items-center">
                             <div id="navbarLogoContainer" class="mr-2 pointer-events-none flex items-center justify-center">
-                                <i class="fa-solid fa-coins text-xl text-yellow-400"></i>
+                                <i class="fa-solid fa-coins text-2xl text-yellow-400"></i>
                             </div>
-                            <span id="navbarSiteName" class="font-bold text-lg tracking-wide pointer-events-none">NS & Top Coin</span>
+                            <span id="navbarSiteName" class="font-bold text-xl tracking-wide pointer-events-none">NS & Top Coin</span>
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-2 sm:gap-3 bg-white/20 px-2 sm:px-3 py-1 rounded-full backdrop-blur-sm self-end sm:self-auto">
-                        <!-- MOVED MENU BUTTON TO RIGHT SIDE -->
-                        <button type="button" onclick="openUserProfileModal()" class="font-bold text-[11px] bg-brand text-white rounded px-2 py-0.5 hover:bg-brand-dark transition shadow border border-white/20 flex items-center gap-1">
-                            Menu <i class="fa-solid fa-bars"></i>
+                    <div class="flex items-center gap-3 bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm self-end sm:self-auto">
+                        <!-- BIG MENU BUTTON ON RIGHT SIDE -->
+                        <button type="button" onclick="openUserProfileModal()" class="font-black text-lg bg-[#2563eb] text-white rounded-xl px-6 py-2.5 hover:bg-blue-700 transition shadow-xl border-2 border-white/50 flex items-center gap-2 transform hover:scale-105 active:scale-95">
+                            <i class="fa-solid fa-bars text-xl"></i> <span class="lang-str uppercase tracking-widest" data-bn="MENU" data-en="MENU">MENU</span>
                         </button>
                         
-                        <div class="w-[1px] h-4 bg-white/30" id="navDivider"></div>
+                        <div class="w-[1px] h-5 bg-white/30" id="navDivider"></div>
                         
-                        <button type="button" id="langToggleBtnUser" onclick="toggleLang()" class="font-bold text-[11px] bg-white/30 text-white rounded px-1.5 py-0.5 hover:bg-white/50 transition border border-white/40">EN</button>
+                        <button type="button" id="langToggleBtnUser" onclick="toggleLang()" class="font-bold text-xs bg-white/30 text-white rounded px-2 py-1 hover:bg-white/50 transition border border-white/40">EN</button>
                         <div class="flex gap-1 border-l border-r border-white/30 px-2">
                             <button type="button" id="cycleThemeBtnUser" class="p-1 hover:scale-110 transition" title="Theme">
                                 <i class="fa-solid fa-palette text-sm text-white pointer-events-none"></i>
                             </button>
                         </div>
                         <button type="button" id="toggleDarkModeBtnUser" class="p-1 hover:scale-110 transition" title="Dark Mode">
-                            <i id="themeIconUser" class="fa-solid fa-moon text-sm text-yellow-300 pointer-events-none"></i>
+                            <i id="themeIconUser" class="fa-solid fa-moon text-base text-yellow-300 pointer-events-none"></i>
                         </button>
                     </div>
                 </div>
@@ -680,7 +680,7 @@
                     <section id="sec-archive" class="hidden">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 p-2 rounded text-[11px] font-bold text-yellow-800 dark:text-yellow-400 w-full md:w-auto">
-                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবেবিধা হবে।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে না।</span>
+                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবে না।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে না।</span>
                             </div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <button onclick="clearArchive()" class="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 px-3 py-1.5 rounded font-bold shadow-sm transition border border-red-300 dark:border-red-800 flex items-center whitespace-nowrap text-[11px]">
@@ -870,13 +870,34 @@
     <!-- ========================================== -->
     <!--              SHARED MODALS                 -->
     <!-- ========================================== -->
-    <!-- Compact User History Modal -->
+    <!-- Compact User History Modal with Dashboard -->
     <div id="userHistoryModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-[90] p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-gray-100 dark:bg-slate-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-slate-700 flex flex-col overflow-hidden">
             <div class="p-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-800">
                 <h3 class="text-sm font-black text-gray-800 dark:text-white flex items-center"><i class="fa-solid fa-clock-rotate-left text-brand mr-2"></i> <span class="lang-str" data-bn="আপনার রিকোয়েস্ট হিস্ট্রি" data-en="Your Request History">আপনার রিকোয়েস্ট হিস্ট্রি</span></h3>
                 <button onclick="closeUserHistoryModal()" class="text-gray-400 hover:text-red-500 text-2xl px-2 leading-none transition">&times;</button>
             </div>
+            
+            <!-- NEW: User Dashboard Stats (Premium Design) -->
+            <div class="p-4 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 space-y-3">
+                <!-- Total Payment Card (Green) -->
+                <div class="bg-[#10b981] rounded-xl p-4 shadow-md text-white relative overflow-hidden">
+                    <div class="absolute -right-4 -bottom-4 opacity-20"><i class="fa-solid fa-wallet text-8xl"></i></div>
+                    <p class="text-[11px] font-black uppercase tracking-wider mb-1 opacity-90 lang-str" data-bn="Total Payment" data-en="Total Payment">Total Payment</p>
+                    <h2 class="text-4xl font-black tracking-tight" id="userTotalPaymentUI">৳0</h2>
+                </div>
+                <!-- Total Pending Card (Dark) -->
+                <div class="bg-[#1e293b] border-l-[6px] border-[#f59e0b] rounded-xl p-3 shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider lang-str" data-bn="Total Pending" data-en="Total Pending">Total Pending</p>
+                        <h3 class="text-2xl font-black text-white mt-0.5" id="userTotalPendingUI">0</h3>
+                    </div>
+                    <div class="bg-[#f59e0b]/20 p-2 rounded-full">
+                        <i class="fa-solid fa-clock text-xl text-[#f59e0b]"></i>
+                    </div>
+                </div>
+            </div>
+            
             <div id="userHistoryContainer" class="p-3 overflow-y-auto flex-grow space-y-2"></div>
         </div>
     </div>
@@ -993,7 +1014,6 @@
         let uploadedImageBase64 = null; 
         let activeCoinId = null; 
         let loggedInUserId = null;
-        let currentUserData = null; // Store active user details
         try { loggedInUserId = localStorage.getItem('nsCoin_loggedInUser'); } catch(e) {}
         
         // Calculated Values for submission
@@ -1011,7 +1031,6 @@
         let newCoinUploadedLogo = null; 
         let siteLogoBase64 = null;
         let authLogoBase64 = null;
-        let tempProfilePicBase64 = null;
         
         let notificationSound = null;
         try { notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); } catch(e) {}
@@ -1075,23 +1094,16 @@
                 }
             }, (err) => {});
 
-            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-            onSnapshot(usersRef, (snapshot) => {
-                let tempUsers = [];
-                snapshot.forEach((doc) => { tempUsers.push({ dbId: doc.id, ...doc.data() }); });
-                allUsers = tempUsers;
-                try { localStorage.setItem('nsCoin_cachedUsers', JSON.stringify(allUsers)); } catch(e) {}
-                
-                if(isAppAdminMode) {
+            if(isAppAdminMode) {
+                const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                onSnapshot(usersRef, (snapshot) => {
+                    let tempUsers = [];
+                    snapshot.forEach((doc) => { tempUsers.push({ dbId: doc.id, ...doc.data() }); });
+                    allUsers = tempUsers;
+                    try { localStorage.setItem('nsCoin_cachedUsers', JSON.stringify(allUsers)); } catch(e) {}
                     renderUsersTable();
-                } else if(loggedInUserId) {
-                    currentUserData = allUsers.find(u => u.dbId === loggedInUserId);
-                    if (currentUserData && currentUserData.blocked) {
-                        showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। দয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
-                        logoutUser();
-                    }
-                }
-            }, (err) => {});
+                }, (err) => {});
+            }
         }
 
         window.setLang = function(langCode) {
@@ -1161,133 +1173,19 @@
             if(isAppAdminMode) window.adminCustomAlert(window.t('সফল', 'Success'), window.t(`কপি করা হয়েছে:\n${text}`, `Copied:\n${text}`)); 
         }
 
-        // ==========================================
-        //         USER PROFILE & SETTINGS SYNC
-        // ==========================================
-
-        window.openUserProfileModal = async function() {
-            if(!loggedInUserId) return showAlert('error', window.t('লগইন নেই', 'Not Logged In'), window.t('দয়া করে লগইন করুন।', 'Please login.'));
-            
-            if(db) {
-                try {
-                    const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId));
-                    if(userDoc.exists()) currentUserData = userDoc.data();
-                } catch(e){}
-            } else if (!currentUserData) {
-                currentUserData = allUsers.find(u => u.dbId === loggedInUserId);
-            }
-
-            if(!currentUserData) return;
-
-            document.getElementById('editProfileName').value = currentUserData.name || '';
-            document.getElementById('editProfileUsername').value = loggedInUserId;
-            document.getElementById('editProfilePassword').value = currentUserData.password || '';
-            
-            tempProfilePicBase64 = currentUserData.profilePic || null;
-            if(tempProfilePicBase64) {
-                document.getElementById('userProfileImgPreview').src = tempProfilePicBase64;
-                document.getElementById('userProfileImgPreview').classList.remove('hidden');
-                document.getElementById('userProfileImgFallback').classList.add('hidden');
-            } else {
-                document.getElementById('userProfileImgPreview').classList.add('hidden');
-                document.getElementById('userProfileImgFallback').classList.remove('hidden');
-            }
-
-            document.getElementById('userProfileModal').classList.remove('hidden');
-        }
-
-        window.closeUserProfileModal = function() {
-            document.getElementById('userProfileModal').classList.add('hidden');
-            tempProfilePicBase64 = null;
-        }
-
-        if(document.getElementById('userProfilePicInput')) {
-            document.getElementById('userProfilePicInput').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    window.compressImage(file, function(cb) { 
-                        tempProfilePicBase64 = cb; 
-                        document.getElementById('userProfileImgPreview').src = tempProfilePicBase64;
-                        document.getElementById('userProfileImgPreview').classList.remove('hidden');
-                        document.getElementById('userProfileImgFallback').classList.add('hidden');
-                    });
-                }
-            });
-        }
-
-        window.saveUserProfile = async function() {
-            const newName = document.getElementById('editProfileName').value.trim();
-            const newUsername = document.getElementById('editProfileUsername').value.trim();
-            const newPassword = document.getElementById('editProfilePassword').value.trim();
-
-            if(!newName || !newUsername || !newPassword) {
-                return showAlert('error', window.t('খালি ঘর', 'Empty Fields'), window.t('সবগুলো ঘর সঠিকভাবে পূরণ করুন।', 'Please fill all fields properly.'));
-            }
-
-            const btn = document.getElementById('saveProfileBtn');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> ${window.t('সেভ হচ্ছে...', 'Saving...')}`;
-            btn.disabled = true;
-
-            try {
-                if (newUsername !== loggedInUserId) {
-                    // Check if new username exists
-                    const newUserRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', newUsername);
-                    const newUserDoc = await getDoc(newUserRef);
-                    
-                    if(newUserDoc.exists()) {
-                        btn.innerHTML = originalHTML; btn.disabled = false;
-                        return showAlert('error', window.t('ইউজারনেমটি নেওয়া হয়েছে', 'Username Taken'), window.t('এই ইউজারনেমটি অন্য কেউ ব্যবহার করছে। দয়া করে অন্য একটি চেষ্টা করুন।', 'This username is already in use. Please try another.'));
-                    }
-
-                    // Transfer Data
-                    await setDoc(newUserRef, {
-                        name: newName,
-                        password: newPassword,
-                        profilePic: tempProfilePicBase64,
-                        blocked: currentUserData.blocked || false,
-                        createdAt: currentUserData.createdAt || Date.now()
-                    });
-
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId));
-
-                    // Update Requests Associated
-                    const myReqs = allRequests.filter(r => r.userId === loggedInUserId);
-                    for (let r of myReqs) {
-                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'requests', r.dbId), { userId: newUsername });
-                    }
-
-                    loggedInUserId = newUsername;
-                    try { localStorage.setItem('nsCoin_loggedInUser', newUsername); } catch(e) {}
-                } else {
-                    // Simple Update
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId), {
-                        name: newName,
-                        password: newPassword,
-                        profilePic: tempProfilePicBase64
-                    });
-                }
-
-                closeUserProfileModal();
-                showAlert('success', window.t('সফল', 'Success'), window.t('প্রোফাইল সফলভাবে আপডেট হয়েছে!', 'Profile updated successfully!'));
-                
-            } catch(e) {
-                showAlert('error', window.t('ত্রুটি', 'Error'), e.message);
-            } finally {
-                btn.innerHTML = originalHTML; btn.disabled = false;
-            }
-        }
-
-        // ==========================================
-        //         AUTH & CORE APP LOGIC
-        // ==========================================
-
         function checkUserLoginStatus() {
             if(!loggedInUserId) {
                 document.getElementById('authModal').classList.remove('hidden');
+                document.getElementById('displayUserId').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.add('hidden');
+                document.getElementById('navDivider').classList.add('hidden');
                 switchAuthTab('login');
             } else {
                 document.getElementById('authModal').classList.add('hidden');
+                document.getElementById('displayUserId').classList.remove('hidden');
+                document.getElementById('uidText').innerText = loggedInUserId;
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('navDivider').classList.remove('hidden');
             }
         }
 
@@ -1295,14 +1193,92 @@
             try {
                 if(!db) return;
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', userId));
-                if(userDoc.exists()) {
-                    currentUserData = userDoc.data();
-                    if(currentUserData.blocked) {
-                        showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। দয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
-                        logoutUser();
-                    }
+                if(userDoc.exists() && userDoc.data().blocked) {
+                    showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। দয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
+                    logoutUser();
                 }
             } catch(e) {}
+        }
+
+        // USER PROFILE MODAL FUNCTIONS
+        window.openUserProfileModal = async function() {
+            if(!loggedInUserId) return showAlert('error', 'Error', 'Please login first.');
+            
+            document.getElementById('editProfileUsername').value = loggedInUserId;
+            document.getElementById('editProfileUsername').disabled = true; // Username cannot be changed
+            document.getElementById('editProfileUsername').classList.add('opacity-50', 'cursor-not-allowed');
+            
+            if(db) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId));
+                    if(userDoc.exists()) {
+                        const data = userDoc.data();
+                        document.getElementById('editProfileName').value = data.name || '';
+                        document.getElementById('editProfilePassword').value = data.password || '';
+                        
+                        if(data.profilePic) {
+                            document.getElementById('userProfileImgPreview').src = data.profilePic;
+                            document.getElementById('userProfileImgPreview').classList.remove('hidden');
+                            document.getElementById('userProfileImgFallback').classList.add('hidden');
+                        } else {
+                            document.getElementById('userProfileImgPreview').classList.add('hidden');
+                            document.getElementById('userProfileImgFallback').classList.remove('hidden');
+                        }
+                    }
+                } catch(e) { console.error(e); }
+            }
+            document.getElementById('userProfileModal').classList.remove('hidden');
+        }
+
+        window.closeUserProfileModal = function() {
+            document.getElementById('userProfileModal').classList.add('hidden');
+        }
+        
+        if(document.getElementById('userProfilePicInput')) {
+            document.getElementById('userProfilePicInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    window.compressImage(file, function(base64Img) {
+                        document.getElementById('userProfileImgPreview').src = base64Img;
+                        document.getElementById('userProfileImgPreview').classList.remove('hidden');
+                        document.getElementById('userProfileImgFallback').classList.add('hidden');
+                    });
+                }
+            });
+        }
+        
+        window.saveUserProfile = async function() {
+            if(!loggedInUserId || !db) return;
+            const btn = document.getElementById('saveProfileBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...`;
+            btn.disabled = true;
+            
+            try {
+                const newName = document.getElementById('editProfileName').value.trim();
+                const newPass = document.getElementById('editProfilePassword').value;
+                const newPic = document.getElementById('userProfileImgPreview').src;
+                
+                if(!newName || !newPass) {
+                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে না।', 'Name and password cannot be empty.'));
+                    return;
+                }
+                
+                const updateData = { name: newName, password: newPass };
+                if(!document.getElementById('userProfileImgPreview').classList.contains('hidden')) {
+                    updateData.profilePic = newPic;
+                }
+                
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId), updateData);
+                showAlert('success', window.t('সফল!', 'Success!'), window.t('আপনার প্রোফাইল আপডেট হয়েছে।', 'Profile updated successfully.'));
+                closeUserProfileModal();
+                
+            } catch(e) {
+                showAlert('error', window.t('ত্রুটি', 'Error'), e.message);
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         window.switchAuthTab = function(tab) {
@@ -1372,7 +1348,6 @@
                     if(data.blocked) { errEl.innerText = window.t("আপনার অ্যাকাউন্ট ব্লক করা হয়েছে!", "Account blocked!"); errEl.classList.remove('hidden'); return; }
                     
                     loggedInUserId = uId; 
-                    currentUserData = data;
                     try { localStorage.setItem('nsCoin_loggedInUser', uId); } catch(e) {}
                     document.getElementById('authErrorMsg').classList.add('hidden');
                     document.getElementById('loginPassword').value = ''; 
@@ -1383,9 +1358,8 @@
 
         window.logoutUser = function() { 
             loggedInUserId = null; 
-            currentUserData = null;
             try { localStorage.removeItem('nsCoin_loggedInUser'); } catch(e) {}
-            closeUserProfileModal();
+            if(document.getElementById('userProfileModal')) closeUserProfileModal();
             checkUserLoginStatus(); 
         }
 
@@ -1697,11 +1671,35 @@
             const userId = loggedInUserId, container = document.getElementById('userHistoryContainer'); 
             if(!container) return;
             container.innerHTML = '';
-            if (!userId || allRequests.length === 0) { container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; return; }
+            
+            let userTotalTk = 0;
+            let userPendingCount = 0;
+
+            if (!userId || allRequests.length === 0) { 
+                container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
+                document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                document.getElementById('userTotalPendingUI').innerText = '0';
+                return; 
+            }
+            
             const myReqs = allRequests.filter(r => r.userId === userId); 
-            if (myReqs.length === 0) { container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; return; }
+            
+            if (myReqs.length === 0) { 
+                container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
+                document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                document.getElementById('userTotalPendingUI').innerText = '0';
+                return; 
+            }
 
             myReqs.forEach(req => {
+                // Dashboard calculations
+                if (req.status === 'paid') {
+                    userTotalTk += parseFloat(req.total) || 0;
+                } else if (req.status === 'pending') {
+                    userPendingCount++;
+                }
+
+                // UI list rendering
                 let statusText, statusClass, proofBtn = '';
                 if (req.status === 'paid') {
                     statusText = window.t('পেমেন্ট কমপ্লিট', 'Payment Complete'); statusClass = "text-green-700 bg-green-100 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800";
@@ -1737,6 +1735,10 @@
                     ${proofBtn}
                 </div>`;
             });
+            
+            // Update Dashboard values
+            document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
+            document.getElementById('userTotalPendingUI').innerText = userPendingCount;
         }
 
         function showAlert(type, title, message) {
