@@ -65,14 +65,12 @@
     <!-- ========================================== -->
     <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
         
-        <!-- Auth Modal -->
+        <!-- Premium Dark Auth Modal -->
         <div id="authModal" class="fixed inset-0 bg-[#0b1120] bg-opacity-95 hidden flex justify-center items-center z-[200] p-4 backdrop-blur-md">
-            <div class="bg-[#1e293b] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-700 p-6 md:p-8 relative">
+            <div class="bg-[#151c2c] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-700 p-6 md:p-8 relative">
                 
-                <!-- Dynamic Header Section -->
                 <div class="flex flex-col items-center mb-6">
-                    <!-- Custom Admin Logo or Default Icon -->
-                    <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-gray-600 mb-3">
+                    <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-gray-600 mb-3 bg-[#1e293b]">
                     <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-[#00c853] flex items-center justify-center text-3xl shadow-lg shadow-green-500/20 text-white mb-3">
                         <i id="authIconFA" class="fa-solid fa-right-to-bracket"></i>
                     </div>
@@ -82,7 +80,7 @@
 
                 <!-- Login Form -->
                 <div id="loginFormArea" class="space-y-4">
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
@@ -90,7 +88,7 @@
                         </div>
                     </div>
                     
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
@@ -111,7 +109,7 @@
 
                 <!-- Register Form -->
                 <div id="registerFormArea" class="hidden space-y-3">
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
@@ -119,7 +117,7 @@
                         </div>
                     </div>
                     
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-id-card"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">নাম</label>
@@ -127,7 +125,7 @@
                         </div>
                     </div>
                     
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
@@ -136,7 +134,7 @@
                         <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-gray-500 transition">
+                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
                         <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
                             <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">কনফার্ম পাসওয়ার্ড</label>
@@ -270,22 +268,27 @@
                                     <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold tracking-wider text-sm" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
                                 </div>
                                 
-                                <!-- Detailed Calculation Area (Receipt Style) -->
-                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm flex flex-col space-y-2">
-                                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
-                                        <span class="text-gray-600 dark:text-gray-400 text-[11px] font-bold"><span class="lang-str" data-bn="কয়েনের মূল্য:" data-en="Coin Value:">কয়েনের মূল্য:</span></span>
-                                        <span id="calcBaseAmount" class="text-gray-800 dark:text-gray-200 text-xs font-black tracking-wide">৳0</span>
+                                <!-- Detailed Calculation Area (Premium Receipt Style) -->
+                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-[#f0fdf4] dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 rounded-xl p-4 shadow-sm">
+                                    <h4 class="text-center font-bold text-green-700 dark:text-green-500 mb-3 border-b border-green-200 dark:border-green-800 pb-1 text-sm"><i class="fa-solid fa-receipt mr-1"></i> হিসাবের বিস্তারিত বিবরণ</h4>
+                                    
+                                    <div class="flex justify-between items-center text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                                        <span>কয়েনের মূল্য (<span id="calcRate">0</span> x <span id="calcAmount">0</span>):</span>
+                                        <span>৳<span id="calcTotalVal">0</span></span>
                                     </div>
-                                    <div id="calcChargeRow" class="flex justify-between items-center hidden pb-2 border-b border-gray-100 dark:border-gray-700">
-                                        <span id="calcChargeLabel" class="text-red-500 dark:text-red-400 text-[11px] font-bold">সেন্ড মানি চার্জ:</span>
-                                        <span id="calcChargeAmount" class="text-red-500 dark:text-red-400 text-xs font-black tracking-wide">-৳0</span>
+                                    
+                                    <div id="chargeRowDetails" class="flex justify-between items-center text-sm font-bold text-red-500 mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+                                        <span><span id="calcChargeName"></span> চার্জ:</span>
+                                        <span>-৳<span id="calcChargeAmt">0</span></span>
                                     </div>
-                                    <div class="flex justify-between items-center pt-1">
-                                        <span class="text-green-700 dark:text-green-500 text-sm font-black"><span class="lang-str" data-bn="সর্বমোট পাবেন:" data-en="Total Receive:">সর্বমোট পাবেন:</span></span>
-                                        <div class="text-right">
-                                            <div id="totalAmount" class="text-xl font-black text-green-700 dark:text-green-400 leading-tight">৳০</div>
-                                            <div id="paymentNoteText" class="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 hidden"></div>
-                                        </div>
+                                    
+                                    <div class="flex justify-between items-center text-lg font-black text-green-800 dark:text-green-400 mt-2">
+                                        <span>সর্বমোট পাবেন:</span>
+                                        <span id="calcFinalAmt">৳0</span>
+                                    </div>
+                                    
+                                    <div class="text-center text-[11px] font-medium text-gray-600 dark:text-gray-400 mt-3 bg-white dark:bg-gray-800 rounded p-1.5 border border-green-100 dark:border-gray-700">
+                                        সহজ হিসাব: (<span id="eqRate">0</span> * <span id="eqAmount">0</span>) <span id="eqChargeStr"></span> = <strong class="text-gray-900 dark:text-gray-200" id="eqFinalAmt">৳0</strong>
                                     </div>
                                 </div>
                             </div>
@@ -336,7 +339,7 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="button" id="submitBtn" class="w-full py-3.5 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center">
+                            <button type="button" id="submitBtn" class="w-full py-3.5 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center relative z-10">
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
@@ -410,6 +413,9 @@
                             </button>
                             <button onclick="switchAdminTab('check_orders')" id="tab-check_orders" class="py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-brand font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm">
                                 <i class="fa-solid fa-magnifying-glass mr-1.5"></i> <span class="lang-str" data-bn="অর্ডার চেক" data-en="Check Orders">অর্ডার চেক</span>
+                            </button>
+                            <button onclick="switchAdminTab('user_proofs')" id="tab-user_proofs" class="py-3 px-2 text-blue-600 hover:text-blue-800 font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm">
+                                <i class="fa-solid fa-folder-open mr-1.5"></i> <span class="lang-str" data-bn="ইউজার প্রুফ" data-en="User Proofs">ইউজার প্রুফ</span>
                             </button>
                             <button onclick="switchAdminTab('archive')" id="tab-archive" class="py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-brand font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm">
                                 <i class="fa-solid fa-box-archive mr-1.5"></i> <span class="lang-str" data-bn="আর্কাইভ" data-en="Archive">আর্কাইভ</span>
@@ -569,6 +575,44 @@
                         </div>
                     </section>
 
+                    <!-- USER PROOFS / HISTORY SECTION (NEW) -->
+                    <section id="sec-user_proofs" class="hidden">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mb-4">
+                            <h3 class="font-bold text-blue-700 dark:text-blue-400 text-sm mb-3"><i class="fa-solid fa-folder-open mr-1"></i> <span class="lang-str" data-bn="ইউজার প্রুফ ও অল হিস্ট্রি" data-en="User Proofs & All History">ইউজার প্রুফ ও অল হিস্ট্রি</span></h3>
+                            <p class="text-[11px] text-gray-500 font-bold mb-3">যেকোনো ইউজারের ইউজারনেইম লিখে তার অতীতের সমস্ত রেকর্ড (পেইড এবং পেন্ডিং) একসাথে দেখুন এবং গুগল শিটে (CSV) ডাউনলোড করুন।</p>
+                            <div class="flex gap-2">
+                                <div class="relative flex-grow">
+                                    <i class="fa-solid fa-user absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                                    <input type="text" id="searchProofUsername" class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded font-bold text-sm focus:border-blue-500 focus:ring-0" placeholder="ইউজারনেইম লিখুন...">
+                                </div>
+                                <button onclick="searchUserProof()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 transition shadow-sm text-sm"><i class="fa-solid fa-search mr-1"></i> খুঁজুন</button>
+                                <button onclick="downloadProofCSV()" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 transition shadow-sm text-sm whitespace-nowrap"><i class="fa-solid fa-file-csv mr-1"></i> শিটে ডাউনলোড</button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                        <tr>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">তারিখ ও সময়</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">অর্ডার আইডি</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">কয়েন</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">পেমেন্ট মেথড</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">অ্যাকাউন্ট</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">নোট/চার্জ</th>
+                                            <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">মোট টাকা</th>
+                                            <th class="px-2 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">প্রুফ ছবি</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="proofTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                                        <tr><td colspan="8" class="p-4 text-center text-gray-500 text-[11px] font-bold">ইউজারনেইম লিখে সার্চ করুন</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Archive Section -->
                     <section id="sec-archive" class="hidden">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
@@ -638,7 +682,7 @@
                             <button onclick="saveSiteInfo()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <!-- NEW: Auth / Login Settings UI -->
+                        <!-- Login Page Settings UI -->
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mt-4">
                             <h3 class="text-sm font-bold text-gray-800 dark:text-white mb-3"><i class="fa-solid fa-id-card text-brand mr-2"></i> <span class="lang-str" data-bn="লগইন পেজ ডিজাইন" data-en="Login Page Design">লগইন পেজ ডিজাইন</span></h3>
                     
@@ -1275,31 +1319,49 @@
             const price = parseFloat(document.getElementById('selectedCoinRate').value) || 0; 
             const method = document.getElementById('paymentMethod').value; 
             
-            const calcBaseAmount = document.getElementById('calcBaseAmount');
-            const calcChargeRow = document.getElementById('calcChargeRow');
-            const calcChargeLabel = document.getElementById('calcChargeLabel');
-            const calcChargeAmount = document.getElementById('calcChargeAmount');
-            const totalAmountDisplay = document.getElementById('totalAmount');
+            const calcRate = document.getElementById('calcRate');
+            const calcAmount = document.getElementById('calcAmount');
+            const calcTotalVal = document.getElementById('calcTotalVal');
+            
+            const chargeRowDetails = document.getElementById('chargeRowDetails');
+            const calcChargeName = document.getElementById('calcChargeName');
+            const calcChargeAmt = document.getElementById('calcChargeAmt');
+            
+            const calcFinalAmt = document.getElementById('calcFinalAmt');
             const calculatorDisplay = document.getElementById('calculatorDisplay');
+            
+            const eqRate = document.getElementById('eqRate');
+            const eqAmount = document.getElementById('eqAmount');
+            const eqChargeStr = document.getElementById('eqChargeStr');
+            const eqFinalAmt = document.getElementById('eqFinalAmt');
             
             if (document.getElementById('coinType').value && amount > 0) {
                 let baseTotalTk = price * amount;
                 let formattedBase = baseTotalTk % 1 !== 0 ? baseTotalTk.toFixed(2) : baseTotalTk;
-                if(calcBaseAmount) calcBaseAmount.textContent = `৳${formattedBase}`;
+                
+                if(calcRate) calcRate.textContent = price;
+                if(calcAmount) calcAmount.textContent = amount;
+                if(calcTotalVal) calcTotalVal.textContent = formattedBase;
+                
+                if(eqRate) eqRate.textContent = price;
+                if(eqAmount) eqAmount.textContent = amount;
                 
                 if(method === 'Binance') {
                     let rate = globalSettings.binanceRate || 127; 
                     let dollars = (baseTotalTk / rate).toFixed(2);
                     currentNetAmountDisplay = `$${dollars}`; 
                     currentPaymentNote = window.t(`(রেট: ৳${rate}/$)`, `(Rate: ৳${rate}/$)`);
-                    totalAmountDisplay.textContent = currentNetAmountDisplay; 
                     
-                    if(calcChargeRow) {
-                        calcChargeLabel.textContent = window.t("বাইনান্স ডলার রেট:", "Binance Dollar Rate:");
-                        calcChargeLabel.className = "text-blue-600 dark:text-blue-400 text-[11px] font-bold";
-                        calcChargeAmount.textContent = `৳${rate} / $1`;
-                        calcChargeAmount.className = "text-blue-600 dark:text-blue-400 text-xs font-black tracking-wide";
-                        calcChargeRow.classList.remove('hidden');
+                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
+                    if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
+                    
+                    if(chargeRowDetails) {
+                        calcChargeName.textContent = window.t("বাইনান্স ডলার রেট", "Binance Rate");
+                        calcChargeName.className = "text-blue-600 dark:text-blue-400";
+                        calcChargeAmt.textContent = `৳${rate} / $1`;
+                        calcChargeAmt.className = "text-blue-600 dark:text-blue-400 font-black";
+                        chargeRowDetails.classList.remove('hidden');
+                        if(eqChargeStr) eqChargeStr.textContent = `(÷ ৳${rate})`;
                     }
                 } else if (method === 'Bkash' || method === 'Nagad' || method === 'Rocket') {
                     let charge = 0;
@@ -1310,25 +1372,31 @@
                     let netTk = baseTotalTk - charge;
                     currentNetAmountDisplay = `৳${netTk % 1 !== 0 ? netTk.toFixed(2) : netTk}`; 
                     
+                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay;
+                    if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
+                    
                     if (charge > 0) {
                         currentPaymentNote = window.t(`(-${charge} টাকা চার্জ)`, `(-${charge} Tk Charge)`);
-                        if(calcChargeRow) {
-                            calcChargeLabel.textContent = window.t("সেন্ড মানি চার্জ:", "Send Money Charge:");
-                            calcChargeLabel.className = "text-red-500 dark:text-red-400 text-[11px] font-bold";
-                            calcChargeAmount.textContent = `-৳${charge}`;
-                            calcChargeAmount.className = "text-red-500 dark:text-red-400 text-xs font-black tracking-wide";
-                            calcChargeRow.classList.remove('hidden');
+                        if(chargeRowDetails) {
+                            calcChargeName.textContent = method + " " + window.t("সেন্ড মানি", "Send Money");
+                            calcChargeName.className = "text-red-500 dark:text-red-400";
+                            calcChargeAmt.textContent = `৳${charge}`;
+                            calcChargeAmt.className = "text-red-500 dark:text-red-400 font-black";
+                            chargeRowDetails.classList.remove('hidden');
+                            if(eqChargeStr) eqChargeStr.textContent = `- ৳${charge}`;
                         }
                     } else {
                         currentPaymentNote = '';
-                        if(calcChargeRow) calcChargeRow.classList.add('hidden');
+                        if(chargeRowDetails) chargeRowDetails.classList.add('hidden');
+                        if(eqChargeStr) eqChargeStr.textContent = `- ৳0`;
                     }
-                    totalAmountDisplay.textContent = currentNetAmountDisplay; 
                 } else {
-                    currentNetAmountDisplay = `৳${baseTotalTk % 1 !== 0 ? baseTotalTk.toFixed(2) : baseTotalTk}`; 
+                    currentNetAmountDisplay = `৳${formattedBase}`; 
                     currentPaymentNote = '';
-                    totalAmountDisplay.textContent = currentNetAmountDisplay; 
-                    if(calcChargeRow) calcChargeRow.classList.add('hidden');
+                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
+                    if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
+                    if(chargeRowDetails) chargeRowDetails.classList.add('hidden');
+                    if(eqChargeStr) eqChargeStr.textContent = `- ৳0`;
                 }
                 calculatorDisplay.classList.remove('hidden'); 
             } else { calculatorDisplay.classList.add('hidden'); }
@@ -1493,7 +1561,7 @@
         // ==========================================
         window.goToUserSite = function() { window.location.href = window.location.pathname; } 
         window.switchAdminTab = function(tab) {
-            ['dashboard', 'pending', 'history', 'users', 'check_orders', 'archive', 'settings'].forEach(t => { 
+            ['dashboard', 'pending', 'history', 'users', 'check_orders', 'user_proofs', 'archive', 'settings'].forEach(t => { 
                 const sec = document.getElementById('sec-' + t); const btn = document.getElementById('tab-' + t);
                 if(sec) sec.classList.add('hidden'); if(btn) btn.classList.remove('tab-active'); 
             });
@@ -1649,6 +1717,84 @@
                     </div>
                 </div>
             `;
+        }
+        
+        // NEW: Search User Proofs for Admin
+        window.searchUserProof = function() {
+            let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
+            let tbody = document.getElementById('proofTableBody');
+            tbody.innerHTML = ''; 
+
+            if (!username) {
+                window.adminCustomAlert("ভুল", "দয়া করে একটি ইউজারনেইম লিখুন!");
+                return;
+            }
+
+            let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
+
+            if (foundData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-red-500 font-bold text-sm">এই ইউজারের কোনো রেকর্ড পাওয়া যায়নি।</td></tr>';
+                return;
+            }
+
+            foundData.forEach(req => {
+                let statusBadge = '';
+                if(req.status === 'paid') statusBadge = `<span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Paid</span>`;
+                else if(req.status === 'rejected') statusBadge = `<span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Rejected</span>`;
+                else statusBadge = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Pending</span>`;
+                
+                let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
+                
+                tbody.innerHTML += `
+                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <td class="p-2 text-[10px] font-bold">${req.date}</td>
+                        <td class="p-2 text-[10px] font-mono font-black text-brand">${req.orderId}</td>
+                        <td class="p-2 text-[11px] font-bold">${req.amount}k ${req.type}</td>
+                        <td class="p-2 text-[10px] font-bold">${req.method}</td>
+                        <td class="p-2 text-[10px] font-mono font-bold">${req.account}</td>
+                        <td class="p-2 text-[9px] font-bold text-red-500">${req.paymentNote || '-'}</td>
+                        <td class="p-2 text-[12px] font-black text-green-600">${amountDisplay} ${statusBadge}</td>
+                        <td class="p-2 text-center">
+                            <button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> ছবি</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        // NEW: Download Proofs as CSV
+        window.downloadProofCSV = function() {
+            let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
+            if (!username) { window.adminCustomAlert("ভুল", "আগে একজন ইউজারের নাম লিখে সার্চ করুন!"); return; }
+
+            let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
+            if (foundData.length === 0) { window.adminCustomAlert("খালি", "ডাউনলোড করার মতো কোনো ডেটা নেই!"); return; }
+
+            // Add BOM so Excel opens Bangla text correctly
+            let csvContent = "\uFEFFতারিখ ও সময়,অর্ডার আইডি,কয়েন,পেমেন্ট মেথড,অ্যাকাউন্ট,নোট/চার্জ,মোট টাকা পেইড,স্ট্যাটাস\n"; 
+
+            foundData.forEach(req => {
+                let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
+                let rowData = [
+                    `"${req.date}"`,
+                    `"${req.orderId}"`,
+                    `"${req.amount}k ${req.type}"`,
+                    `"${req.method}"`,
+                    `"${req.account}"`,
+                    `"${req.paymentNote || '-'}"`,
+                    `"${amountDisplay}"`,
+                    `"${req.status}"`
+                ];
+                csvContent += rowData.join(",") + "\n";
+            });
+
+            let encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `${username}_History.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function renderAdminTables() {
