@@ -157,13 +157,6 @@
             </div>
         </div>
 
-        <!-- Floating History Button (Retained for quick access) -->
-        <div class="fixed bottom-4 right-4 z-50">
-            <button onclick="openUserHistoryModal()" class="bg-white dark:bg-slate-800 text-brand dark:text-brand-light p-3 rounded-full shadow-lg border-2 border-brand-light dark:border-slate-600 flex items-center justify-center cursor-pointer hover:scale-110 transition" title="History">
-                <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-            </button>
-        </div>
-
         <!-- PROFILE MODAL (USER) -->
         <div id="userProfileModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm overflow-y-auto">
             <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-[24px] shadow-2xl p-6 relative my-auto border dark:border-slate-700">
@@ -687,7 +680,7 @@
                     <section id="sec-archive" class="hidden">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 p-2 rounded text-[11px] font-bold text-yellow-800 dark:text-yellow-400 w-full md:w-auto">
-                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবে না।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে না।</span>
+                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবেবিধা হবে।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে না।</span>
                             </div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <button onclick="clearArchive()" class="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 px-3 py-1.5 rounded font-bold shadow-sm transition border border-red-300 dark:border-red-800 flex items-center whitespace-nowrap text-[11px]">
@@ -874,6 +867,71 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!--              SHARED MODALS                 -->
+    <!-- ========================================== -->
+    <!-- Compact User History Modal -->
+    <div id="userHistoryModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-[90] p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-gray-100 dark:bg-slate-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-slate-700 flex flex-col overflow-hidden">
+            <div class="p-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-800">
+                <h3 class="text-sm font-black text-gray-800 dark:text-white flex items-center"><i class="fa-solid fa-clock-rotate-left text-brand mr-2"></i> <span class="lang-str" data-bn="আপনার রিকোয়েস্ট হিস্ট্রি" data-en="Your Request History">আপনার রিকোয়েস্ট হিস্ট্রি</span></h3>
+                <button onclick="closeUserHistoryModal()" class="text-gray-400 hover:text-red-500 text-2xl px-2 leading-none transition">&times;</button>
+            </div>
+            <div id="userHistoryContainer" class="p-3 overflow-y-auto flex-grow space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- Alert Modal (User) -->
+    <div id="customAlert" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full text-center border dark:border-slate-700">
+            <div id="alertIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
+            <h3 id="alertTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
+            <p id="alertMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
+            <div id="alertButtons" class="flex gap-2 justify-center"></div>
+        </div>
+    </div>
+
+    <!-- Shared Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-95 hidden flex items-center justify-center z-[200] p-4 transition-opacity">
+        <button type="button" onclick="closeImageModal()" class="absolute top-6 right-6 text-white bg-red-600 rounded-full w-10 h-10 flex items-center justify-center text-xl z-50 hover:scale-110 shadow-lg transition"><i class="fa-solid fa-xmark pointer-events-none"></i></button>
+        <div class="w-full h-full flex justify-center items-center p-2"><img id="fullSizeImage" src="" class="max-w-full max-h-full object-contain rounded shadow-2xl"></div>
+    </div>
+
+    <!-- Admin Confirm Modal -->
+    <div id="adminConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-sm shadow-2xl text-center border dark:border-slate-700">
+            <h3 id="adminConfirmTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
+            <p id="adminConfirmMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
+            <div id="adminConfirmBtns" class="flex justify-center gap-2"></div>
+        </div>
+    </div>
+
+    <!-- Admin Approve Modal -->
+    <div id="approveModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+            <h3 class="text-lg font-bold text-green-700 dark:text-green-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-check-circle mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট কনফার্ম" data-en="Confirm Payment">পেমেন্ট কনফার্ম</span></h3>
+            <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-3"><span class="lang-str" data-bn="স্ক্রিনশট আপলোড (ঐচ্ছিক):" data-en="Upload proof (Optional):">স্ক্রিনশট আপলোড (ঐচ্ছিক):</span></p>
+            <input type="file" id="adminProofInput" accept="image/*" class="w-full border-2 border-dashed border-gray-300 dark:border-slate-600 p-2 rounded mb-4 cursor-pointer bg-gray-50 dark:bg-slate-700 text-xs text-gray-500">
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeApproveModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="বাতিল" data-en="Cancel">বাতিল</span></button>
+                <button onclick="confirmApproval()" class="px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="কনফার্ম" data-en="Confirm">কনফার্ম</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Reject Modal -->
+    <div id="rejectModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+            <h3 class="text-lg font-bold text-red-600 dark:text-red-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-ban mr-1"></i> <span class="lang-str" data-bn="বাতিল করুন" data-en="Reject">বাতিল করুন</span></h3>
+            <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-1"><span class="lang-str" data-bn="কারণ লিখুন:" data-en="Enter Reason:">কারণ লিখুন:</span></p>
+            <textarea id="rejectReason" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded p-2 text-xs mb-4 focus:border-red-500" data-bn="যেমন: আপনি কয়েন পাঠাননি..." data-en="E.g: Didn't send coins..." placeholder="যেমন: আপনি কয়েন পাঠাননি..."></textarea>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeRejectModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="ক্যান্সেল" data-en="Cancel">ক্যান্সেল</span></button>
+                <button onclick="confirmReject()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="নিশ্চিত" data-en="Confirm">নিশ্চিত</span></button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ========================================== -->
     <!--            MAIN JAVASCRIPT LOGIC           -->
@@ -935,7 +993,7 @@
         let uploadedImageBase64 = null; 
         let activeCoinId = null; 
         let loggedInUserId = null;
-        let currentUserData = null; // Storing active user object
+        let currentUserData = null; // Store active user details
         try { loggedInUserId = localStorage.getItem('nsCoin_loggedInUser'); } catch(e) {}
         
         // Calculated Values for submission
@@ -953,7 +1011,7 @@
         let newCoinUploadedLogo = null; 
         let siteLogoBase64 = null;
         let authLogoBase64 = null;
-        let tempProfilePicBase64 = null; // Temp holder for profile pic update
+        let tempProfilePicBase64 = null;
         
         let notificationSound = null;
         try { notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); } catch(e) {}
@@ -1017,7 +1075,6 @@
                 }
             }, (err) => {});
 
-            // Auto-sync users for both User App (Profile changes) & Admin App (Dashboard)
             const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
             onSnapshot(usersRef, (snapshot) => {
                 let tempUsers = [];
@@ -1030,7 +1087,7 @@
                 } else if(loggedInUserId) {
                     currentUserData = allUsers.find(u => u.dbId === loggedInUserId);
                     if (currentUserData && currentUserData.blocked) {
-                        showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। දয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
+                        showAlert('error', window.t('অ্যাকাউন্ট ব্লকড', 'Account Blocked'), window.t('আপনার অ্যাকাউন্ট ব্লক করা হয়েছে। দয়া করে এডমিনের সাথে যোগাযোগ করুন।', 'Your account is blocked. Please contact the admin.'));
                         logoutUser();
                     }
                 }
@@ -1228,11 +1285,9 @@
         function checkUserLoginStatus() {
             if(!loggedInUserId) {
                 document.getElementById('authModal').classList.remove('hidden');
-                document.getElementById('displayUserId').classList.add('hidden');
                 switchAuthTab('login');
             } else {
                 document.getElementById('authModal').classList.add('hidden');
-                // ID Display in Nav is hidden to keep it clean, access is via Right Menu
             }
         }
 
@@ -1278,6 +1333,7 @@
             else { inp.type = "password"; icon.classList.remove("fa-eye", "text-[#10b981]"); icon.classList.add("fa-eye-slash"); }
         }
 
+        // Live Username Checker (Green Tick)
         if(document.getElementById('loginUserId')) {
             document.getElementById('loginUserId').addEventListener('input', function() {
                 let checkIcon = document.getElementById('loginUserCheck');
@@ -1296,8 +1352,10 @@
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId); const userDoc = await getDoc(userRef);
                     if(userDoc.exists()) { errEl.innerText = window.t("এই ইউজারনেমটি আগেই নেওয়া হয়েছে। অন্য নাম দিন।", "Username already exists."); errEl.classList.remove('hidden'); return; }
                     
+                    // Create User in DB
                     await setDoc(userRef, { name: name, password: pass, blocked: false, createdAt: Date.now() });
                     
+                    // Force User to Login Screen (No Auto-Login)
                     showAlert('success', window.t('সফল!', 'Success!'), window.t('রেজিস্ট্রেশন সফল হয়েছে। দয়া করে এখন লগইন করুন।', 'Registration successful. Please login now.'));
                     document.getElementById('loginUserId').value = uId; 
                     document.getElementById('regPassword').value = '';
@@ -1400,29 +1458,34 @@
             if(document.getElementById('limitWarningText')) document.getElementById('limitWarningText').textContent = `${window.t('লিমিট', 'Limit')}: ${minL}k - ${maxL}k`;
             if(document.getElementById('coinAmount') && document.activeElement !== document.getElementById('coinAmount')){ document.getElementById('coinAmount').min = minL; document.getElementById('coinAmount').max = maxL; }
 
+            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER (Row Layout: 🔴🔵✈️🟢)
             const horizContainer = document.getElementById('horizontalSocialLinks'); 
             const mainContainer = document.getElementById('horizontalSocialLinksContainer');
             if(horizContainer && mainContainer) {
                 let supHtml = '';
                 
+                // 1. YouTube 🔴
                 let ytLink = globalSettings.support?.yt || '';
                 if(ytLink) { 
                     if(!ytLink.startsWith('http')) { if(ytLink.startsWith('@')) ytLink = 'https://youtube.com/' + ytLink.trim(); else ytLink = 'https://youtube.com/@' + ytLink.trim(); } 
                     supHtml += `<a href="${ytLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#ff0000] text-white text-2xl shadow-lg hover:scale-110 transition" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
                 }
                 
+                // 2. Facebook 🔵
                 let fbLink = globalSettings.support?.fb || '';
                 if(fbLink) { 
                     if(!fbLink.startsWith('http')) { fbLink = 'https://facebook.com/' + fbLink.trim(); } 
                     supHtml += `<a href="${fbLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#1877F2] text-white text-2xl shadow-lg hover:scale-110 transition" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
                 }
 
+                // 3. Telegram ✈️
                 let tgLink = globalSettings.support?.tg || '';
                 if(tgLink) { 
                     if(!tgLink.startsWith('http')) { tgLink = 'https://t.me/' + tgLink.replace('@', '').trim(); } 
                     supHtml += `<a href="${tgLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-2xl shadow-lg hover:scale-110 transition" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
                 }
                 
+                // 4. WhatsApp 🟢
                 let waLink = globalSettings.support?.wa || '';
                 if(waLink) { 
                     if(!waLink.startsWith('http')) { let cWa = waLink.replace(/[^0-9+]/g, ''); if(cWa.startsWith('01') && cWa.length === 11) cWa = '88' + cWa; waLink = 'https://wa.me/' + cWa; } 
@@ -1477,6 +1540,7 @@
             calculateTotalUser();
         }
 
+        // PREMIUM DETAILED CALCULATION
         window.calculateTotalUser = function() {
             if(!document.getElementById('coinAmount')) return;
             const amount = parseFloat(document.getElementById('coinAmount').value) || 0; 
@@ -1638,40 +1702,38 @@
             if (myReqs.length === 0) { container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; return; }
 
             myReqs.forEach(req => {
-                let statusText, statusColor, proofBtn = '';
+                let statusText, statusClass, proofBtn = '';
                 if (req.status === 'paid') {
-                    statusText = window.t('পেমেন্ট কমপ্লিট', 'Payment Complete'); 
-                    statusColor = "green-500";
-                    if(req.adminProof) proofBtn = `<button type="button" onclick="openImageModal('${req.adminProof}')" class="mt-3 w-full bg-green-100 hover:bg-green-200 text-green-800 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 text-[11px] font-bold py-2 rounded transition shadow-sm border border-green-200 dark:border-green-800"><i class="fa-solid fa-file-invoice mr-1"></i> ${window.t('অ্যাডমিন প্রুফ দেখুন', 'View Admin Proof')}</button>`;
+                    statusText = window.t('পেমেন্ট কমপ্লিট', 'Payment Complete'); statusClass = "text-green-700 bg-green-100 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800";
+                    if(req.adminProof) proofBtn = `<button type="button" onclick="openImageModal('${req.adminProof}')" class="mt-2 w-full bg-green-200 hover:bg-green-300 text-green-800 text-[11px] font-bold py-1.5 rounded transition shadow-sm"><i class="fa-solid fa-file-invoice mr-1"></i> ${window.t('পেমেন্ট প্রুফ দেখুন', 'View Proof')}</button>`;
                 } else if (req.status === 'rejected') {
-                    statusText = window.t('বাতিল: ', 'Rejected: ') + (req.rejectReason || ''); 
-                    statusColor = "red-500";
+                    statusText = window.t('বাতিল: ', 'Rejected: ') + (req.rejectReason || ''); statusClass = "text-red-700 bg-red-100 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800";
                 } else {
-                    statusText = window.t('অ্যাডমিন চেক করছে', 'Admin Checking'); 
-                    statusColor = "blue-500";
+                    statusText = window.t('অ্যাডমিন চেক করে পেমেন্ট করবে।', 'Admin will check and pay.'); statusClass = "text-blue-700 bg-blue-50 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800";
                 }
+                let shortDate = req.date.split(',')[0] || req.date; 
                 
-                let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
-                
-                // Detailed Folder Style Render
+                let chargeLine = req.chargeAmt > 0 && req.method !== 'Binance' ? `<div class="text-[9px] text-red-500 border-b border-red-200 dark:border-red-900/50 mb-0.5 pb-0.5">-৳${req.chargeAmt}</div>` : '';
+                if(req.method === 'Binance') chargeLine = `<div class="text-[9px] text-blue-500 border-b border-blue-200 dark:border-blue-900/50 mb-0.5 pb-0.5">Rate: ৳${req.chargeAmt}/$</div>`;
+
                 container.innerHTML += `
-                <div class="bg-white dark:bg-slate-800 border-l-4 border-${statusColor} rounded-lg p-3 shadow-sm relative mb-3">
-                    <div class="absolute top-0 right-0 bg-${statusColor} text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg rounded-tr-lg shadow-sm">
-                        ${statusText}
+                <div class="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded p-2.5 shadow-sm">
+                    <div class="flex justify-between items-center mb-2 border-b dark:border-slate-700 pb-1.5">
+                        <span class="text-[10px] font-mono font-black text-brand bg-brand-light/20 px-1.5 py-0.5 rounded">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')" title="Copy Order ID"></i></span>
+                        <span class="text-[10px] font-bold text-gray-500">${shortDate}</span>
                     </div>
-                    <div class="flex items-center mb-2 border-b dark:border-slate-700 pb-2">
-                        <i class="fa-solid fa-folder-open text-${statusColor} text-2xl mr-3 opacity-80"></i>
+                    <div class="flex justify-between items-end mt-1 mb-2">
                         <div>
-                            <div class="text-[11px] font-black text-gray-800 dark:text-gray-200">${req.date}</div>
-                            <div class="text-[10px] font-mono text-gray-500 bg-gray-100 dark:bg-slate-700 px-1 mt-0.5 rounded inline-block">ID: ${req.orderId}</div>
+                            <span class="text-[12px] font-black text-gray-800 dark:text-gray-200 block mb-0.5">${req.amount}k ${req.type}</span>
+                            <span class="text-[9px] font-bold text-gray-500 bg-gray-200 dark:bg-slate-700 px-1 rounded">${req.method}</span>
+                        </div>
+                        <div class="text-right">
+                            ${req.baseTotal ? `<div class="text-[9px] text-gray-500 line-through">৳${req.baseTotal}</div>` : ''}
+                            ${chargeLine}
+                            <span class="text-sm font-black text-brand">${req.netAmountDisplay || `৳${req.total}`}</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-y-2 gap-x-1 text-[11px] font-medium bg-gray-50 dark:bg-slate-900 p-2 rounded border border-gray-100 dark:border-slate-700">
-                        <div><span class="text-gray-500 block text-[9px] uppercase tracking-wider mb-0.5">${window.t('কয়েন', 'Coin')}</span><strong class="text-gray-900 dark:text-white">${req.amount}k ${req.type}</strong></div>
-                        <div><span class="text-gray-500 block text-[9px] uppercase tracking-wider mb-0.5">${window.t('মেথড', 'Method')}</span><strong class="text-gray-900 dark:text-white">${req.method}</strong></div>
-                        <div class="col-span-2"><span class="text-gray-500 block text-[9px] uppercase tracking-wider mb-0.5">${window.t('অ্যাকাউন্ট', 'Account')}</span><strong class="font-mono text-gray-900 dark:text-white">${req.account}</strong></div>
-                        <div class="col-span-2 border-t dark:border-slate-700 pt-1 mt-1 flex justify-between items-center"><span class="text-gray-500 font-bold">${window.t('মোট পেইড', 'Total Paid')}:</span><strong class="text-${statusColor} text-sm font-black">${amountDisplay}</strong></div>
-                    </div>
+                    <div class="text-[10px] font-bold px-2 py-1 rounded text-left leading-snug ${statusClass}">${statusText}</div>
                     ${proofBtn}
                 </div>`;
             });
@@ -1862,9 +1924,7 @@
                 let copyPassBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.password}')" title="Copy Password"></i>`;
                 let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
 
-                let imgDisplay = user.profilePic ? `<img src="${user.profilePic}" class="w-6 h-6 rounded-full inline-block mr-1 object-cover">` : `<i class="fa-solid fa-circle-user text-gray-400 mr-1 text-lg"></i>`;
-
-                uBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center">${imgDisplay} ${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
+                uBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
             });
         }
 
