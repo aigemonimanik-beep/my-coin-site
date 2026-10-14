@@ -26,13 +26,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700;900&display=swap');
         
         html, body { overscroll-behavior: none; font-family: 'Hind Siliguri', sans-serif; transition: background-color 0.3s, color 0.3s; }
         .glass-effect { backdrop-filter: blur(10px); }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        .dark ::-webkit-scrollbar-track { background: #1f2937; }
+        .dark ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         
@@ -42,16 +42,16 @@
         .tab-active { border-bottom: 3px solid var(--color-brand); color: var(--color-brand); font-weight: bold; border-radius: 4px 4px 0 0; background-color: rgba(79, 70, 229, 0.08); }
         .dark .tab-active { background-color: rgba(79, 70, 229, 0.2); }
 
-        :root { --color-brand: #4f46e5; --color-brand-light: #e0e7ff; --color-brand-dark: #3730a3; }
+        :root { --color-brand: #10b981; --color-brand-light: #d1fae5; --color-brand-dark: #047857; } /* Default Green Theme */
         [data-theme="rose"] { --color-brand: #e11d48; --color-brand-light: #ffe4e6; --color-brand-dark: #be123c; }
-        [data-theme="emerald"] { --color-brand: #10b981; --color-brand-light: #d1fae5; --color-brand-dark: #047857; }
+        [data-theme="indigo"] { --color-brand: #4f46e5; --color-brand-light: #e0e7ff; --color-brand-dark: #3730a3; }
         [data-theme="amber"] { --color-brand: #f59e0b; --color-brand-light: #fef3c7; --color-brand-dark: #b45309; }
         [data-theme="purple"] { --color-brand: #a855f7; --color-brand-light: #f3e8ff; --color-brand-dark: #7e22ce; }
         [data-theme="cyan"] { --color-brand: #06b6d4; --color-brand-light: #cffafe; --color-brand-dark: #0e7490; }
         [data-theme="slate"] { --color-brand: #64748b; --color-brand-light: #f1f5f9; --color-brand-dark: #334155; }
     </style>
 </head>
-<body class="text-gray-800 bg-gray-100 dark:bg-gray-900 dark:text-gray-200 antialiased min-h-screen flex flex-col transition-colors duration-300">
+<body class="text-gray-800 bg-gray-100 dark:bg-slate-900 dark:text-gray-200 antialiased min-h-screen flex flex-col transition-colors duration-300">
 
     <!-- Fallback if JS fails -->
     <div id="js-error-fallback" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center hidden">
@@ -65,91 +65,92 @@
     <!-- ========================================== -->
     <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
         
-        <!-- Premium Dark Auth Modal -->
-        <div id="authModal" class="fixed inset-0 bg-[#0b1120] bg-opacity-95 hidden flex justify-center items-center z-[200] p-4 backdrop-blur-md">
-            <div class="bg-[#151c2c] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-gray-700 p-6 md:p-8 relative">
+        <!-- Premium Dark Auth Modal (Login/Register) -->
+        <div id="authModal" class="fixed inset-0 bg-[#0f172a] hidden flex justify-center items-center z-[200] p-4 overflow-y-auto">
+            <div class="bg-[#1e293b] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-slate-700 p-6 md:p-8 relative my-auto">
                 
                 <div class="flex flex-col items-center mb-6">
-                    <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-gray-600 mb-3 bg-[#1e293b]">
-                    <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-[#00c853] flex items-center justify-center text-3xl shadow-lg shadow-green-500/20 text-white mb-3">
+                    <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-slate-600 mb-3 bg-slate-800">
+                    <div id="authDefaultIcon" class="w-16 h-16 rounded-full bg-[#10b981] flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20 text-white mb-3">
                         <i id="authIconFA" class="fa-solid fa-right-to-bracket"></i>
                     </div>
                     <h2 id="authTitle" class="text-2xl font-black tracking-wide text-white">লগইন করুন</h2>
-                    <p id="authDynamicText" class="text-xs text-gray-400 mt-1 font-medium">আপনার একাউন্টে প্রবেশ করুন</p>
+                    <p id="authDynamicText" class="text-xs text-slate-400 mt-1 font-medium">আপনার একাউন্টে প্রবেশ করুন</p>
                 </div>
 
                 <!-- Login Form -->
                 <div id="loginFormArea" class="space-y-4">
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
-                            <input type="text" id="loginUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার ইউজারনেইম লিখুন">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
+                            <input type="text" id="loginUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="আপনার ইউজারনেইম লিখুন">
                         </div>
+                        <div class="w-6 flex justify-center text-[#10b981] opacity-0 transition" id="loginUserCheck"><i class="fa-solid fa-circle-check"></i></div>
                     </div>
                     
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
-                            <input type="password" id="loginPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
+                            <input type="password" id="loginPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeLogin" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('loginPassword', 'eyeLogin')" class="text-slate-500 hover:text-white px-2 transition"><i id="eyeLogin" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <button onclick="handleAuth('login')" class="w-full bg-[#00c853] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-green-500/20 hover:bg-green-600 transition mt-6 flex justify-center items-center gap-2">
+                    <button onclick="handleAuth('login')" class="w-full bg-[#10b981] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition mt-6 flex justify-center items-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i> লগইন করুন
                     </button>
                     
                     <div class="text-center mt-5">
-                        <span class="text-xs text-gray-400 font-medium">একাউন্ট নেই?</span> 
-                        <button onclick="switchAuthTab('register')" class="text-xs text-[#00c853] font-bold hover:underline ml-1">নতুন একাউন্ট খুলুন</button>
+                        <span class="text-xs text-slate-400 font-medium">একাউন্ট নেই?</span> 
+                        <button onclick="switchAuthTab('register')" class="text-xs text-[#10b981] font-bold hover:underline ml-1">নতুন একাউন্ট খুলুন</button>
                     </div>
                 </div>
 
                 <!-- Register Form -->
                 <div id="registerFormArea" class="hidden space-y-3">
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-user"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
-                            <input type="text" id="regUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার পছন্দের ইউজারনেইম">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">ইউজারনেইম</label>
+                            <input type="text" id="regUserId" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="আপনার পছন্দের ইউজারনেইম">
                         </div>
                     </div>
                     
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-id-card"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">নাম</label>
-                            <input type="text" id="regName" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আপনার নাম লিখুন">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">নাম</label>
+                            <input type="text" id="regName" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="আপনার নাম লিখুন">
                         </div>
                     </div>
                     
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
-                            <input type="password" id="regPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">পাসওয়ার্ড</label>
+                            <input type="password" id="regPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('regPassword', 'eyeReg1')" class="text-slate-500 hover:text-white px-2 transition"><i id="eyeReg1" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <div class="bg-[#1e293b] rounded-xl p-3 flex items-center gap-3 border border-gray-700 focus-within:border-[#00c853] transition">
-                        <div class="w-8 flex justify-center text-gray-500 text-lg"><i class="fa-solid fa-lock"></i></div>
+                    <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
+                        <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-lock"></i></div>
                         <div class="flex-1">
-                            <label class="block text-[10px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">কনফার্ম পাসওয়ার্ড</label>
-                            <input type="password" id="regConfirmPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-gray-600 p-0 focus:ring-0" placeholder="আবার পাসওয়ার্ড লিখুন">
+                            <label class="block text-[10px] text-slate-500 font-bold mb-0.5 uppercase tracking-wider">কনফার্ম পাসওয়ার্ড</label>
+                            <input type="password" id="regConfirmPassword" class="w-full bg-transparent border-none outline-none text-sm font-bold text-white placeholder-slate-600 p-0 focus:ring-0" placeholder="আবার পাসওয়ার্ড লিখুন">
                         </div>
-                        <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="text-gray-500 hover:text-white px-2 transition"><i id="eyeReg2" class="fa-solid fa-eye-slash"></i></button>
+                        <button type="button" onclick="togglePassword('regConfirmPassword', 'eyeReg2')" class="text-slate-500 hover:text-white px-2 transition"><i id="eyeReg2" class="fa-solid fa-eye-slash"></i></button>
                     </div>
                     
-                    <button onclick="handleAuth('register')" class="w-full bg-[#00c853] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-green-500/20 hover:bg-green-600 transition mt-6 flex justify-center items-center gap-2">
+                    <button onclick="handleAuth('register')" class="w-full bg-[#10b981] text-white font-black text-lg py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition mt-6 flex justify-center items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন করুন
                     </button>
                     
                     <div class="text-center mt-5">
-                        <span class="text-xs text-gray-400 font-medium">ইতিমধ্যে একাউন্ট আছে?</span> 
-                        <button onclick="switchAuthTab('login')" class="text-xs text-[#00c853] font-bold hover:underline ml-1">লগইন করুন</button>
+                        <span class="text-xs text-slate-400 font-medium">ইতিমধ্যে একাউন্ট আছে?</span> 
+                        <button onclick="switchAuthTab('login')" class="text-xs text-[#10b981] font-bold hover:underline ml-1">লগইন করুন</button>
                     </div>
                 </div>
                 
@@ -159,7 +160,7 @@
 
         <!-- Floating History Button -->
         <div class="fixed bottom-4 right-4 z-50">
-            <button onclick="openUserHistoryModal()" class="bg-white dark:bg-gray-800 text-brand dark:text-brand-light p-3 rounded-full shadow-lg border-2 border-brand-light dark:border-gray-600 flex items-center justify-center cursor-pointer hover:scale-110 transition" title="হিস্ট্রি">
+            <button onclick="openUserHistoryModal()" class="bg-white dark:bg-slate-800 text-brand dark:text-brand-light p-3 rounded-full shadow-lg border-2 border-brand-light dark:border-slate-600 flex items-center justify-center cursor-pointer hover:scale-110 transition" title="হিস্ট্রি">
                 <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             </button>
         </div>
@@ -197,7 +198,7 @@
         <div id="mainContentArea" class="flex-grow w-full relative">
             <div id="userView" class="container mx-auto px-3 py-6 max-w-2xl">
                 
-                <div id="notice-banner" class="hidden mb-4 bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-900 dark:text-yellow-100 p-3 rounded-lg shadow-sm">
+                <div id="notice-banner" class="hidden mb-4 bg-yellow-100 dark:bg-yellow-900/40 border-l-4 border-yellow-500 text-yellow-900 dark:text-yellow-100 p-3 rounded-lg shadow-sm">
                     <div class="flex items-start">
                         <i class="fa-solid fa-bullhorn text-2xl text-yellow-600 dark:text-yellow-400 mr-3 mt-0.5 animate-pulse"></i>
                         <div>
@@ -212,7 +213,7 @@
                 </div>
 
                 <div id="hero-header" class="text-center mb-6">
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2"><span class="lang-str" data-bn="সহজেই কয়েন সেল করুন" data-en="Sell Coins Easily">সহজেই কয়েন সেল করুন</span></h1>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-2"><span class="lang-str" data-bn="সহজেই কয়েন সেল করুন" data-en="Sell Coins Easily">সহজেই কয়েন সেল করুন</span></h1>
                     <p class="text-gray-600 dark:text-gray-400 mb-4 font-medium text-sm"><span class="lang-str" data-bn="নিচের ধাপে ফর্মটি পূরণ করুন এবং নিশ্চিন্তে টাকা বুঝে নিন." data-en="Fill out the form below and receive your money securely.">নিচের ধাপে ফর্মটি পূরণ করুন এবং নিশ্চিন্তে টাকা বুঝে নিন.</span></p>
                 </div>
 
@@ -220,14 +221,14 @@
                     <div id="system-stopped-container" class="hidden bg-red-50 dark:bg-red-900 border-2 border-red-300 rounded-xl p-6 text-center shadow-md">
                         <i class="fa-solid fa-lock text-5xl text-red-500 mb-3"></i>
                         <h2 class="text-xl font-bold text-red-800 dark:text-red-200 mb-2"><span class="lang-str" data-bn="কয়েন সেল সাময়িকভাবে বন্ধ আছে" data-en="Coin sales are temporarily closed">কয়েন সেল সাময়িকভাবে বন্ধ আছে</span></h2>
-                        <p id="system-stopped-text" class="text-sm text-gray-700 dark:text-gray-200 font-bold bg-white dark:bg-gray-800 p-3 rounded-lg inline-block shadow-sm"></p>
+                        <p id="system-stopped-text" class="text-sm text-gray-700 dark:text-gray-200 font-bold bg-white dark:bg-slate-800 p-3 rounded-lg inline-block shadow-sm"></p>
                     </div>
                     
                     <div id="active-system-container">
                         <div id="sellFormContainer" class="space-y-4 relative">
                             
                             <!-- Step 1 -->
-                            <div class="glass-effect bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
                                     <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">১</span> 
                                     <span class="lang-str" data-bn="প্রথম কাজ: কোন কয়েন বিক্রি করবেন?" data-en="Step 1: Which coin will you sell?">প্রথম কাজ: কোন কয়েন বিক্রি করবেন?</span> <span class="text-red-500 ml-1">*</span>
@@ -239,7 +240,7 @@
                             </div>
 
                             <!-- Step 2 -->
-                            <div class="glass-effect bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                                     <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 flex items-center">
                                         <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">২</span> <span class="lang-str" data-bn="দ্বিতীয় কাজ: কত 1k কয়েন সেল করবেন?" data-en="Step 2: How many 1k coins?">দ্বিতীয় কাজ: কত 1k কয়েন সেল করবেন?</span> <span class="text-red-500 ml-1">*</span>
@@ -249,7 +250,7 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 font-bold mb-2.5 ml-8">👉 <span class="lang-str" data-bn="বক্সে লিখে দিন অথবা শর্টকাট বাটনে চাপ দিন:" data-en="Type in the box or click a shortcut button:">বক্সে লিখে দিন অথবা শর্টকাট বাটনে চাপ দিন:</span></p>
                                 <div class="ml-8">
                                     <div class="relative w-full">
-                                        <input type="number" id="coinAmount" class="lang-placeholder w-full px-3 py-2 text-base font-bold rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-0 focus:border-brand pr-10" data-bn="যেমন: 50" data-en="E.g: 50" placeholder="যেমন: 50">
+                                        <input type="number" id="coinAmount" class="lang-placeholder w-full px-3 py-2 text-base font-bold rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-0 focus:border-brand pr-10" data-bn="যেমন: 50" data-en="E.g: 50" placeholder="যেমন: 50">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-base k-symbol">k</span></div>
                                     </div>
                                     <div class="flex flex-wrap gap-2 mt-2 items-center">
@@ -261,33 +262,34 @@
                             </div>
 
                             <!-- Step 3 -->
-                            <div class="glass-effect bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center"><span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৩</span> <span class="lang-str" data-bn="টাকা কিসে নিবেন?" data-en="Step 3: Payment Method?">টাকা কিসে নিবেন?</span> <span class="text-red-500 ml-1">*</span></h3>
                                 <div class="ml-8 space-y-3">
-                                    <select id="paymentMethod" onchange="updateAccountPlaceholder(); calculateTotalUser();" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold text-sm"></select>
-                                    <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold tracking-wider text-sm" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
+                                    <select id="paymentMethod" onchange="updateAccountPlaceholder(); calculateTotalUser();" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold text-sm"></select>
+                                    <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold tracking-wider text-sm" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
                                 </div>
                                 
-                                <!-- Detailed Calculation Area (Premium Receipt Style) -->
-                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-[#f0fdf4] dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 rounded-xl p-4 shadow-sm">
-                                    <h4 class="text-center font-bold text-green-700 dark:text-green-500 mb-3 border-b border-green-200 dark:border-green-800 pb-1 text-sm"><i class="fa-solid fa-receipt mr-1"></i> হিসাবের বিস্তারিত বিবরণ</h4>
+                                <!-- New Premium Detailed Calculation Area -->
+                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-[#e8f5e9] dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-green-600"></div>
+                                    <h4 class="text-center font-black text-green-800 dark:text-green-500 mb-3 border-b border-green-200 dark:border-green-800/50 pb-1.5 text-sm flex items-center justify-center"><i class="fa-solid fa-receipt mr-2"></i> হিসাবের বিস্তারিত বিবরণ</h4>
                                     
                                     <div class="flex justify-between items-center text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                                         <span>কয়েনের মূল্য (<span id="calcRate">0</span> x <span id="calcAmount">0</span>):</span>
-                                        <span>৳<span id="calcTotalVal">0</span></span>
+                                        <span class="text-gray-900 dark:text-white">৳<span id="calcTotalVal">0</span></span>
                                     </div>
                                     
-                                    <div id="chargeRowDetails" class="flex justify-between items-center text-sm font-bold text-red-500 mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                        <span><span id="calcChargeName"></span> চার্জ:</span>
-                                        <span>-৳<span id="calcChargeAmt">0</span></span>
+                                    <div id="chargeRowDetails" class="flex justify-between items-center text-sm font-bold mb-3 border-b border-green-200 dark:border-green-800/50 pb-3">
+                                        <span id="calcChargeName" class="text-red-600 dark:text-red-400">চার্জ:</span>
+                                        <span id="calcChargeAmt" class="text-red-600 dark:text-red-400">-৳0</span>
                                     </div>
                                     
-                                    <div class="flex justify-between items-center text-lg font-black text-green-800 dark:text-green-400 mt-2">
+                                    <div class="flex justify-between items-center text-xl font-black text-green-800 dark:text-green-400 mt-2 bg-white dark:bg-slate-800 p-2 rounded-lg border border-green-100 dark:border-green-900/30">
                                         <span>সর্বমোট পাবেন:</span>
                                         <span id="calcFinalAmt">৳0</span>
                                     </div>
                                     
-                                    <div class="text-center text-[11px] font-medium text-gray-600 dark:text-gray-400 mt-3 bg-white dark:bg-gray-800 rounded p-1.5 border border-green-100 dark:border-gray-700">
+                                    <div class="text-center text-[11px] font-bold text-gray-500 dark:text-gray-400 mt-3 pt-2 border-t border-green-200 dark:border-green-800/50">
                                         সহজ হিসাব: (<span id="eqRate">0</span> * <span id="eqAmount">0</span>) <span id="eqChargeStr"></span> = <strong class="text-gray-900 dark:text-gray-200" id="eqFinalAmt">৳0</strong>
                                     </div>
                                 </div>
@@ -299,7 +301,7 @@
                                 <div id="step4-initial" class="ml-8"><p class="text-xs text-gray-500 font-bold italic">⚠ <span class="lang-str" data-bn="উপর থেকে একটি কয়েন সিলেক্ট করুন।" data-en="Please select a coin above.">উপর থেকে একটি কয়েন সিলেক্ট করুন।</span></p></div>
                                 <div id="transfer-section" class="ml-8 hidden mt-2">
                                     <p class="text-[11px] text-gray-700 dark:text-gray-300 font-bold mb-2">👉 <span class="lang-str" data-bn="নিচের ইউজারনেমটি কপি করে কয়েন ট্রান্সফার করুন।" data-en="Copy the username below and transfer coins.">নিচের ইউজারনেমটি কপি করে কয়েন ট্রান্সফার করুন।</span></p>
-                                    <div class="bg-white dark:bg-gray-800 p-2 pl-3 rounded-lg border-2 border-brand-light flex justify-between items-center mb-1 w-full">
+                                    <div class="bg-white dark:bg-slate-800 p-2 pl-3 rounded-lg border-2 border-brand-light dark:border-slate-600 flex justify-between items-center mb-1 w-full">
                                         <span id="dynamic-username" class="font-mono text-base font-black text-red-600 dark:text-red-400 tracking-wider"></span>
                                         <button type="button" id="copyUsernameBtn" class="bg-brand text-white px-3 py-1.5 rounded font-bold transition hover:bg-brand-dark shadow flex items-center text-xs"><i class="fa-solid fa-copy mr-1 pointer-events-none"></i> <span class="lang-str" data-bn="কপি" data-en="Copy">কপি</span></button>
                                     </div>
@@ -308,7 +310,7 @@
                             </div>
 
                             <!-- Step 5 -->
-                            <div class="glass-effect bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                  <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
                                     <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৫</span> 
                                     <span class="lang-str" data-bn="টেলিগ্রাম ইউজারনেম" data-en="Step 5: Telegram">টেলিগ্রাম ইউজারনেম</span> 
@@ -318,16 +320,16 @@
                                  <div class="ml-8 w-full">
                                      <div class="relative">
                                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fa-brands fa-telegram text-gray-400"></i></div>
-                                         <input type="text" id="telegramUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white font-bold focus:ring-0 focus:border-brand text-sm" data-bn="যেমন: @username" data-en="E.g: @username" placeholder="যেমন: @username">
+                                         <input type="text" id="telegramUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold focus:ring-0 focus:border-brand text-sm" data-bn="যেমন: @username" data-en="E.g: @username" placeholder="যেমন: @username">
                                      </div>
                                  </div>
                             </div>
 
                             <!-- Step 6 -->
-                            <div class="glass-effect bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center"><span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৬</span> <span class="lang-str" data-bn="স্ক্রিনশট প্রুফ" data-en="Step 6: Screenshot Proof">স্ক্রিনশট প্রুফ</span> <span class="text-red-500 ml-1">*</span></h3>
                                 <div class="ml-8">
-                                    <label for="proofImage" id="uploadBox" class="mt-1 flex flex-col items-center justify-center w-full h-24 border-2 border-brand-light dark:border-brand-dark border-dashed rounded-lg cursor-pointer bg-white dark:bg-gray-700 hover:bg-brand-light/50 transition">
+                                    <label for="proofImage" id="uploadBox" class="mt-1 flex flex-col items-center justify-center w-full h-24 border-2 border-brand-light dark:border-brand-dark border-dashed rounded-lg cursor-pointer bg-white dark:bg-slate-700 hover:bg-brand-light/50 transition">
                                         <div class="flex flex-col items-center justify-center pt-3 pb-3">
                                             <i class="fa-solid fa-image text-3xl text-brand mb-1" id="uploadIcon"></i>
                                             <p class="text-xs font-bold text-brand dark:text-brand-light"><span class="lang-str" data-bn="স্ক্রিনশট সিলেক্ট করুন" data-en="Select screenshot">স্ক্রিনশট সিলেক্ট করুন</span></p>
@@ -339,22 +341,24 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="button" id="submitBtn" class="w-full py-3.5 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center relative z-10">
+                            <button type="button" id="submitBtn" class="w-full py-4 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center relative z-10">
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
                             <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button) -->
                             <!-- Serial: YouTube -> Facebook -> Telegram -> WhatsApp -->
-                            <div class="mt-6 flex flex-col items-center justify-center gap-4 w-full" id="horizontalSocialLinks">
-                                <!-- Links injected here by JS -->
+                            <div class="mt-6 flex flex-col items-center justify-center w-full" id="horizontalSocialLinksContainer">
+                                <div class="flex flex-col gap-4 items-center" id="horizontalSocialLinks">
+                                    <!-- Links injected here by JS -->
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Compact Pending Section -->
+                        <!-- Compact Pending Section with Detailed View -->
                         <div id="activePendingSection" class="mt-6 hidden">
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="text-base font-bold text-blue-700 dark:text-blue-400 flex items-center"><i class="fa-solid fa-spinner fa-spin mr-2"></i> <span class="lang-str" data-bn="পেন্ডিং রিকোয়েস্ট" data-en="Pending Requests">পেন্ডিং রিকোয়েস্ট</span> <span id="pendingCountBadge" class="ml-2 bg-blue-100 text-blue-800 text-xs font-black px-2 py-0.5 rounded-full">0</span></h3>
-                                <button onclick="openUserHistoryModal()" class="text-sm font-bold text-blue-600 hover:underline">সব হিস্ট্রি</button>
+                            <div class="flex justify-between items-center mb-3 border-b dark:border-slate-700 pb-2">
+                                <h3 class="text-sm font-black text-blue-700 dark:text-blue-400 flex items-center"><i class="fa-solid fa-spinner fa-spin mr-2"></i> <span class="lang-str" data-bn="পেন্ডিং রিকোয়েস্ট" data-en="Pending Requests">পেন্ডিং রিকোয়েস্ট</span> <span id="pendingCountBadge" class="ml-2 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-black px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-700">0</span></h3>
+                                <button onclick="openUserHistoryModal()" class="text-xs font-bold text-white bg-brand hover:bg-brand-dark px-3 py-1.5 rounded shadow transition">সব হিস্ট্রি</button>
                             </div>
                             <div id="activePendingContainer" class="space-y-3"></div>
                         </div>
@@ -397,7 +401,7 @@
 
         <div id="adminMainContentArea" class="flex-grow w-full relative">
             <div id="adminDashboardView" class="w-full pb-10">
-                <div class="bg-white dark:bg-gray-800 shadow-sm mb-4 border-b dark:border-gray-700 sticky top-[48px] sm:top-[56px] z-30">
+                <div class="bg-white dark:bg-slate-800 shadow-sm mb-4 border-b dark:border-slate-700 sticky top-[48px] sm:top-[56px] z-30">
                     <div class="max-w-7xl mx-auto px-2">
                         <div class="flex space-x-1 sm:space-x-4 overflow-x-auto no-scrollbar">
                             <button onclick="switchAdminTab('dashboard')" id="tab-dashboard" class="py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-brand font-bold whitespace-nowrap tab-active transition flex items-center text-[13px] sm:text-sm">
@@ -424,7 +428,7 @@
                             <button onclick="switchAdminTab('settings')" id="tab-settings" class="py-3 px-2 text-gray-600 dark:text-gray-300 hover:text-brand font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm">
                                 <i class="fa-solid fa-gear mr-1.5"></i> <span class="lang-str" data-bn="সেটিংস" data-en="Settings">সেটিংস</span>
                             </button>
-                            <button onclick="goToUserSite()" class="py-3 px-2 text-blue-500 hover:text-blue-700 font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm ml-auto border-l border-gray-200 dark:border-gray-700 pl-2 sm:pl-3">
+                            <button onclick="goToUserSite()" class="py-3 px-2 text-blue-500 hover:text-blue-700 font-bold whitespace-nowrap transition flex items-center text-[13px] sm:text-sm ml-auto border-l border-gray-200 dark:border-slate-700 pl-2 sm:pl-3">
                                 <i class="fa-solid fa-globe mr-1.5"></i> <span class="lang-str" data-bn="সাইটে যান" data-en="Go to Site">সাইটে যান</span>
                             </button>
                         </div>
@@ -442,22 +446,22 @@
                             </button>
                         </div>
                         
-                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-4 rounded-xl shadow mb-4 text-white flex justify-between items-center">
-                            <div>
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-4 rounded-xl shadow mb-4 text-white flex justify-between items-center relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-20"><i class="fa-solid fa-wallet text-8xl"></i></div>
+                            <div class="relative z-10">
                                 <p class="text-[11px] font-bold text-green-100 mb-0.5 uppercase tracking-wider"><span class="lang-str" data-bn="সর্বমোট পেমেন্ট" data-en="Total Payment">সর্বমোট পেমেন্ট</span></p>
-                                <h2 class="text-2xl sm:text-3xl font-black" id="stat-total-paid">৳0</h2>
+                                <h2 class="text-3xl sm:text-4xl font-black" id="stat-total-paid">৳0</h2>
                             </div>
-                            <i class="fa-solid fa-money-bill-trend-up text-4xl text-green-200/50"></i>
                         </div>
 
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                            <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border-l-4 border-yellow-500 shadow-sm flex items-center justify-between">
-                                <div><p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 leading-tight"><span class="lang-str" data-bn="মোট পেন্ডিং" data-en="Total Pending">মোট পেন্ডিং</span></p><h3 class="text-xl font-black text-gray-800 dark:text-white" id="stat-pending">0</h3></div>
-                                <i class="fa-solid fa-clock text-2xl text-yellow-200 dark:text-yellow-900/50"></i>
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border-l-4 border-yellow-500 shadow-sm flex items-center justify-between">
+                                <div><p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 leading-tight"><span class="lang-str" data-bn="মোট পেন্ডিং" data-en="Total Pending">মোট পেন্ডিং</span></p><h3 class="text-2xl font-black text-gray-800 dark:text-white" id="stat-pending">0</h3></div>
+                                <i class="fa-solid fa-clock text-3xl text-yellow-200 dark:text-yellow-900/50"></i>
                             </div>
                         </div>
 
-                        <h4 class="font-bold text-gray-600 dark:text-gray-400 mb-2 text-xs border-b dark:border-gray-700 pb-1"><i class="fa-solid fa-layer-group mr-1"></i> <span class="lang-str" data-bn="কয়েন ভিত্তিক হিসাব (পেইড)" data-en="Coin Based Stats (Paid)">কয়েন ভিত্তিক হিসাব (পেইড)</span></h4>
+                        <h4 class="font-bold text-gray-600 dark:text-gray-400 mb-2 text-xs border-b dark:border-slate-700 pb-1"><i class="fa-solid fa-layer-group mr-1"></i> <span class="lang-str" data-bn="কয়েন ভিত্তিক হিসাব (পেইড)" data-en="Coin Based Stats (Paid)">কয়েন ভিত্তিক হিসাব (পেইড)</span></h4>
                         <div id="dynamic-stats-container" class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4"></div>
                     </section>
 
@@ -467,13 +471,13 @@
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm"><i class="fa-solid fa-clock mr-1 text-brand"></i> <span class="lang-str" data-bn="পেন্ডিং রিকোয়েস্ট" data-en="Pending Requests">পেন্ডিং রিকোয়েস্ট</span></h3>
                             <div class="relative w-48">
                                 <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchPending" onkeyup="filterTable('pendingTableBody', 'searchPending')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded w-full font-bold text-xs" placeholder="Search Order ID / No.">
+                                <input type="text" id="searchPending" onkeyup="filterTable('pendingTableBody', 'searchPending')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs" placeholder="Search Order ID / No.">
                             </div>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                                    <thead class="bg-gray-50 dark:bg-slate-900">
                                         <tr>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="তারিখ ও অর্ডার" data-en="Date & Order">তারিখ ও অর্ডার</span></th>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="কয়েন" data-en="Coin">কয়েন</span></th>
@@ -483,7 +487,7 @@
                                             <th class="px-2 py-2 text-center text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="অ্যাকশন" data-en="Action">অ্যাকশন</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="pendingTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800"></tbody>
+                                    <tbody id="pendingTableBody" class="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -500,14 +504,14 @@
                             <div class="flex gap-2 w-full md:w-auto">
                                 <div class="relative flex-grow md:w-48">
                                     <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                    <input type="text" id="searchHistory" onkeyup="filterTable('historyTableBody', 'searchHistory')" class="lang-placeholder pl-8 pr-3 py-1.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-brand focus:border-brand w-full font-bold text-xs" data-bn="অর্ডার আইডি / নাম্বার খুঁজুন..." data-en="Search ID/No..." placeholder="অর্ডার আইডি / নাম্বার খুঁজুন...">
+                                    <input type="text" id="searchHistory" onkeyup="filterTable('historyTableBody', 'searchHistory')" class="lang-placeholder pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded focus:ring-brand focus:border-brand w-full font-bold text-xs" data-bn="অর্ডার আইডি / নাম্বার খুঁজুন..." data-en="Search ID/No..." placeholder="অর্ডার আইডি / নাম্বার খুঁজুন...">
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                                    <thead class="bg-gray-50 dark:bg-slate-900">
                                         <tr>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="তারিখ ও অর্ডার" data-en="Date & Order">তারিখ ও অর্ডার</span></th>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="কয়েন" data-en="Coin">কয়েন</span></th>
@@ -517,7 +521,7 @@
                                             <th class="px-2 py-2 text-center text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="ডিলিট" data-en="Del">ডিলিট</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="historyTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800"></tbody>
+                                    <tbody id="historyTableBody" class="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -529,13 +533,13 @@
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm"><i class="fa-solid fa-users mr-1 text-brand"></i> <span class="lang-str" data-bn="রেজিস্টার করা ইউজার্স" data-en="Registered Users">রেজিস্টার করা ইউজার্স</span></h3>
                             <div class="relative w-48">
                                 <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchUsers" onkeyup="filterTable('usersTableBody', 'searchUsers')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded w-full font-bold text-xs" placeholder="Search User ID">
+                                <input type="text" id="searchUsers" onkeyup="filterTable('usersTableBody', 'searchUsers')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs" placeholder="Search User ID">
                             </div>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                                    <thead class="bg-gray-50 dark:bg-slate-900">
                                         <tr>
                                             <th class="px-3 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Name</th>
                                             <th class="px-3 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Username</th>
@@ -545,7 +549,7 @@
                                             <th class="px-3 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="usersTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800"></tbody>
+                                    <tbody id="usersTableBody" class="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -554,14 +558,14 @@
                     <!-- CHECK ORDERS SECTION -->
                     <section id="sec-check_orders" class="hidden">
                         <div class="max-w-2xl mx-auto">
-                            <h3 class="font-bold text-gray-700 dark:text-gray-300 text-base mb-4 border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-magnifying-glass mr-1 text-brand"></i> <span class="lang-str" data-bn="অর্ডার আইডি দিয়ে চেক করুন" data-en="Check by Order ID">অর্ডার আইডি দিয়ে চেক করুন</span></h3>
+                            <h3 class="font-bold text-gray-700 dark:text-gray-300 text-base mb-4 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-magnifying-glass mr-1 text-brand"></i> <span class="lang-str" data-bn="অর্ডার আইডি দিয়ে চেক করুন" data-en="Check by Order ID">অর্ডার আইডি দিয়ে চেক করুন</span></h3>
                             
-                            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border dark:border-gray-700 mb-6">
+                            <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border dark:border-slate-700 mb-6">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 font-bold mb-3"><span class="lang-str" data-bn="ইউজারের দেওয়া অর্ডার আইডি (যেমন: ORD-123456) নিচে লিখে খুঁজুন:" data-en="Enter the Order ID provided by user (e.g., ORD-123456):">ইউজারের দেওয়া অর্ডার আইডি (যেমন: ORD-123456) নিচে লিখে খুঁজুন:</span></p>
                                 <div class="flex gap-2">
                                     <div class="relative flex-grow">
                                         <i class="fa-solid fa-hashtag absolute left-3 top-2.5 text-gray-400"></i>
-                                        <input type="text" id="adminCheckOrderId" class="w-full pl-9 pr-3 py-2 border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg font-bold focus:border-brand focus:ring-0" placeholder="ORD-XXXXXX">
+                                        <input type="text" id="adminCheckOrderId" class="w-full pl-9 pr-3 py-2 border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg font-bold focus:border-brand focus:ring-0" placeholder="ORD-XXXXXX">
                                     </div>
                                     <button onclick="handleAdminCheckOrder()" class="bg-brand text-white px-5 py-2 rounded-lg font-bold hover:bg-brand-dark transition shadow"><i class="fa-solid fa-search mr-1"></i> <span class="lang-str" data-bn="খুঁজুন" data-en="Search">খুঁজুন</span></button>
                                 </div>
@@ -576,25 +580,25 @@
                         </div>
                     </section>
 
-                    <!-- USER PROOFS / HISTORY SECTION (NEW) -->
+                    <!-- USER PROOFS / HISTORY SECTION -->
                     <section id="sec-user_proofs" class="hidden">
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mb-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mb-4">
                             <h3 class="font-bold text-blue-700 dark:text-blue-400 text-sm mb-3"><i class="fa-solid fa-folder-open mr-1"></i> <span class="lang-str" data-bn="ইউজার প্রুফ ও অল হিস্ট্রি" data-en="User Proofs & All History">ইউজার প্রুফ ও অল হিস্ট্রি</span></h3>
                             <p class="text-[11px] text-gray-500 font-bold mb-3">যেকোনো ইউজারের ইউজারনেইম লিখে তার অতীতের সমস্ত রেকর্ড (পেইড এবং পেন্ডিং) একসাথে দেখুন এবং গুগল শিটে (CSV) ডাউনলোড করুন।</p>
                             <div class="flex gap-2">
                                 <div class="relative flex-grow">
                                     <i class="fa-solid fa-user absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-                                    <input type="text" id="searchProofUsername" class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded font-bold text-sm focus:border-blue-500 focus:ring-0" placeholder="ইউজারনেইম লিখুন...">
+                                    <input type="text" id="searchProofUsername" class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded font-bold text-sm focus:border-blue-500 focus:ring-0" placeholder="ইউজারনেইম লিখুন...">
                                 </div>
                                 <button onclick="searchUserProof()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 transition shadow-sm text-sm"><i class="fa-solid fa-search mr-1"></i> খুঁজুন</button>
                                 <button onclick="downloadProofCSV()" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 transition shadow-sm text-sm whitespace-nowrap"><i class="fa-solid fa-file-csv mr-1"></i> শিটে ডাউনলোড</button>
                             </div>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                                    <thead class="bg-gray-50 dark:bg-slate-900">
                                         <tr>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">তারিখ ও সময়</th>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">অর্ডার আইডি</th>
@@ -606,7 +610,7 @@
                                             <th class="px-2 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">প্রুফ ছবি</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="proofTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                                    <tbody id="proofTableBody" class="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
                                         <tr><td colspan="8" class="p-4 text-center text-gray-500 text-[11px] font-bold">ইউজারনেইম লিখে সার্চ করুন</td></tr>
                                     </tbody>
                                 </table>
@@ -626,10 +630,10 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                                    <thead class="bg-gray-50 dark:bg-slate-900">
                                         <tr>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="তারিখ ও অর্ডার" data-en="Date & Order">তারিখ ও অর্ডার</span></th>
                                             <th class="px-2 py-2 text-left text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="কয়েন" data-en="Coin">কয়েন</span></th>
@@ -638,7 +642,7 @@
                                             <th class="px-2 py-2 text-center text-[10px] font-bold text-gray-500 uppercase"><span class="lang-str" data-bn="স্ট্যাটাস" data-en="Status">স্ট্যাটাস</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody id="archiveTableBody" class="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800"></tbody>
+                                    <tbody id="archiveTableBody" class="divide-y divide-gray-100 dark:divide-slate-700 bg-white dark:bg-slate-800"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -646,19 +650,19 @@
 
                     <!-- Settings Section -->
                     <section id="sec-settings" class="hidden max-w-5xl mx-auto space-y-4">
-                        <h2 class="text-xl font-bold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-sliders text-brand mr-2"></i> <span class="lang-str" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></h2>
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-sliders text-brand mr-2"></i> <span class="lang-str" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></h2>
                             
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
                             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4"><i class="fa-solid fa-globe text-brand mr-2"></i> <span class="lang-str" data-bn="সাধারণ সেটিংস" data-en="General Settings">সাধারণ সেটিংস</span></h3>
                             
                             <div class="flex flex-col md:flex-row gap-4 mb-4">
                                 <div class="flex-grow">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="ওয়েবসাইটের নাম:" data-en="Website Name:">ওয়েবসাইটের নাম:</span></label>
-                                    <input type="text" id="setSiteName" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="NS & Top Coin">
+                                    <input type="text" id="setSiteName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="NS & Top Coin">
                                 </div>
                                 <div class="w-full md:w-40 shrink-0">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লোগো:" data-en="Logo:">লোগো:</span></label>
-                                    <label class="flex flex-col items-center justify-center w-full h-[34px] border border-gray-300 dark:border-gray-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 transition overflow-hidden relative">
+                                    <label class="flex flex-col items-center justify-center w-full h-[34px] border border-gray-300 dark:border-slate-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 transition overflow-hidden relative">
                                         <div class="flex items-center justify-center space-x-2" id="siteLogoPreviewContainer">
                                             <i class="fa-solid fa-image text-gray-400 text-xs"></i>
                                             <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400"><span class="lang-str" data-bn="লোগো আপলোড" data-en="Upload Logo">লোগো আপলোড</span></span>
@@ -678,23 +682,23 @@
                                 <input type="checkbox" id="setNoticeActive" class="w-4 h-4 text-brand rounded">
                                 <span class="font-bold text-sm text-gray-800 dark:text-gray-200"><span class="lang-str" data-bn="ইউজার নোটিশ অন করুন" data-en="Enable User Notice">ইউজার নোটিশ অন করুন</span></span>
                             </label>
-                            <textarea id="setNoticeText" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="নোটিশ লিখুন" data-en="Write Notice" placeholder="নোটিশ লিখুন"></textarea>
+                            <textarea id="setNoticeText" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="নোটিশ লিখুন" data-en="Write Notice" placeholder="নোটিশ লিখুন"></textarea>
                             
                             <button onclick="saveSiteInfo()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
                         <!-- Login Page Settings UI -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mt-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4">
                             <h3 class="text-sm font-bold text-gray-800 dark:text-white mb-3"><i class="fa-solid fa-id-card text-brand mr-2"></i> <span class="lang-str" data-bn="লগইন পেজ ডিজাইন" data-en="Login Page Design">লগইন পেজ ডিজাইন</span></h3>
                     
                             <div class="flex flex-col md:flex-row gap-4 mb-4">
                                 <div class="flex-grow">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লেখা (Sub-title):" data-en="Login Page Text:">লগইন পেজের লেখা (Sub-title):</span></label>
-                                    <input type="text" id="setAuthText" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="একাউন্ট তৈরি করে এখনই শুরু করুন">
+                                    <input type="text" id="setAuthText" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="একাউন্ট তৈরি করে এখনই শুরু করুন">
                                 </div>
                                 <div class="w-full md:w-40 shrink-0">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লোগো:" data-en="Login Page Logo:">লগইন পেজের লোগো:</span></label>
-                                    <label class="flex flex-col items-center justify-center w-full h-[34px] border border-gray-300 dark:border-gray-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 transition overflow-hidden relative">
+                                    <label class="flex flex-col items-center justify-center w-full h-[34px] border border-gray-300 dark:border-slate-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 transition overflow-hidden relative">
                                         <div class="flex items-center justify-center space-x-2" id="authLogoPreviewContainer">
                                             <i class="fa-solid fa-image text-gray-400 text-xs"></i>
                                             <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400"><span class="lang-str" data-bn="লোগো আপলোড" data-en="Upload Logo">লোগো আপলোড</span></span>
@@ -707,13 +711,13 @@
                             <button onclick="saveAuthSettings()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mt-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-scale-balanced mr-1"></i> <span class="lang-str" data-bn="সেলের লিমিট (Min/Max)" data-en="Sale Limits (Min/Max)">সেলের লিমিট (Min/Max)</span></h3>
                                     <div class="flex gap-4 mb-3">
-                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Min k:</label><input type="number" id="setMinLimit" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
-                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Max k:</label><input type="number" id="setMaxLimit" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
+                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Min k:</label><input type="number" id="setMinLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
+                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Max k:</label><input type="number" id="setMaxLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
                                     </div>
                                     <button onclick="saveLimits()" class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                                 </div>
@@ -721,32 +725,32 @@
                                     <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-dollar-sign mr-1"></i> <span class="lang-str" data-bn="বাইনান্স ডলার (USDT) রেট" data-en="Binance USDT Rate">বাইনান্স ডলার (USDT) রেট</span></h3>
                                     <div class="mb-3">
                                         <label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="প্রতি ডলার (৳):" data-en="Per Dollar (৳):">প্রতি ডলার (৳):</span></label>
-                                        <input type="number" id="setBinanceRate" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500" placeholder="127">
+                                        <input type="number" id="setBinanceRate" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500" placeholder="127">
                                     </div>
                                     <button onclick="saveBinanceRate()" class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
                             <h3 class="text-sm font-bold text-green-600 dark:text-green-500 mb-3"><i class="fa-solid fa-wallet mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট মেথড ও সেন্ড মানি চার্জ" data-en="Payment Methods & Charge">পেমেন্ট মেথড ও সেন্ড মানি চার্জ</span></h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
+                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
                                     <input type="checkbox" id="payBkash" class="w-4 h-4 text-brand rounded">
                                     <span class="text-sm font-bold text-pink-600 w-16">bKash</span>
-                                    <input type="number" id="chargeBkash" class="w-20 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-pink-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeBkash" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-pink-500" placeholder="Charge ৳">
                                 </div>
-                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
+                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
                                     <input type="checkbox" id="payNagad" class="w-4 h-4 text-brand rounded">
                                     <span class="text-sm font-bold text-orange-500 w-16">Nagad</span>
-                                    <input type="number" id="chargeNagad" class="w-20 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-orange-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeNagad" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-orange-500" placeholder="Charge ৳">
                                 </div>
-                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
+                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
                                     <input type="checkbox" id="payRocket" class="w-4 h-4 text-brand rounded">
                                     <span class="text-sm font-bold text-purple-600 w-16">Rocket</span>
-                                    <input type="number" id="chargeRocket" class="w-20 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-purple-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeRocket" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-purple-500" placeholder="Charge ৳">
                                 </div>
-                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded border dark:border-gray-600">
+                                <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
                                     <input type="checkbox" id="payBinance" class="w-4 h-4 text-brand rounded">
                                     <span class="text-sm font-bold text-yellow-500">Binance</span>
                                 </div>
@@ -754,13 +758,13 @@
                             <button onclick="savePaymentMethods()" class="px-4 py-1.5 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
                             <h3 class="text-sm font-bold text-blue-600 dark:text-blue-500 mb-3"><i class="fa-solid fa-headset mr-1"></i> <span class="lang-str" data-bn="সাপোর্ট লিংক" data-en="Support Links">সাপোর্ট লিংক</span></h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-youtube text-red-600"></i> YouTube:</label><input type="text" id="linkYt" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Channel Link..."></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-facebook text-blue-600"></i> Facebook:</label><input type="text" id="linkFb" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Link..."></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-telegram text-blue-400"></i> Telegram:</label><input type="text" id="linkTg" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="@username"></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-whatsapp text-green-500"></i> WhatsApp:</label><input type="text" id="linkWa" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="017..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-youtube text-red-600"></i> YouTube:</label><input type="text" id="linkYt" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Channel Link..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-facebook text-blue-600"></i> Facebook:</label><input type="text" id="linkFb" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Link..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-telegram text-blue-400"></i> Telegram:</label><input type="text" id="linkTg" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="@username"></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-whatsapp text-green-500"></i> WhatsApp:</label><input type="text" id="linkWa" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="017..."></div>
                             </div>
                             <button onclick="saveSupportLinks()" class="px-4 py-1.5 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
@@ -768,29 +772,29 @@
                         <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg shadow-sm border border-red-200 dark:border-red-800">
                             <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-3"><i class="fa-solid fa-power-off mr-1"></i> <span class="lang-str" data-bn="ওয়েবসাইট অন/অফ" data-en="Website On/Off">ওয়েবসাইট অন/অফ</span></h3>
                             <label class="flex items-center space-x-2 cursor-pointer mb-2"><input type="checkbox" id="setSystemActive" class="w-5 h-5 text-red-600 rounded"><span class="font-black text-red-700 dark:text-red-400 text-sm"><span class="lang-str" data-bn="কয়েন কেনা-বেচা চালু আছে?" data-en="Coin trading active?">কয়েন কেনা-বেচা চালু আছে?</span></span></label>
-                            <textarea id="setStopMsg" rows="1" class="lang-placeholder w-full border border-red-300 dark:border-red-600 dark:bg-gray-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="বন্ধ থাকলে মেসেজ..." data-en="If closed, write message..." placeholder="বন্ধ থাকলে মেসেজ..."></textarea>
+                            <textarea id="setStopMsg" rows="1" class="lang-placeholder w-full border border-red-300 dark:border-red-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="বন্ধ থাকলে মেসেজ..." data-en="If closed, write message..." placeholder="বন্ধ থাকলে মেসেজ..."></textarea>
                             <button onclick="saveSystemStatus()" class="px-4 py-1.5 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
                         
                         <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg shadow-sm border border-green-200 dark:border-green-800 mt-4">
                             <h3 class="text-sm font-bold text-green-700 dark:text-green-400 mb-2"><i class="fa-solid fa-comment-sms mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট সাকসেস মেসেজ" data-en="Payment Success Message">পেমেন্ট সাকসেস মেসেজ</span></h3>
                             <p class="text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-2">Tag: [account], [amount]</p>
-                            <textarea id="setSuccessSms" rows="2" class="lang-placeholder w-full border border-green-300 dark:border-green-600 dark:bg-gray-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।" data-en="SMS: ৳[amount] sent to [account]." placeholder="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"></textarea>
+                            <textarea id="setSuccessSms" rows="2" class="lang-placeholder w-full border border-green-300 dark:border-green-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।" data-en="SMS: ৳[amount] sent to [account]." placeholder="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"></textarea>
                             <button onclick="saveSuccessSms()" class="px-4 py-1.5 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-brand-light/30 dark:bg-brand-dark/20 p-4 rounded-lg shadow-sm border border-brand-light dark:border-brand-dark">
+                        <div class="bg-brand-light/30 dark:bg-brand-dark/20 p-4 rounded-lg shadow-sm border border-brand-light dark:border-brand-dark mt-4">
                             <h3 class="text-sm font-bold text-brand dark:text-brand-light mb-3"><i class="fa-solid fa-coins mr-1"></i> <span class="lang-str" data-bn="কয়েন ম্যানেজমেন্ট" data-en="Coin Management">কয়েন ম্যানেজমেন্ট</span></h3>
                             <div id="adminCoinList" class="space-y-2 mb-4 grid grid-cols-1 md:grid-cols-2 gap-3"></div>
 
-                            <div class="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600 shadow-sm">
-                                <h4 class="font-bold text-gray-700 dark:text-gray-300 text-[11px] mb-2 border-b dark:border-gray-600 pb-1"><span class="lang-str" data-bn="নতুন কয়েন যুক্ত করুন:" data-en="Add New Coin:">নতুন কয়েন যুক্ত করুন:</span></h4>
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded border border-gray-200 dark:border-slate-600 shadow-sm">
+                                <h4 class="font-bold text-gray-700 dark:text-gray-300 text-[11px] mb-2 border-b dark:border-slate-600 pb-1"><span class="lang-str" data-bn="নতুন কয়েন যুক্ত করুন:" data-en="Add New Coin:">নতুন কয়েন যুক্ত করুন:</span></h4>
                                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
-                                    <div><input type="text" id="newCoinName" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Name"></div>
-                                    <div><input type="number" id="newCoinRate" step="0.01" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="1k Rate"></div>
-                                    <div><input type="text" id="newCoinUsername" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Game ID"></div>
+                                    <div><input type="text" id="newCoinName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Name"></div>
+                                    <div><input type="number" id="newCoinRate" step="0.01" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="1k Rate"></div>
+                                    <div><input type="text" id="newCoinUsername" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Game ID"></div>
                                     <div>
-                                        <label class="flex flex-col items-center justify-center w-full h-[26px] border border-gray-300 dark:border-gray-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 overflow-hidden">
+                                        <label class="flex flex-col items-center justify-center w-full h-[26px] border border-gray-300 dark:border-slate-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 overflow-hidden">
                                             <div class="flex items-center justify-center space-x-1" id="newCoinLogoPreviewContainer"><i class="fa-solid fa-image text-gray-400 text-[10px]" id="newCoinLogoIcon"></i><span class="text-[9px] font-bold text-gray-500" id="newCoinLogoText">Logo</span></div>
                                             <input type="file" id="newCoinLogo" accept="image/*" class="hidden">
                                         </label>
@@ -810,8 +814,8 @@
     <!-- ========================================== -->
     <!-- Compact User History Modal -->
     <div id="userHistoryModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-[90] p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-gray-100 dark:bg-gray-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-gray-700 flex flex-col overflow-hidden">
-            <div class="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+        <div class="bg-gray-100 dark:bg-slate-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-slate-700 flex flex-col overflow-hidden">
+            <div class="p-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-800">
                 <h3 class="text-sm font-black text-gray-800 dark:text-white flex items-center"><i class="fa-solid fa-clock-rotate-left text-brand mr-2"></i> <span class="lang-str" data-bn="আপনার রিকোয়েস্ট হিস্ট্রি" data-en="Your Request History">আপনার রিকোয়েস্ট হিস্ট্রি</span></h3>
                 <button onclick="closeUserHistoryModal()" class="text-gray-400 hover:text-red-500 text-2xl px-2 leading-none transition">&times;</button>
             </div>
@@ -821,7 +825,7 @@
 
     <!-- Alert Modal (User) -->
     <div id="customAlert" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full text-center border dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full text-center border dark:border-slate-700">
             <div id="alertIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
             <h3 id="alertTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
             <p id="alertMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
@@ -837,7 +841,7 @@
 
     <!-- Admin Confirm Modal -->
     <div id="adminConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 w-full max-w-sm shadow-2xl text-center border dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-sm shadow-2xl text-center border dark:border-slate-700">
             <h3 id="adminConfirmTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
             <p id="adminConfirmMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
             <div id="adminConfirmBtns" class="flex justify-center gap-2"></div>
@@ -846,12 +850,12 @@
 
     <!-- Admin Approve Modal -->
     <div id="approveModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-gray-700">
-            <h3 class="text-lg font-bold text-green-700 dark:text-green-400 mb-3 border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-check-circle mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট কনফার্ম" data-en="Confirm Payment">পেমেন্ট কনফার্ম</span></h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+            <h3 class="text-lg font-bold text-green-700 dark:text-green-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-check-circle mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট কনফার্ম" data-en="Confirm Payment">পেমেন্ট কনফার্ম</span></h3>
             <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-3"><span class="lang-str" data-bn="স্ক্রিনশট আপলোড (ঐচ্ছিক):" data-en="Upload proof (Optional):">স্ক্রিনশট আপলোড (ঐচ্ছিক):</span></p>
-            <input type="file" id="adminProofInput" accept="image/*" class="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 p-2 rounded mb-4 cursor-pointer bg-gray-50 dark:bg-gray-700 text-xs text-gray-500">
+            <input type="file" id="adminProofInput" accept="image/*" class="w-full border-2 border-dashed border-gray-300 dark:border-slate-600 p-2 rounded mb-4 cursor-pointer bg-gray-50 dark:bg-slate-700 text-xs text-gray-500">
             <div class="flex justify-end space-x-2">
-                <button onclick="closeApproveModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="বাতিল" data-en="Cancel">বাতিল</span></button>
+                <button onclick="closeApproveModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="বাতিল" data-en="Cancel">বাতিল</span></button>
                 <button onclick="confirmApproval()" class="px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="কনফার্ম" data-en="Confirm">কনফার্ম</span></button>
             </div>
         </div>
@@ -859,12 +863,12 @@
 
     <!-- Admin Reject Modal -->
     <div id="rejectModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-gray-700">
-            <h3 class="text-lg font-bold text-red-600 dark:text-red-400 mb-3 border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-ban mr-1"></i> <span class="lang-str" data-bn="বাতিল করুন" data-en="Reject">বাতিল করুন</span></h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+            <h3 class="text-lg font-bold text-red-600 dark:text-red-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-ban mr-1"></i> <span class="lang-str" data-bn="বাতিল করুন" data-en="Reject">বাতিল করুন</span></h3>
             <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-1"><span class="lang-str" data-bn="কারণ লিখুন:" data-en="Enter Reason:">কারণ লিখুন:</span></p>
-            <textarea id="rejectReason" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded p-2 text-xs mb-4 focus:border-red-500" data-bn="যেমন: আপনি কয়েন পাঠাননি..." data-en="E.g: Didn't send coins..." placeholder="যেমন: আপনি কয়েন পাঠাননি..."></textarea>
+            <textarea id="rejectReason" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded p-2 text-xs mb-4 focus:border-red-500" data-bn="যেমন: আপনি কয়েন পাঠাননি..." data-en="E.g: Didn't send coins..." placeholder="যেমন: আপনি কয়েন পাঠাননি..."></textarea>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeRejectModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="ক্যান্সেল" data-en="Cancel">ক্যান্সেল</span></button>
+                <button onclick="closeRejectModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="ক্যান্সেল" data-en="Cancel">ক্যান্সেল</span></button>
                 <button onclick="confirmReject()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="নিশ্চিত" data-en="Confirm">নিশ্চিত</span></button>
             </div>
         </div>
@@ -917,13 +921,20 @@
         try { let cachedRequests = localStorage.getItem('nsCoin_cachedRequests'); if (cachedRequests) allRequests = JSON.parse(cachedRequests); } catch(e) {}
         
         let allUsers = [];
+        try { let cachedUsers = localStorage.getItem('nsCoin_cachedUsers'); if (cachedUsers) allUsers = JSON.parse(cachedUsers); } catch(e) {}
+
         let uploadedImageBase64 = null; 
         let activeCoinId = null; 
         let loggedInUserId = null;
         try { loggedInUserId = localStorage.getItem('nsCoin_loggedInUser'); } catch(e) {}
         
+        // Calculated Values for submission
+        let submitBaseTotal = 0;
+        let submitChargeAmt = 0;
+        let submitChargeName = '';
         let currentNetAmountDisplay = '';
         let currentPaymentNote = '';
+        
         let isSoundEnabled = true; 
         let lastPendingCount = 0; 
         let modalResolver = null; 
@@ -936,7 +947,7 @@
         let notificationSound = null;
         try { notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); } catch(e) {}
 
-        async function loadFirebaseInstantly() {
+        async function loadFirebaseBackground() {
             try {
                 const fbApp = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
                 const fbAuth = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
@@ -997,6 +1008,7 @@
                 onSnapshot(usersRef, (snapshot) => {
                     allUsers = [];
                     snapshot.forEach((doc) => { allUsers.push({ dbId: doc.id, ...doc.data() }); });
+                    try { localStorage.setItem('nsCoin_cachedUsers', JSON.stringify(allUsers)); } catch(e) {}
                     renderUsersTable();
                 }, (err) => {});
             }
@@ -1016,7 +1028,7 @@
         }
         window.toggleLang = function() { window.setLang(currentLang === 'bn' ? 'en' : 'bn'); }
 
-        const themes = ['default', 'rose', 'emerald', 'amber', 'purple', 'cyan', 'slate'];
+        const themes = ['default', 'rose', 'indigo', 'amber', 'purple', 'cyan', 'slate'];
         let currentThemeIndex = 0;
         function changeTheme(themeName) { 
             document.documentElement.setAttribute('data-theme', themeName); 
@@ -1114,8 +1126,16 @@
 
         window.togglePassword = function(inputId, iconId) {
             let inp = document.getElementById(inputId); let icon = document.getElementById(iconId);
-            if(inp.type === "password") { inp.type = "text"; icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye", "text-[#00c853]"); } 
-            else { inp.type = "password"; icon.classList.remove("fa-eye", "text-[#00c853]"); icon.classList.add("fa-eye-slash"); }
+            if(inp.type === "password") { inp.type = "text"; icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye", "text-[#10b981]"); } 
+            else { inp.type = "password"; icon.classList.remove("fa-eye", "text-[#10b981]"); icon.classList.add("fa-eye-slash"); }
+        }
+
+        // Live Username Checker (Green Tick)
+        if(document.getElementById('loginUserId')) {
+            document.getElementById('loginUserId').addEventListener('input', function() {
+                let checkIcon = document.getElementById('loginUserCheck');
+                if(this.value.trim().length > 2) checkIcon.classList.remove('opacity-0'); else checkIcon.classList.add('opacity-0');
+            });
         }
 
         window.handleAuth = async function(action) {
@@ -1189,10 +1209,10 @@
                     globalSettings.coins.forEach(coin => {
                         let btn = document.createElement('button'); btn.type = 'button'; let isActive = (coin.id === activeCoinId);
                         let classes = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 ';
-                        classes += isActive ? 'border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2' : 'border-brand-light dark:border-gray-600 bg-white dark:bg-gray-800 border-2 hover:border-brand hover:shadow-lg';
+                        classes += isActive ? 'border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2' : 'border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg';
                         btn.className = classes; btn.id = 'btn-' + coin.id;
                         let iconHtml = coin.logo ? `<img src="${coin.logo}" alt="${coin.name}" class="w-10 h-10 object-cover rounded-full mb-0.5 pointer-events-none shadow-sm">` : `<div class="bg-brand-light dark:bg-brand-dark/50 p-2 rounded-full mb-0.5 pointer-events-none"><i class="fa-solid fa-coins text-2xl text-brand dark:text-brand-light"></i></div>`;
-                        btn.innerHTML = `${iconHtml}<span class="text-sm font-black tracking-wide pointer-events-none">${coin.name}</span><div class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded border mt-0.5 shadow-sm pointer-events-none"><span class="text-[11px] font-bold">1k = ৳${coin.price}</span></div>`;
+                        btn.innerHTML = `${iconHtml}<span class="text-sm font-black tracking-wide pointer-events-none">${coin.name}</span><div class="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded border mt-0.5 shadow-sm pointer-events-none"><span class="text-[11px] font-bold">1k = ৳${coin.price}</span></div>`;
                         btn.addEventListener('click', e => { e.preventDefault(); selectCoinUser(coin.id, coin.name, coin.price, coin.username); });
                         coinContainer.appendChild(btn);
                     });
@@ -1233,41 +1253,42 @@
             if(document.getElementById('limitWarningText')) document.getElementById('limitWarningText').textContent = `${window.t('লিমিট', 'Limit')}: ${minL}k - ${maxL}k`;
             if(document.getElementById('coinAmount') && document.activeElement !== document.getElementById('coinAmount')){ document.getElementById('coinAmount').min = minL; document.getElementById('coinAmount').max = maxL; }
 
-            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER 🔴🔵✈️🟢
+            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER (Vertical Stacked 🔴🔵✈️🟢)
             const horizContainer = document.getElementById('horizontalSocialLinks'); 
-            if(horizContainer) {
+            const mainContainer = document.getElementById('horizontalSocialLinksContainer');
+            if(horizContainer && mainContainer) {
                 let supHtml = '';
                 
                 // 1. YouTube 🔴
                 let ytLink = globalSettings.support?.yt || '';
                 if(ytLink) { 
                     if(!ytLink.startsWith('http')) { if(ytLink.startsWith('@')) ytLink = 'https://youtube.com/' + ytLink.trim(); else ytLink = 'https://youtube.com/@' + ytLink.trim(); } 
-                    supHtml += `<a href="${ytLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white text-2xl shadow-lg hover:scale-110 transition z-[4]" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
+                    supHtml += `<a href="${ytLink}" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full bg-[#ff0000] text-white text-3xl shadow-xl hover:scale-110 transition z-[4]" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
                 }
                 
                 // 2. Facebook 🔵
                 let fbLink = globalSettings.support?.fb || '';
                 if(fbLink) { 
                     if(!fbLink.startsWith('http')) { fbLink = 'https://facebook.com/' + fbLink.trim(); } 
-                    supHtml += `<a href="${fbLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white text-2xl shadow-lg hover:scale-110 transition z-[3]" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
+                    supHtml += `<a href="${fbLink}" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full bg-[#1877F2] text-white text-3xl shadow-xl hover:scale-110 transition z-[3]" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
                 }
 
                 // 3. Telegram ✈️
                 let tgLink = globalSettings.support?.tg || '';
                 if(tgLink) { 
                     if(!tgLink.startsWith('http')) { tgLink = 'https://t.me/' + tgLink.replace('@', '').trim(); } 
-                    supHtml += `<a href="${tgLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-2xl shadow-lg hover:scale-110 transition z-[2]" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
+                    supHtml += `<a href="${tgLink}" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-3xl shadow-xl hover:scale-110 transition z-[2]" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
                 }
                 
                 // 4. WhatsApp 🟢
                 let waLink = globalSettings.support?.wa || '';
                 if(waLink) { 
                     if(!waLink.startsWith('http')) { let cWa = waLink.replace(/[^0-9+]/g, ''); if(cWa.startsWith('01') && cWa.length === 11) cWa = '88' + cWa; waLink = 'https://wa.me/' + cWa; } 
-                    supHtml += `<a href="${waLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366] text-white text-2xl shadow-lg hover:scale-110 transition z-[1]" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`; 
+                    supHtml += `<a href="${waLink}" target="_blank" class="w-14 h-14 flex items-center justify-center rounded-full bg-[#25D366] text-white text-3xl shadow-xl hover:scale-110 transition z-[1]" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>`; 
                 }
                 
                 horizContainer.innerHTML = supHtml;
-                if(supHtml === '') horizContainer.classList.add('hidden'); else horizContainer.classList.remove('hidden');
+                if(supHtml === '') mainContainer.classList.add('hidden'); else mainContainer.classList.remove('hidden');
             }
 
             if(document.getElementById('tgStar')) {
@@ -1304,7 +1325,7 @@
             document.getElementById('coinType').value = name; 
             document.getElementById('selectedCoinRate').value = price;
             
-            document.querySelectorAll('.coin-btn').forEach(btn => { btn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-gray-600 bg-white dark:bg-gray-800 border-2 hover:border-brand hover:shadow-lg'; });
+            document.querySelectorAll('.coin-btn').forEach(btn => { btn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg'; });
             const activeBtn = document.getElementById('btn-' + id);
             if(activeBtn) activeBtn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2';
             
@@ -1314,6 +1335,7 @@
             calculateTotalUser();
         }
 
+        // PREMIUM DETAILED CALCULATION
         window.calculateTotalUser = function() {
             if(!document.getElementById('coinAmount')) return;
             const amount = parseFloat(document.getElementById('coinAmount').value) || 0; 
@@ -1338,7 +1360,8 @@
             
             if (document.getElementById('coinType').value && amount > 0) {
                 let baseTotalTk = price * amount;
-                let formattedBase = baseTotalTk % 1 !== 0 ? baseTotalTk.toFixed(2) : baseTotalTk;
+                submitBaseTotal = baseTotalTk % 1 !== 0 ? parseFloat(baseTotalTk.toFixed(2)) : baseTotalTk;
+                let formattedBase = submitBaseTotal;
                 
                 if(calcRate) calcRate.textContent = price;
                 if(calcAmount) calcAmount.textContent = amount;
@@ -1353,6 +1376,9 @@
                     currentNetAmountDisplay = `$${dollars}`; 
                     currentPaymentNote = window.t(`(রেট: ৳${rate}/$)`, `(Rate: ৳${rate}/$)`);
                     
+                    submitChargeAmt = rate; 
+                    submitChargeName = 'Binance Rate';
+
                     if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
                     if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
                     
@@ -1370,6 +1396,9 @@
                     if(method === 'Nagad' && typeof globalSettings.methods?.nagad === 'object') charge = parseFloat(globalSettings.methods.nagad.charge) || 0;
                     if(method === 'Rocket' && typeof globalSettings.methods?.rocket === 'object') charge = parseFloat(globalSettings.methods.rocket.charge) || 0;
                     
+                    submitChargeAmt = charge;
+                    submitChargeName = method + " Charge";
+
                     let netTk = baseTotalTk - charge;
                     currentNetAmountDisplay = `৳${netTk % 1 !== 0 ? netTk.toFixed(2) : netTk}`; 
                     
@@ -1379,10 +1408,10 @@
                     if (charge > 0) {
                         currentPaymentNote = window.t(`(-${charge} টাকা চার্জ)`, `(-${charge} Tk Charge)`);
                         if(chargeRowDetails) {
-                            calcChargeName.textContent = method + " " + window.t("সেন্ড মানি", "Send Money");
-                            calcChargeName.className = "text-red-500 dark:text-red-400";
-                            calcChargeAmt.textContent = `৳${charge}`;
-                            calcChargeAmt.className = "text-red-500 dark:text-red-400 font-black";
+                            calcChargeName.textContent = method + " " + window.t("সেন্ড মানি চার্জ:", "Send Money Charge:");
+                            calcChargeName.className = "text-red-600 dark:text-red-400";
+                            calcChargeAmt.textContent = `-৳${charge}`;
+                            calcChargeAmt.className = "text-red-600 dark:text-red-400 font-black";
                             chargeRowDetails.classList.remove('hidden');
                             if(eqChargeStr) eqChargeStr.textContent = `- ৳${charge}`;
                         }
@@ -1394,6 +1423,9 @@
                 } else {
                     currentNetAmountDisplay = `৳${formattedBase}`; 
                     currentPaymentNote = '';
+                    submitChargeAmt = 0;
+                    submitChargeName = 'None';
+                    
                     if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
                     if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
                     if(chargeRowDetails) chargeRowDetails.classList.add('hidden');
@@ -1430,15 +1462,25 @@
             } else {
                 pendingSec.classList.remove('hidden'); document.getElementById('pendingCountBadge').textContent = pendingReqs.length; pendingContainer.innerHTML = '';
                 pendingReqs.forEach(req => {
+                    let chargeLine = req.chargeAmt > 0 && req.method !== 'Binance' ? `<div class="text-[10px] text-red-500 border-b border-red-200 dark:border-red-900/50 mb-0.5 pb-0.5">-৳${req.chargeAmt} (${window.t('চার্জ', 'Charge')})</div>` : '';
+                    if(req.method === 'Binance') chargeLine = `<div class="text-[10px] text-blue-500 border-b border-blue-200 dark:border-blue-900/50 mb-0.5 pb-0.5">Rate: ৳${req.chargeAmt}/$</div>`;
+
                     pendingContainer.innerHTML += `
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3 rounded-lg shadow-sm relative">
-                        <div class="flex justify-between items-center mb-1 border-b border-blue-100 dark:border-blue-800/50 pb-1">
-                            <span class="font-bold text-blue-700 dark:text-blue-400 text-[11px]"><i class="fa-solid fa-clock mr-1"></i> ${window.t('অ্যাডমিন চেক করবে', 'Admin checking')}</span>
-                            <span class="text-[10px] font-mono text-brand font-black">${req.orderId || ''}</span>
+                    <div class="bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-slate-600 p-3 rounded-lg shadow-sm relative">
+                        <div class="flex justify-between items-center mb-2 border-b border-blue-100 dark:border-slate-700 pb-2">
+                            <span class="font-bold text-blue-700 dark:text-blue-400 text-[11px]"><i class="fa-solid fa-clock mr-1"></i> ${window.t('অ্যাডমিন চেক করছে', 'Admin is checking')}</span>
+                            <span class="text-[10px] font-mono text-brand font-black bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')"></i></span>
                         </div>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="font-black text-gray-800 dark:text-gray-200 text-sm">${req.amount}k ${req.type}</span>
-                            <span class="font-black text-brand text-sm">${req.netAmountDisplay || `৳${req.total}`}</span>
+                        <div class="flex justify-between items-end mt-2">
+                            <div>
+                                <span class="font-black text-gray-800 dark:text-gray-200 text-[13px] block mb-1">${req.amount}k ${req.type}</span>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">${req.method}</span>
+                            </div>
+                            <div class="text-right">
+                                ${req.baseTotal ? `<div class="text-[10px] text-gray-500 line-through">৳${req.baseTotal}</div>` : ''}
+                                ${chargeLine}
+                                <div class="font-black text-brand text-base">${req.netAmountDisplay || `৳${req.total}`}</div>
+                            </div>
                         </div>
                     </div>`;
                 });
@@ -1466,17 +1508,27 @@
                 } else {
                     statusText = window.t('অ্যাডমিন চেক করে পেমেন্ট করবে।', 'Admin will check and pay.'); statusClass = "text-blue-700 bg-blue-50 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800";
                 }
-                let shortDate = req.date.split(',')[0] || req.date; let displayAmount = req.netAmountDisplay || `৳${req.total}`;
+                let shortDate = req.date.split(',')[0] || req.date; 
+                
+                let chargeLine = req.chargeAmt > 0 && req.method !== 'Binance' ? `<div class="text-[9px] text-red-500 border-b border-red-200 dark:border-red-900/50 mb-0.5 pb-0.5">-৳${req.chargeAmt}</div>` : '';
+                if(req.method === 'Binance') chargeLine = `<div class="text-[9px] text-blue-500 border-b border-blue-200 dark:border-blue-900/50 mb-0.5 pb-0.5">Rate: ৳${req.chargeAmt}/$</div>`;
 
                 container.innerHTML += `
-                <div class="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded p-2.5 shadow-sm">
-                    <div class="flex justify-between items-center mb-1 border-b dark:border-gray-700 pb-1">
-                        <span class="text-[10px] font-mono font-black text-brand">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-gray-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')" title="Copy Order ID"></i></span>
+                <div class="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded p-2.5 shadow-sm">
+                    <div class="flex justify-between items-center mb-2 border-b dark:border-slate-700 pb-1.5">
+                        <span class="text-[10px] font-mono font-black text-brand bg-brand-light/20 px-1.5 py-0.5 rounded">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')" title="Copy Order ID"></i></span>
                         <span class="text-[10px] font-bold text-gray-500">${shortDate}</span>
                     </div>
-                    <div class="flex justify-between items-center mt-1.5 mb-1.5">
-                        <span class="text-[13px] font-black text-gray-800 dark:text-gray-200">${req.amount}k ${req.type}</span>
-                        <span class="text-sm font-black text-brand">${displayAmount}</span>
+                    <div class="flex justify-between items-end mt-1 mb-2">
+                        <div>
+                            <span class="text-[12px] font-black text-gray-800 dark:text-gray-200 block mb-0.5">${req.amount}k ${req.type}</span>
+                            <span class="text-[9px] font-bold text-gray-500 bg-gray-200 dark:bg-slate-700 px-1 rounded">${req.method}</span>
+                        </div>
+                        <div class="text-right">
+                            ${req.baseTotal ? `<div class="text-[9px] text-gray-500 line-through">৳${req.baseTotal}</div>` : ''}
+                            ${chargeLine}
+                            <span class="text-sm font-black text-brand">${req.netAmountDisplay || `৳${req.total}`}</span>
+                        </div>
                     </div>
                     <div class="text-[10px] font-bold px-2 py-1 rounded text-left leading-snug ${statusClass}">${statusText}</div>
                     ${proofBtn}
@@ -1527,16 +1579,35 @@
                 try {
                     let finalTotalTk = parseFloat(document.getElementById('selectedCoinRate').value) * amount; 
                     let newOrderId = generateUniqueOrderId();
+                    
+                    // FIXED: Saving directly to Firestore to trigger real-time admin sync
                     const reqRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'requests'));
                     await setDoc(reqRef, {
-                        createdAt: Date.now(), date: new Date().toLocaleString(currentLang === 'en' ? 'en-US' : 'bn-BD'), orderId: newOrderId, userId: loggedInUserId, type: type, amount: amount, 
-                        total: finalTotalTk % 1 !== 0 ? finalTotalTk.toFixed(2) : finalTotalTk, netAmountDisplay: currentNetAmountDisplay, paymentNote: currentPaymentNote, method: method, account: account, telegramUser: telegramUser || '', image: uploadedImageBase64, status: 'pending', adminNote: '', archived: false
+                        createdAt: Date.now(), 
+                        date: new Date().toLocaleString(currentLang === 'en' ? 'en-US' : 'bn-BD'), 
+                        orderId: newOrderId, 
+                        userId: loggedInUserId, 
+                        type: type, 
+                        amount: amount, 
+                        total: finalTotalTk % 1 !== 0 ? finalTotalTk.toFixed(2) : finalTotalTk, 
+                        baseTotal: submitBaseTotal,
+                        chargeAmt: submitChargeAmt,
+                        chargeName: submitChargeName,
+                        netAmountDisplay: currentNetAmountDisplay, 
+                        paymentNote: currentPaymentNote, 
+                        method: method, 
+                        account: account, 
+                        telegramUser: telegramUser || '', 
+                        image: uploadedImageBase64, 
+                        status: 'pending', 
+                        adminNote: '', 
+                        archived: false
                     });
 
                     document.getElementById('coinType').value = ''; document.getElementById('coinAmount').value = ''; document.getElementById('paymentMethod').value = ''; document.getElementById('accountNumber').value = ''; document.getElementById('proofImage').value = ''; document.getElementById('telegramUsername').value = ''; activeCoinId = null; document.getElementById('calculatorDisplay').classList.add('hidden'); uploadedImageBase64 = null; document.getElementById('uploadIcon').className = 'fa-solid fa-image text-3xl text-brand mb-1 pointer-events-none'; document.getElementById('fileNameDisplay').classList.add('hidden'); document.getElementById('step4-initial').classList.remove('hidden'); document.getElementById('transfer-section').classList.add('hidden');
-                    document.querySelectorAll('.coin-btn').forEach(b => { b.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-gray-600 bg-white dark:bg-gray-800 border-2 hover:border-brand hover:shadow-lg'; });
+                    document.querySelectorAll('.coin-btn').forEach(b => { b.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg'; });
 
-                    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#4f46e5', '#10b981', '#f59e0b', '#e11d48'] });
+                    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#10b981', '#f59e0b', '#e11d48', '#3b82f6'] });
                     
                     const modal = document.getElementById('customAlert'), icon = document.getElementById('alertIcon'), btnContainer = document.getElementById('alertButtons');
                     document.getElementById('alertTitle').textContent = window.t('রিকোয়েস্ট সফল হয়েছে!', 'Request Successful!'); 
@@ -1580,7 +1651,7 @@
         window.adminCustomConfirm = function(title, msg) {
             return new Promise(resolve => {
                 document.getElementById('adminConfirmTitle').innerText = title; document.getElementById('adminConfirmMessage').innerText = msg;
-                document.getElementById('adminConfirmBtns').innerHTML = `<button onclick="resolveAdminConfirm(false)" class="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold py-1.5 rounded transition text-xs">${window.t('বাতিল', 'Cancel')}</button><button onclick="resolveAdminConfirm(true)" class="flex-1 bg-red-600 text-white font-bold py-1.5 rounded shadow transition text-xs">${window.t('নিশ্চিত', 'Confirm')}</button>`;
+                document.getElementById('adminConfirmBtns').innerHTML = `<button onclick="resolveAdminConfirm(false)" class="flex-1 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white font-bold py-1.5 rounded transition text-xs">${window.t('বাতিল', 'Cancel')}</button><button onclick="resolveAdminConfirm(true)" class="flex-1 bg-red-600 text-white font-bold py-1.5 rounded shadow transition text-xs">${window.t('নিশ্চিত', 'Confirm')}</button>`;
                 document.getElementById('adminConfirmModal').classList.remove('hidden'); modalResolver = resolve;
             });
         }
@@ -1651,7 +1722,7 @@
                 let copyPassBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.password}')" title="Copy Password"></i>`;
                 let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
 
-                uBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
+                uBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
             });
         }
 
@@ -1676,13 +1747,13 @@
             else statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-black px-2 py-1 rounded border border-blue-300 shadow-sm"><i class="fa-solid fa-spinner fa-spin mr-1"></i>${window.t('পেন্ডিং আছে', 'Pending')}</span>`;
 
             resultContent.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 border-2 border-brand-light dark:border-brand-dark rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 border-2 border-brand-light dark:border-brand-dark rounded-xl p-4 shadow-sm relative overflow-hidden">
                     ${foundReq.archived ? `<div class="absolute -right-6 top-3 bg-yellow-500 text-white text-[9px] font-black py-0.5 px-8 transform rotate-45">ARCHIVED</div>` : ''}
                     
-                    <div class="flex justify-between items-start mb-4 border-b dark:border-gray-700 pb-3">
+                    <div class="flex justify-between items-start mb-4 border-b dark:border-slate-700 pb-3">
                         <div>
                             <div class="text-[10px] text-gray-500 font-bold mb-1">${window.t('অর্ডার আইডি:', 'Order ID:')}</div>
-                            <div class="font-mono text-lg font-black text-brand bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-gray-600 inline-block">${foundReq.orderId}</div>
+                            <div class="font-mono text-lg font-black text-brand bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600 inline-block">${foundReq.orderId}</div>
                         </div>
                         <div class="text-right">
                             ${statusBadge}
@@ -1701,7 +1772,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg border dark:border-gray-600 mb-4">
+                    <div class="bg-gray-50 dark:bg-slate-700/50 p-3 rounded-lg border dark:border-slate-600 mb-4">
                         <div class="flex justify-between items-center mb-2">
                             <div class="text-[11px] font-bold text-gray-600 dark:text-gray-400">${window.t('পেমেন্ট মেথড:', 'Payment Method:')} <span class="text-gray-900 dark:text-white">${foundReq.method}</span></div>
                             <div class="font-black text-green-600 text-lg">${foundReq.netAmountDisplay || `৳${foundReq.total}`}</div>
@@ -1721,16 +1792,13 @@
             `;
         }
         
-        // NEW: Search User Proofs for Admin
+        // ADMIN USER PROOFS SEARCH
         window.searchUserProof = function() {
             let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
             let tbody = document.getElementById('proofTableBody');
             tbody.innerHTML = ''; 
 
-            if (!username) {
-                window.adminCustomAlert("ভুল", "দয়া করে একটি ইউজারনেইম লিখুন!");
-                return;
-            }
+            if (!username) { window.adminCustomAlert("ভুল", "দয়া করে একটি ইউজারনেইম লিখুন!"); return; }
 
             let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
 
@@ -1748,7 +1816,7 @@
                 let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
                 
                 tbody.innerHTML += `
-                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
                         <td class="p-2 text-[10px] font-bold">${req.date}</td>
                         <td class="p-2 text-[10px] font-mono font-black text-brand">${req.orderId}</td>
                         <td class="p-2 text-[11px] font-bold">${req.amount}k ${req.type}</td>
@@ -1764,7 +1832,7 @@
             });
         }
         
-        // NEW: Download Proofs as CSV
+        // CSV DOWNLOAD
         window.downloadProofCSV = function() {
             let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
             if (!username) { window.adminCustomAlert("ভুল", "আগে একজন ইউজারের নাম লিখে সার্চ করুন!"); return; }
@@ -1772,7 +1840,6 @@
             let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
             if (foundData.length === 0) { window.adminCustomAlert("খালি", "ডাউনলোড করার মতো কোনো ডেটা নেই!"); return; }
 
-            // Add BOM so Excel opens Bangla text correctly
             let csvContent = "\uFEFFতারিখ ও সময়,অর্ডার আইডি,কয়েন,পেমেন্ট মেথড,অ্যাকাউন্ট,নোট/চার্জ,মোট টাকা পেইড,স্ট্যাটাস\n"; 
 
             foundData.forEach(req => {
@@ -1818,17 +1885,17 @@
 
                 let tgDisplay = req.telegramUser ? `<a href="https://t.me/${req.telegramUser.replace('@', '').trim()}" target="_blank" title="${window.t('টেলিগ্রামে মেসেজ দিন', 'Message on Telegram')}" class="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-1 inline-flex items-center hover:underline bg-blue-50 dark:bg-blue-900/30 px-1 py-0.5 rounded"><i class="fa-brands fa-telegram mr-1"></i> ${req.telegramUser}</a>` : `<span class="text-[9px] text-gray-400 mt-1 block">(No TG)</span>`;
                 let paymentNoteDisplay = req.paymentNote ? `<div class="text-[9px] text-yellow-600 dark:text-yellow-400 font-bold mt-1 bg-yellow-50 dark:bg-yellow-900/20 px-1 rounded inline-block">${req.paymentNote}</div>` : '';
-                let numberDisplay = `<div class="text-[11px] font-bold text-gray-900 dark:text-gray-200 mb-0.5 whitespace-nowrap">${req.method}</div><div class="flex items-center flex-wrap"><div class="text-[11px] font-mono tracking-wider font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-brand bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded border dark:border-gray-600 inline-flex items-center whitespace-nowrap" onclick="copyNumber('${req.account}')">${req.account} <i class="fa-regular fa-copy ml-1"></i></div></div>`;
+                let numberDisplay = `<div class="text-[11px] font-bold text-gray-900 dark:text-gray-200 mb-0.5 whitespace-nowrap">${req.method}</div><div class="flex items-center flex-wrap"><div class="text-[11px] font-mono tracking-wider font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-brand bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border dark:border-slate-600 inline-flex items-center whitespace-nowrap" onclick="copyNumber('${req.account}')">${req.account} <i class="fa-regular fa-copy ml-1"></i></div></div>`;
                 let orderDateDisplay = `<div class="text-[10px] font-bold text-gray-600 dark:text-gray-400">${req.date}</div><div class="text-[10px] font-mono font-black text-brand mt-1 bg-brand-light/30 px-1 py-0.5 rounded border border-brand-light dark:border-brand-dark/50 inline-flex items-center cursor-pointer hover:bg-brand-light/60" onclick="copyNumber('${req.orderId}')">${req.orderId || 'N/A'} <i class="fa-regular fa-copy ml-1 text-gray-500"></i></div>`;
                 let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
 
                 if (req.status === 'pending') {
                     pendingCount++;
-                    if(pBody) pBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[90px]"><div class="text-[11px] font-black text-brand whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[11px] font-black text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded inline-block mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2"><textarea onchange="saveAdminNote('${req.dbId}', this.value)" placeholder="নোট..." class="w-full text-[10px] font-medium p-1 border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white h-10 min-w-[100px]">${req.adminNote||''}</textarea></td><td class="p-2 text-center"><button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> ছবি</button></td><td class="p-2 text-center space-y-1 min-w-[80px]"><button onclick="openApproveModal('${req.dbId}')" class="w-full bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 font-bold text-[10px] whitespace-nowrap">পে</button><button onclick="openRejectModal('${req.dbId}')" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 px-2 py-1 rounded hover:bg-red-200 font-bold text-[10px] whitespace-nowrap">বাতিল</button><button onclick="handleDeleteHistory('${req.dbId}')" class="text-[9px] text-red-500 hover:underline w-full">ডিলিট</button></td></tr>`;
+                    if(pBody) pBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[90px]"><div class="text-[11px] font-black text-brand whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[11px] font-black text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded inline-block mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2"><textarea onchange="saveAdminNote('${req.dbId}', this.value)" placeholder="নোট..." class="w-full text-[10px] font-medium p-1 border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-700 dark:text-white h-10 min-w-[100px]">${req.adminNote||''}</textarea></td><td class="p-2 text-center"><button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> ছবি</button></td><td class="p-2 text-center space-y-1 min-w-[80px]"><button onclick="openApproveModal('${req.dbId}')" class="w-full bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 font-bold text-[10px] whitespace-nowrap">পে</button><button onclick="openRejectModal('${req.dbId}')" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 px-2 py-1 rounded hover:bg-red-200 font-bold text-[10px] whitespace-nowrap">বাতিল</button><button onclick="handleDeleteHistory('${req.dbId}')" class="text-[9px] text-red-500 hover:underline w-full">ডিলিট</button></td></tr>`;
                 } else if (req.archived === true) {
-                    if(aBody) aBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td></tr>`;
+                    if(aBody) aBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td></tr>`;
                 } else {
-                    if(hBody) hBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="handleDeleteHistory('${req.dbId}')" class="text-red-500 hover:bg-red-100 p-1.5 rounded"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
+                    if(hBody) hBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="handleDeleteHistory('${req.dbId}')" class="text-red-500 hover:bg-red-100 p-1.5 rounded"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
                 }
             });
 
@@ -1842,7 +1909,7 @@
                     let isDefinedCoin = globalSettings.coins && globalSettings.coins.find(c => c.name === coinName);
                     if (isDefinedCoin || data.totalTk > 0 || data.totalCoins > 0) {
                         hasStats = true;
-                        statsContainer.innerHTML += `<div class="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"><h5 class="font-bold text-[13px] mb-2 flex items-center border-b dark:border-gray-700 pb-1"><i class="fa-solid fa-coins text-brand mr-1"></i> ${coinName}</h5><div class="flex justify-between items-end"><div><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('মোট পেইড', 'Total Paid')}</p><p class="text-[15px] font-black text-green-600">৳${data.totalTk % 1 !== 0 ? data.totalTk.toFixed(2) : data.totalTk.toLocaleString('en-US')}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('রিসিভড', 'Received')}</p><p class="text-[13px] font-bold text-brand">${data.totalCoins}k</p></div></div></div>`;
+                        statsContainer.innerHTML += `<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm"><h5 class="font-bold text-[13px] mb-2 flex items-center border-b dark:border-slate-700 pb-1"><i class="fa-solid fa-coins text-brand mr-1"></i> ${coinName}</h5><div class="flex justify-between items-end"><div><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('মোট পেইড', 'Total Paid')}</p><p class="text-[15px] font-black text-green-600">৳${data.totalTk % 1 !== 0 ? data.totalTk.toFixed(2) : data.totalTk.toLocaleString('en-US')}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('রিসিভড', 'Received')}</p><p class="text-[13px] font-bold text-brand">${data.totalCoins}k</p></div></div></div>`;
                     }
                 }
                 if (!hasStats) statsContainer.innerHTML = `<div class="col-span-full text-center py-2 text-gray-500 text-[11px] font-bold bg-gray-50 rounded border border-dashed">${window.t('কোনো কয়েন ডাটা নেই', 'No Coin Data')}</div>`;
@@ -2036,9 +2103,9 @@
         function renderAdminCoins() {
             const list = document.getElementById('adminCoinList'); if(!list) return; list.innerHTML = '';
             globalSettings.coins.forEach((c, i) => {
-                let logoHtml = c.logo ? `<img src="${c.logo}" class="w-8 h-8 rounded-full object-cover mr-2 border dark:border-gray-600">` : `<div class="w-8 h-8 rounded-full bg-brand-light dark:bg-brand-dark/50 flex items-center justify-center mr-2 text-brand"><i class="fa-solid fa-coins text-xs"></i></div>`;
+                let logoHtml = c.logo ? `<img src="${c.logo}" class="w-8 h-8 rounded-full object-cover mr-2 border dark:border-slate-600">` : `<div class="w-8 h-8 rounded-full bg-brand-light dark:bg-brand-dark/50 flex items-center justify-center mr-2 text-brand"><i class="fa-solid fa-coins text-xs"></i></div>`;
                 list.innerHTML += `
-                <div class="bg-white dark:bg-gray-800 p-3 rounded-lg border dark:border-gray-600 relative shadow-sm flex items-center">
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-600 relative shadow-sm flex items-center">
                     ${logoHtml}
                     <div>
                         <div class="font-bold text-sm leading-tight pr-14">${c.name}</div>
@@ -2077,22 +2144,19 @@
             // 1. Instantly render UI based on Local Cache (0 Second Load)
             if(isAppAdminMode) {
                 if(document.getElementById('user-wrapper')) document.getElementById('user-wrapper').classList.add('hidden');
-                
                 if(document.getElementById('admin-wrapper')) {
                     document.getElementById('admin-wrapper').classList.remove('hidden');
                     document.getElementById('admin-wrapper').classList.add('flex');
                 }
-                
                 updateSettingsUIAdmin();
                 renderAdminTables();
+                renderUsersTable();
             } else {
                 if(document.getElementById('admin-wrapper')) document.getElementById('admin-wrapper').classList.add('hidden'); 
-                
                 if(document.getElementById('user-wrapper')) {
                     document.getElementById('user-wrapper').classList.remove('hidden');
                     document.getElementById('user-wrapper').classList.add('flex');
                 }
-                
                 updateNavbarBranding(); 
                 applySettingsDataToUser(); 
                 checkUserLoginStatus();
@@ -2108,8 +2172,8 @@
             updateThemeIcon(); 
             if (currentLang) window.setLang(currentLang); 
             
-            // 2. Load Firebase quietly in the background without making the user wait
-            loadFirebaseInstantly(); 
+            // 2. Load Firebase quietly in the background
+            loadFirebaseBackground(); 
         });
     </script>
 </body>
