@@ -344,8 +344,9 @@
                             </button>
                             
                             <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button) -->
-                            <div class="mt-6 flex flex-row items-center justify-center gap-4" id="horizontalSocialLinks">
-                                <!-- Links injected here by JS: YouTube -> Facebook -> Telegram -> WhatsApp -->
+                            <!-- Serial: YouTube -> Facebook -> Telegram -> WhatsApp -->
+                            <div class="mt-6 flex flex-col items-center justify-center gap-4 w-full" id="horizontalSocialLinks">
+                                <!-- Links injected here by JS -->
                             </div>
                         </div>
 
@@ -1647,9 +1648,10 @@
                 let statusBadge = user.blocked ? `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-red-200">Blocked</span>` : `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-green-200">Active</span>`;
                 let actionBtn = user.blocked ? `<button onclick="toggleUserBlock('${user.dbId}', true)" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-green-600 w-14">Unblock</button>` : `<button onclick="toggleUserBlock('${user.dbId}', false)" class="bg-red-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-red-600 w-14">Block</button>`;
                 let copyBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.dbId}')" title="Copy Username"></i>`;
+                let copyPassBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.password}')" title="Copy Password"></i>`;
                 let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
 
-                uBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
+                uBody.innerHTML += `<tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
             });
         }
 
@@ -1994,7 +1996,7 @@
         }
 
         window.saveSystemStatus = function() { globalSettings.systemActive = document.getElementById('setSystemActive').checked; globalSettings.stopMsg = document.getElementById('setStopMsg').value; forceSaveAndAlert(window.t('সিস্টেম স্ট্যাটাস সেভ হয়েছে!', 'System Status Saved!')); }
-        window.saveSuccessSms = function() { globalSettings.successSms = document.getElementById('setSuccessSms').value || "SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"; forceSaveAndAlert(window.t('সাকসেস মেসেজ সেভ হয়েছে!', 'Success SMS Saved!')); }
+        window.saveSuccessSms = function() { globalSettings.successSms = document.getElementById('setSuccessSms').value || "SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"; forceSaveAndAlert(window.t('সাকসে মেসেজ সেভ হয়েছে!', 'Success SMS Saved!')); }
 
         if(document.getElementById('newCoinLogo')) {
             document.getElementById('newCoinLogo').addEventListener('change', function(event) {
