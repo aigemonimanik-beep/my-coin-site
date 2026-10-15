@@ -1260,7 +1260,7 @@
                 const newPic = document.getElementById('userProfileImgPreview').src;
                 
                 if(!newName || !newPass) {
-                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে না।', 'Name and password cannot be empty.'));
+                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে মিলিটারি।', 'Name and password cannot be empty.'));
                     return;
                 }
                 
@@ -1317,9 +1317,24 @@
             });
         }
 
+        // ============== UPDATED HANDLE AUTH FUNCTION ================
         window.handleAuth = async function(action) {
             let errEl = document.getElementById('authErrorMsg'); errEl.classList.add('hidden');
-            if(!db) { errEl.innerText = window.t("সার্ভার কানেক্ট হচ্ছে, একটু অপেক্ষা করুন...", "Connecting to server, please wait..."); errEl.classList.remove('hidden'); return; }
+            
+            // ডাটাবেস লোড হওয়ার জন্য সাইলেন্টলি অপেক্ষা করবে
+            if(!db) { 
+                let waitTime = 0;
+                while(!db && waitTime < 8000) { // ৮ সেকেন্ড পর্যন্ত অপেক্ষা করবে
+                    await new Promise(r => setTimeout(r, 500)); 
+                    waitTime += 500; 
+                }
+                if(!db) { 
+                    errEl.innerText = window.t("সার্ভার কানেক্ট হতে পারছে না! ব্রাউজারের AdBlocker বন্ধ করুন অথবা পেজটি রিফ্রেশ দিন।", "Server connection failed! Disable AdBlocker or refresh."); 
+                    errEl.classList.remove('hidden'); 
+                    return; 
+                }
+            }
+
             try {
                 if(action === 'register') {
                     let name = document.getElementById('regName').value.trim(); let uId = document.getElementById('regUserId').value.trim(); let pass = document.getElementById('regPassword').value; let cPass = document.getElementById('regConfirmPassword').value;
@@ -1355,6 +1370,7 @@
                 }
             } catch(e) { errEl.innerText = "Error: " + e.message; errEl.classList.remove('hidden'); }
         }
+        // ============================================================
 
         window.logoutUser = function() { 
             loggedInUserId = null; 
