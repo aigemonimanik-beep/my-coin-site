@@ -56,7 +56,7 @@
     <div id="js-error-fallback" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center hidden">
         <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
         <h2 class="text-xl font-bold text-gray-800">Please Wait...</h2>
-        <p class="text-gray-500 text-sm mt-2">Connecting to server or loading failed.</p>
+        <p class="text-gray-500 text-sm mt-2">Connecting to server.</p>
     </div>
 
     <!-- ========================================== -->
@@ -201,6 +201,7 @@
                 </div>
 
                 <div class="mt-6 flex flex-col gap-3">
+                    <!-- ALL PROOF FOLDER BUTTON -->
                     <button type="button" onclick="closeUserProfileModal(); openUserHistoryModal();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 font-bold py-2.5 rounded-xl transition flex justify-center items-center text-sm border border-blue-200 dark:border-blue-800 shadow-sm">
                         <i class="fa-solid fa-folder-open mr-2"></i><span class="lang-str" data-bn="সব হিস্ট্রি ও প্রুফ দেখুন" data-en="View All History & Proofs">সব হিস্ট্রি ও প্রুফ দেখুন</span>
                     </button>
@@ -402,7 +403,8 @@
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
-                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS -->
+                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button, in Row) -->
+                            <!-- Sequence: YouTube(Red) -> Facebook(Blue) -> Telegram(Sky) -> WhatsApp(Green) -->
                             <div class="mt-6 flex justify-center w-full" id="horizontalSocialLinksContainer">
                                 <div class="flex flex-row gap-4 items-center justify-center" id="horizontalSocialLinks">
                                     <!-- Links injected here by JS -->
@@ -951,12 +953,14 @@
         </div>
     </div>
 
+
     <!-- ========================================== -->
     <!--            MAIN JAVASCRIPT LOGIC           -->
     <!-- ========================================== -->
     <script type="module">
-        let app, db, auth;
-        let initializeApp, getAuth, signInAnonymously, getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc;
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyATYpTioZRY612OywkjbNbaccKRhxDYaAg",
@@ -967,6 +971,7 @@
             appId: "1:497930950808:web:74ebbe981dd1b1797cd8ed"
         };
         
+        let app, db, auth;
         let appId = 'ns-top-coin-app';
         let currentUser = null;
         let isAppAdminMode = false;
@@ -1034,15 +1039,9 @@
 
         async function loadFirebaseBackground() {
             try {
-                // FIXED VERSION: Used version 10.8.0 to ensure correct loading and avoid the "Connecting to Server" stuck error
-                const fbApp = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-                const fbAuth = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
-                const fbFs = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-
-                initializeApp = fbApp.initializeApp; getAuth = fbAuth.getAuth; signInAnonymously = fbAuth.signInAnonymously;
-                getFirestore = fbFs.getFirestore; doc = fbFs.doc; setDoc = fbFs.setDoc; getDoc = fbFs.getDoc; onSnapshot = fbFs.onSnapshot; collection = fbFs.collection; updateDoc = fbFs.updateDoc; deleteDoc = fbFs.deleteDoc;
-
-                app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
+                app = initializeApp(firebaseConfig); 
+                auth = getAuth(app); 
+                db = getFirestore(app);
 
                 await signInAnonymously(auth);
                 currentUser = auth.currentUser;
@@ -1051,12 +1050,12 @@
                 if (!isAppAdminMode && loggedInUserId) { verifyUserInDB(loggedInUserId); }
             } catch (error) { 
                 console.error("Firebase load error:", error); 
-                setTimeout(() => { if(document.getElementById('js-error-fallback')) document.getElementById('js-error-fallback').classList.remove('hidden'); }, 5000);
+                // Error is handled implicitly by the missing 'db' object in handleAuth.
             }
         }
 
         function startMergedRealtimeListeners() {
-            if (!currentUser) return;
+            if (!currentUser || !db) return;
             
             const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
             onSnapshot(settingsRef, (docSnap) => {
@@ -1073,7 +1072,6 @@
                 let tempRequests = [];
                 snapshot.forEach((doc) => { tempRequests.push({ dbId: doc.id, ...doc.data() }); });
                 
-                // CRITICAL: Sort Descending (Newest at Top / Index 0)
                 tempRequests.sort((a, b) => b.createdAt - a.createdAt);
                 allRequests = tempRequests;
                 
@@ -1203,7 +1201,7 @@
             if(!loggedInUserId) return showAlert('error', 'Error', 'Please login first.');
             
             document.getElementById('editProfileUsername').value = loggedInUserId;
-            document.getElementById('editProfileUsername').disabled = true; // Username cannot be changed
+            document.getElementById('editProfileUsername').disabled = true;
             document.getElementById('editProfileUsername').classList.add('opacity-50', 'cursor-not-allowed');
             
             if(db) {
@@ -1228,9 +1226,7 @@
             document.getElementById('userProfileModal').classList.remove('hidden');
         }
 
-        window.closeUserProfileModal = function() {
-            document.getElementById('userProfileModal').classList.add('hidden');
-        }
+        window.closeUserProfileModal = function() { document.getElementById('userProfileModal').classList.add('hidden'); }
         
         if(document.getElementById('userProfilePicInput')) {
             document.getElementById('userProfilePicInput').addEventListener('change', function(event) {
@@ -1263,20 +1259,14 @@
                 }
                 
                 const updateData = { name: newName, password: newPass };
-                if(!document.getElementById('userProfileImgPreview').classList.contains('hidden')) {
-                    updateData.profilePic = newPic;
-                }
+                if(!document.getElementById('userProfileImgPreview').classList.contains('hidden')) { updateData.profilePic = newPic; }
                 
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', loggedInUserId), updateData);
                 showAlert('success', window.t('সফল!', 'Success!'), window.t('আপনার প্রোফাইল আপডেট হয়েছে।', 'Profile updated successfully.'));
                 closeUserProfileModal();
                 
-            } catch(e) {
-                showAlert('error', window.t('ত্রুটি', 'Error'), e.message);
-            } finally {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
+            } catch(e) { showAlert('error', window.t('ত্রুটি', 'Error'), e.message);
+            } finally { btn.innerHTML = originalHtml; btn.disabled = false; }
         }
 
         window.switchAuthTab = function(tab) {
@@ -1307,7 +1297,6 @@
             else { inp.type = "password"; icon.classList.remove("fa-eye", "text-[#10b981]"); icon.classList.add("fa-eye-slash"); }
         }
 
-        // Live Username Checker (Green Tick)
         if(document.getElementById('loginUserId')) {
             document.getElementById('loginUserId').addEventListener('input', function() {
                 let checkIcon = document.getElementById('loginUserCheck');
@@ -1317,7 +1306,11 @@
 
         window.handleAuth = async function(action) {
             let errEl = document.getElementById('authErrorMsg'); errEl.classList.add('hidden');
-            if(!db) { errEl.innerText = window.t("সার্ভার কানেক্ট হচ্ছে, একটু অপেক্ষা করুন...", "Connecting to server, please wait..."); errEl.classList.remove('hidden'); return; }
+            if(!db) { 
+                errEl.innerText = window.t("সার্ভার কানেক্ট হতে পারছে না! ব্রাউজারের AdBlocker বন্ধ করুন অথবা পেজটি রিফ্রেশ দিন।", "Cannot connect to server! Turn off AdBlocker or refresh the page."); 
+                errEl.classList.remove('hidden'); 
+                return; 
+            }
             try {
                 if(action === 'register') {
                     let name = document.getElementById('regName').value.trim(); let uId = document.getElementById('regUserId').value.trim(); let pass = document.getElementById('regPassword').value; let cPass = document.getElementById('regConfirmPassword').value;
@@ -1326,10 +1319,7 @@
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId); const userDoc = await getDoc(userRef);
                     if(userDoc.exists()) { errEl.innerText = window.t("এই ইউজারনেমটি আগেই নেওয়া হয়েছে। অন্য নাম দিন।", "Username already exists."); errEl.classList.remove('hidden'); return; }
                     
-                    // Create User in DB
                     await setDoc(userRef, { name: name, password: pass, blocked: false, createdAt: Date.now() });
-                    
-                    // Force User to Login Screen (No Auto-Login)
                     showAlert('success', window.t('সফল!', 'Success!'), window.t('রেজিস্ট্রেশন সফল হয়েছে। দয়া করে এখন লগইন করুন।', 'Registration successful. Please login now.'));
                     document.getElementById('loginUserId').value = uId; 
                     document.getElementById('regPassword').value = '';
@@ -1430,7 +1420,6 @@
             if(document.getElementById('limitWarningText')) document.getElementById('limitWarningText').textContent = `${window.t('লিমিট', 'Limit')}: ${minL}k - ${maxL}k`;
             if(document.getElementById('coinAmount') && document.activeElement !== document.getElementById('coinAmount')){ document.getElementById('coinAmount').min = minL; document.getElementById('coinAmount').max = maxL; }
 
-            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER
             const horizContainer = document.getElementById('horizontalSocialLinks'); 
             const mainContainer = document.getElementById('horizontalSocialLinksContainer');
             if(horizContainer && mainContainer) {
@@ -1508,7 +1497,6 @@
             calculateTotalUser();
         }
 
-        // PREMIUM DETAILED CALCULATION
         window.calculateTotalUser = function() {
             if(!document.getElementById('coinAmount')) return;
             const amount = parseFloat(document.getElementById('coinAmount').value) || 0; 
@@ -1671,8 +1659,8 @@
 
             if (!userId || allRequests.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
-                if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳0';
-                if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = '0';
+                document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                document.getElementById('userTotalPendingUI').innerText = '0';
                 return; 
             }
             
@@ -1680,13 +1668,17 @@
             
             if (myReqs.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
-                if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳0';
-                if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = '0';
+                document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                document.getElementById('userTotalPendingUI').innerText = '0';
                 return; 
             }
 
             myReqs.forEach(req => {
-                if (req.status === 'paid') { userTotalTk += parseFloat(req.total) || 0; } else if (req.status === 'pending') { userPendingCount++; }
+                if (req.status === 'paid') {
+                    userTotalTk += parseFloat(req.total) || 0;
+                } else if (req.status === 'pending') {
+                    userPendingCount++;
+                }
 
                 let statusText, statusClass, proofBtn = '';
                 if (req.status === 'paid') {
@@ -1724,8 +1716,8 @@
                 </div>`;
             });
             
-            if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
-            if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = userPendingCount;
+            document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
+            document.getElementById('userTotalPendingUI').innerText = userPendingCount;
         }
 
         function showAlert(type, title, message) {
@@ -1817,6 +1809,7 @@
                 } finally { btnText.innerHTML = window.t('রিকোয়েস্ট পাঠিয়ে দিন', 'Send Request'); document.getElementById('submitBtn').disabled = false; }
             });
         }
+
 
         // ==========================================
         //              ADMIN LOGIC
@@ -2327,7 +2320,7 @@
         window.toggleSound = function() { isSoundEnabled = !isSoundEnabled; document.getElementById('soundToggleBtn').querySelector('i').className = isSoundEnabled ? 'fa-solid fa-bell text-sm text-green-300' : 'fa-solid fa-bell-slash text-sm text-gray-400'; }
 
         // ==========================================
-        //              APP INITIALIZATION
+        //              APP INITIALIZATION (ZERO-SECOND LOAD)
         // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
             
