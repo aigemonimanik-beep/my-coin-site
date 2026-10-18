@@ -25,6 +25,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700;900&display=swap');
         
+        /* Smooth Scroll and Default font */
+        html { scroll-behavior: smooth; }
         html, body { overscroll-behavior: none; font-family: 'Hind Siliguri', sans-serif; transition: background-color 0.3s, color 0.3s; }
         .glass-effect { backdrop-filter: blur(10px); }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -33,9 +35,33 @@
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         
+        /* Trust Badge Animation */
         .trust-badge { animation: trustPulse 2s infinite; }
         @keyframes trustPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
         
+        /* Background Animated Blobs */
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        /* Smooth Fade In Up Transitions */
+        .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Step delays for nice cascading effect */
+        #sellFormContainer > div:nth-child(1) { animation-delay: 0.1s; }
+        #sellFormContainer > div:nth-child(2) { animation-delay: 0.2s; }
+        #sellFormContainer > div:nth-child(3) { animation-delay: 0.3s; }
+        #sellFormContainer > div:nth-child(4) { animation-delay: 0.4s; }
+        #sellFormContainer > div:nth-child(5) { animation-delay: 0.5s; }
+        #sellFormContainer > div:nth-child(6) { animation-delay: 0.6s; }
+
         .tab-active { border-bottom: 3px solid var(--color-brand); color: var(--color-brand); font-weight: bold; border-radius: 4px 4px 0 0; background-color: rgba(79, 70, 229, 0.08); }
         .dark .tab-active { background-color: rgba(79, 70, 229, 0.2); }
 
@@ -48,7 +74,14 @@
         [data-theme="slate"] { --color-brand: #64748b; --color-brand-light: #f1f5f9; --color-brand-dark: #334155; }
     </style>
 </head>
-<body class="text-gray-800 bg-gray-100 dark:bg-slate-900 dark:text-gray-200 antialiased min-h-screen flex flex-col transition-colors duration-300">
+<body class="text-gray-800 bg-gray-100 dark:bg-slate-900 dark:text-gray-200 antialiased min-h-screen flex flex-col transition-colors duration-300 relative">
+
+    <!-- Background Animated Effects -->
+    <div class="fixed inset-0 z-[0] overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand/20 rounded-full mix-blend-multiply filter blur-[100px] animate-blob dark:opacity-30"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000 dark:opacity-30"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000 dark:opacity-30"></div>
+    </div>
 
     <!-- Fallback if JS fails -->
     <div id="js-error-fallback" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center hidden">
@@ -60,11 +93,11 @@
     <!-- ========================================== -->
     <!--              USER APP WRAPPER              -->
     <!-- ========================================== -->
-    <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
+    <div id="user-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden z-10">
         
         <!-- Premium Dark Auth Modal (Login/Register) -->
         <div id="authModal" class="fixed inset-0 bg-[#0f172a] hidden flex justify-center items-center z-[200] p-4 overflow-y-auto">
-            <div class="bg-[#1e293b] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-slate-700 p-6 md:p-8 relative my-auto">
+            <div class="bg-[#1e293b] text-white rounded-[24px] w-full max-w-sm shadow-2xl overflow-hidden border border-slate-700 p-6 md:p-8 relative my-auto fade-in-up">
                 
                 <div class="flex flex-col items-center mb-6">
                     <img id="authTopLogo" src="" class="w-16 h-16 rounded-full object-cover hidden shadow-lg border-2 border-slate-600 mb-3 bg-slate-800">
@@ -106,7 +139,7 @@
                 </div>
 
                 <!-- Register Form -->
-                <div id="registerFormArea" class="hidden space-y-3">
+                <div id="registerFormArea" class="hidden space-y-3 fade-in-up">
                     <div class="bg-[#0f172a] rounded-xl p-3 flex items-center gap-3 border border-slate-700 focus-within:border-[#10b981] transition">
                         <div class="w-8 flex justify-center text-slate-500 text-lg"><i class="fa-solid fa-user"></i></div>
                         <div class="flex-1">
@@ -157,7 +190,7 @@
 
         <!-- PROFILE MODAL (USER) -->
         <div id="userProfileModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm overflow-y-auto">
-            <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-[24px] shadow-2xl p-6 relative my-auto border dark:border-slate-700">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-[24px] shadow-2xl p-6 relative my-auto border dark:border-slate-700 fade-in-up">
                 <button onclick="closeUserProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-xl transition"><i class="fa-solid fa-xmark"></i></button>
                 
                 <h3 class="text-lg font-black text-center mb-6 text-gray-800 dark:text-white"><i class="fa-solid fa-user-gear text-brand mr-2"></i><span class="lang-str" data-bn="আমার প্রোফাইল" data-en="My Profile">আমার প্রোফাইল</span></h3>
@@ -199,7 +232,6 @@
                 </div>
 
                 <div class="mt-6 flex flex-col gap-3">
-                    <!-- ALL PROOF FOLDER BUTTON -->
                     <button type="button" onclick="closeUserProfileModal(); openUserHistoryModal();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 font-bold py-2.5 rounded-xl transition flex justify-center items-center text-sm border border-blue-200 dark:border-blue-800 shadow-sm">
                         <i class="fa-solid fa-folder-open mr-2"></i><span class="lang-str" data-bn="সব হিস্ট্রি ও প্রুফ দেখুন" data-en="View All History & Proofs">সব হিস্ট্রি ও প্রুফ দেখুন</span>
                     </button>
@@ -250,9 +282,9 @@
         </nav>
 
         <div id="mainContentArea" class="flex-grow w-full relative">
-            <div id="userView" class="container mx-auto px-3 py-6 max-w-2xl">
+            <div id="userView" class="container mx-auto px-3 py-6 max-w-2xl fade-in-up">
                 
-                <div id="notice-banner" class="hidden mb-4 bg-yellow-100 dark:bg-yellow-900/40 border-l-4 border-yellow-500 text-yellow-900 dark:text-yellow-100 p-3 rounded-lg shadow-sm">
+                <div id="notice-banner" class="hidden mb-4 bg-yellow-100 dark:bg-yellow-900/40 border-l-4 border-yellow-500 text-yellow-900 dark:text-yellow-100 p-3 rounded-lg shadow-sm fade-in-up">
                     <div class="flex items-start">
                         <i class="fa-solid fa-bullhorn text-2xl text-yellow-600 dark:text-yellow-400 mr-3 mt-0.5 animate-pulse"></i>
                         <div>
@@ -262,11 +294,11 @@
                     </div>
                 </div>
 
-                <div id="trust-indicator" class="trust-badge bg-green-100 dark:bg-green-900/40 border-2 border-green-400 dark:border-green-600 text-green-800 dark:text-green-300 rounded-full px-4 py-2 flex items-center justify-center w-max mx-auto mb-6 shadow-sm font-bold text-[11px] md:text-sm">
+                <div id="trust-indicator" class="fade-in-up trust-badge bg-green-100 dark:bg-green-900/40 border-2 border-green-400 dark:border-green-600 text-green-800 dark:text-green-300 rounded-full px-4 py-2 flex items-center justify-center w-max mx-auto mb-6 shadow-sm font-bold text-[11px] md:text-sm">
                     <i class="fa-solid fa-shield-halved mr-1.5 text-green-600 dark:text-green-400"></i> <span class="lang-str" data-bn="১০০% বিশ্বস্ত ও নিরাপদ প্ল্যাটফর্ম | ফাস্ট পেমেন্ট" data-en="100% Trusted & Secure Platform | Fast Payment">১০০% বিশ্বস্ত ও নিরাপদ প্ল্যাটফর্ম | ফাস্ট পেমেন্ট</span>
                 </div>
 
-                <div id="hero-header" class="text-center mb-6">
+                <div id="hero-header" class="text-center mb-6 fade-in-up">
                     <h1 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mb-2"><span class="lang-str" data-bn="সহজেই কয়েন সেল করুন" data-en="Sell Coins Easily">সহজেই কয়েন সেল করুন</span></h1>
                     <p class="text-gray-600 dark:text-gray-400 mb-4 font-medium text-sm"><span class="lang-str" data-bn="নিচের ধাপে ফর্মটি পূরণ করুন এবং নিশ্চিন্তে টাকা বুঝে নিন." data-en="Fill out the form below and receive your money securely.">নিচের ধাপে ফর্মটি পূরণ করুন এবং নিশ্চিন্তে টাকা বুঝে নিন.</span></p>
                 </div>
@@ -282,7 +314,7 @@
                         <div id="sellFormContainer" class="space-y-4 relative">
                             
                             <!-- Step 1 -->
-                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="fade-in-up glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand" id="step1-box">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
                                     <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">১</span> 
                                     <span class="lang-str" data-bn="প্রথম কাজ: কোন কয়েন বিক্রি করবেন?" data-en="Step 1: Which coin will you sell?">প্রথম কাজ: কোন কয়েন বিক্রি করবেন?</span> <span class="text-red-500 ml-1">*</span>
@@ -294,7 +326,7 @@
                             </div>
 
                             <!-- Step 2 -->
-                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="fade-in-up glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand" id="step2-box">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                                     <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 flex items-center">
                                         <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">২</span> <span class="lang-str" data-bn="দ্বিতীয় কাজ: কত 1k কয়েন সেল করবেন?" data-en="Step 2: How many 1k coins?">দ্বিতীয় কাজ: কত 1k কয়েন সেল করবেন?</span> <span class="text-red-500 ml-1">*</span>
@@ -304,7 +336,7 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400 font-bold mb-2.5 ml-8">👉 <span class="lang-str" data-bn="বক্সে লিখে দিন অথবা শর্টকাট বাটনে চাপ দিন:" data-en="Type in the box or click a shortcut button:">বক্সে লিখে দিন অথবা শর্টকাট বাটনে চাপ দিন:</span></p>
                                 <div class="ml-8">
                                     <div class="relative w-full">
-                                        <input type="number" id="coinAmount" class="lang-placeholder w-full px-3 py-2 text-base font-bold rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-0 focus:border-brand pr-10" data-bn="যেমন: 50" data-en="E.g: 50" placeholder="যেমন: 50">
+                                        <input type="number" id="coinAmount" class="lang-placeholder w-full px-3 py-2 text-base font-bold rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-0 focus:border-brand pr-10 transition" data-bn="যেমন: 50" data-en="E.g: 50" placeholder="যেমন: 50">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><span class="text-gray-500 font-bold text-base k-symbol">k</span></div>
                                     </div>
                                     <div class="flex flex-wrap gap-2 mt-2 items-center">
@@ -316,15 +348,15 @@
                             </div>
 
                             <!-- Step 3 -->
-                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="fade-in-up glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center"><span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৩</span> <span class="lang-str" data-bn="টাকা কিসে নিবেন?" data-en="Step 3: Payment Method?">টাকা কিসে নিবেন?</span> <span class="text-red-500 ml-1">*</span></h3>
                                 <div class="ml-8 space-y-3">
-                                    <select id="paymentMethod" onchange="updateAccountPlaceholder(); calculateTotalUser();" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold text-sm"></select>
-                                    <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold tracking-wider text-sm" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
+                                    <select id="paymentMethod" onchange="updateAccountPlaceholder(); calculateTotalUser();" class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold text-sm transition"></select>
+                                    <input type="text" id="accountNumber" class="lang-placeholder w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold tracking-wider text-sm transition" data-bn="নাম্বারটি লিখুন (যেমন: 017...)" data-en="Enter account number" placeholder="নাম্বারটি লিখুন (যেমন: 017...)">
                                 </div>
                                 
-                                <!-- Premium Detailed Calculation Area (Receipt Style) -->
-                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-[#e8f5e9] dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                                <!-- Premium Detailed Calculation Area -->
+                                <div id="calculatorDisplay" class="hidden ml-8 mt-4 bg-[#e8f5e9] dark:bg-green-900/20 border-2 border-green-500 dark:border-green-700 rounded-xl p-4 shadow-sm relative overflow-hidden transition-all duration-300">
                                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-green-600"></div>
                                     <h4 class="text-center font-black text-green-800 dark:text-green-500 mb-3 border-b border-green-200 dark:border-green-800/50 pb-1.5 text-sm flex items-center justify-center">
                                         <i class="fa-solid fa-receipt mr-2"></i> <span class="lang-str" data-bn="হিসাবের বিস্তারিত বিবরণ" data-en="Detailed Calculation">হিসাবের বিস্তারিত বিবরণ</span>
@@ -352,7 +384,7 @@
                             </div>
 
                             <!-- Step 4 -->
-                            <div id="step4-container" class="bg-brand-light dark:bg-brand-dark/40 p-4 rounded-xl shadow border-l-4 border-brand transition-all duration-300">
+                            <div id="step4-container" class="fade-in-up bg-brand-light dark:bg-brand-dark/40 p-4 rounded-xl shadow border-l-4 border-brand transition-all duration-300">
                                 <h3 class="text-base font-bold text-brand dark:text-brand-light mb-2 flex items-center"><span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৪</span> <span class="lang-str" data-bn="কয়েন ট্রান্সফার করুন" data-en="Step 4: Transfer Coins">কয়েন ট্রান্সফার করুন</span></h3>
                                 <div id="step4-initial" class="ml-8"><p class="text-xs text-gray-500 font-bold italic">⚠ <span class="lang-str" data-bn="উপর থেকে একটি কয়েন সিলেক্ট করুন।" data-en="Please select a coin above.">উপর থেকে একটি কয়েন সিলেক্ট করুন।</span></p></div>
                                 <div id="transfer-section" class="ml-8 hidden mt-2">
@@ -366,7 +398,7 @@
                             </div>
 
                             <!-- Step 5 -->
-                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="fade-in-up glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                  <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center">
                                     <span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৫</span> 
                                     <span class="lang-str" data-bn="টেলিগ্রাম ইউজারনেম" data-en="Step 5: Telegram">টেলিগ্রাম ইউজারনেম</span> 
@@ -376,18 +408,18 @@
                                  <div class="ml-8 w-full">
                                      <div class="relative">
                                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fa-brands fa-telegram text-gray-400"></i></div>
-                                         <input type="text" id="telegramUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold focus:ring-0 focus:border-brand text-sm" data-bn="যেমন: @username" data-en="E.g: @username" placeholder="যেমন: @username">
+                                         <input type="text" id="telegramUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 rounded-lg border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white font-bold focus:ring-0 focus:border-brand text-sm transition" data-bn="যেমন: @username" data-en="E.g: @username" placeholder="যেমন: @username">
                                      </div>
                                  </div>
                             </div>
 
                             <!-- Step 6 -->
-                            <div class="glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
+                            <div class="fade-in-up glass-effect bg-white/95 dark:bg-slate-800/95 p-4 rounded-xl shadow border-l-4 border-brand">
                                 <h3 class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center"><span class="bg-brand text-white w-6 h-6 flex justify-center items-center rounded-full text-xs mr-2 shadow">৬</span> <span class="lang-str" data-bn="স্ক্রিনশট প্রুফ" data-en="Step 6: Screenshot Proof">স্ক্রিনশট প্রুফ</span> <span class="text-red-500 ml-1">*</span></h3>
                                 <div class="ml-8">
                                     <label for="proofImage" id="uploadBox" class="mt-1 flex flex-col items-center justify-center w-full h-24 border-2 border-brand-light dark:border-brand-dark border-dashed rounded-lg cursor-pointer bg-white dark:bg-slate-700 hover:bg-brand-light/50 transition">
                                         <div class="flex flex-col items-center justify-center pt-3 pb-3">
-                                            <i class="fa-solid fa-image text-3xl text-brand mb-1" id="uploadIcon"></i>
+                                            <i class="fa-solid fa-image text-3xl text-brand mb-1 transition" id="uploadIcon"></i>
                                             <p class="text-xs font-bold text-brand dark:text-brand-light"><span class="lang-str" data-bn="স্ক্রিনশট সিলেক্ট করুন" data-en="Select screenshot">স্ক্রিনশট সিলেক্ট করুন</span></p>
                                             <p id="fileNameDisplay" class="text-[10px] font-bold text-green-600 dark:text-green-400 mt-1 hidden bg-green-50 dark:bg-green-900/30 py-0.5 px-1.5 rounded"></p>
                                         </div>
@@ -397,21 +429,18 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="button" id="submitBtn" class="w-full py-4 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center relative z-10">
+                            <button type="button" id="submitBtn" class="fade-in-up w-full py-4 mt-4 rounded-xl shadow-lg text-lg font-black text-white bg-green-600 hover:bg-green-700 transition transform hover:-translate-y-0.5 flex justify-center items-center relative z-10">
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
-                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button, in Row) -->
-                            <!-- Sequence: YouTube(Red) -> Facebook(Blue) -> Telegram(Sky) -> WhatsApp(Green) -->
-                            <div class="mt-6 flex justify-center w-full" id="horizontalSocialLinksContainer">
-                                <div class="flex flex-row gap-4 items-center justify-center" id="horizontalSocialLinks">
-                                    <!-- Links injected here by JS -->
-                                </div>
+                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS -->
+                            <div class="mt-6 flex justify-center w-full fade-in-up" id="horizontalSocialLinksContainer">
+                                <div class="flex flex-row gap-4 items-center justify-center" id="horizontalSocialLinks"></div>
                             </div>
                         </div>
 
                         <!-- Compact Pending Section with Detailed View -->
-                        <div id="activePendingSection" class="mt-6 hidden">
+                        <div id="activePendingSection" class="mt-6 hidden fade-in-up">
                             <div class="flex justify-between items-center mb-3 border-b dark:border-slate-700 pb-2">
                                 <h3 class="text-sm font-black text-blue-700 dark:text-blue-400 flex items-center"><i class="fa-solid fa-spinner fa-spin mr-2"></i> <span class="lang-str" data-bn="পেন্ডিং রিকোয়েস্ট" data-en="Pending Requests">পেন্ডিং রিকোয়েস্ট</span> <span id="pendingCountBadge" class="ml-2 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 text-xs font-black px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-700">0</span></h3>
                                 <button onclick="openUserHistoryModal()" class="text-xs font-bold text-white bg-brand hover:bg-brand-dark px-3 py-1.5 rounded shadow transition"><span class="lang-str" data-bn="সব হিস্ট্রি" data-en="All History">সব হিস্ট্রি</span></button>
@@ -428,7 +457,7 @@
     <!-- ========================================== -->
     <!--              ADMIN APP WRAPPER             -->
     <!-- ========================================== -->
-    <div id="admin-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden">
+    <div id="admin-wrapper" class="flex-grow w-full relative flex-col min-h-screen hidden z-10">
         
         <nav class="bg-brand dark:bg-brand-dark text-white shadow-md sticky top-0 z-40 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -494,7 +523,7 @@
                 <div class="max-w-7xl mx-auto px-3 sm:px-4">
                     
                     <!-- DASHBOARD -->
-                    <section id="sec-dashboard">
+                    <section id="sec-dashboard" class="fade-in-up">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm"><i class="fa-solid fa-chart-pie mr-1 text-brand"></i> <span class="lang-str" data-bn="বর্তমান হিসাব নিকাশ" data-en="Current Stats">বর্তমান হিসাব নিকাশ</span></h3>
                             <button onclick="handleResetStats()" class="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 px-2 py-1 rounded font-bold text-[11px] transition shadow-sm border border-red-200 dark:border-red-800 flex items-center">
@@ -522,12 +551,12 @@
                     </section>
 
                     <!-- PENDING SECTION -->
-                    <section id="sec-pending" class="hidden">
+                    <section id="sec-pending" class="hidden fade-in-up">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm"><i class="fa-solid fa-clock mr-1 text-brand"></i> <span class="lang-str" data-bn="পেন্ডিং রিকোয়েস্ট" data-en="Pending Requests">পেন্ডিং রিকোয়েস্ট</span></h3>
                             <div class="relative w-48">
                                 <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchPending" onkeyup="filterTable('pendingTableBody', 'searchPending')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs lang-placeholder" data-bn="অর্ডার আইডি খুঁজুন" data-en="Search Order ID" placeholder="অর্ডার আইডি খুঁজুন">
+                                <input type="text" id="searchPending" onkeyup="filterTable('pendingTableBody', 'searchPending')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs lang-placeholder transition" data-bn="অর্ডার আইডি খুঁজুন" data-en="Search Order ID" placeholder="অর্ডার আইডি খুঁজুন">
                             </div>
                         </div>
                         <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
@@ -550,7 +579,7 @@
                     </section>
 
                     <!-- History Section -->
-                    <section id="sec-history" class="hidden">
+                    <section id="sec-history" class="hidden fade-in-up">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div class="flex gap-2 w-full md:w-auto">
                                 <button onclick="deleteAllHistory()" class="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 px-3 py-1.5 rounded font-bold shadow-sm transition border border-red-300 dark:border-red-800 flex items-center whitespace-nowrap text-[11px]">
@@ -560,7 +589,7 @@
                             <div class="flex gap-2 w-full md:w-auto">
                                 <div class="relative flex-grow md:w-48">
                                     <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                    <input type="text" id="searchHistory" onkeyup="filterTable('historyTableBody', 'searchHistory')" class="lang-placeholder pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded focus:ring-brand focus:border-brand w-full font-bold text-xs" data-bn="অর্ডার আইডি / নাম্বার খুঁজুন..." data-en="Search ID/No..." placeholder="অর্ডার আইডি / নাম্বার খুঁজুন...">
+                                    <input type="text" id="searchHistory" onkeyup="filterTable('historyTableBody', 'searchHistory')" class="lang-placeholder pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded focus:ring-brand focus:border-brand w-full font-bold text-xs transition" data-bn="অর্ডার আইডি / নাম্বার খুঁজুন..." data-en="Search ID/No..." placeholder="অর্ডার আইডি / নাম্বার খুঁজুন...">
                                 </div>
                             </div>
                         </div>
@@ -584,12 +613,12 @@
                     </section>
 
                     <!-- Users Section -->
-                    <section id="sec-users" class="hidden">
+                    <section id="sec-users" class="hidden fade-in-up">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm"><i class="fa-solid fa-users mr-1 text-brand"></i> <span class="lang-str" data-bn="রেজিস্টার করা ইউজার্স" data-en="Registered Users">রেজিস্টার করা ইউজার্স</span></h3>
                             <div class="relative w-48">
                                 <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchUsers" onkeyup="filterTable('usersTableBody', 'searchUsers')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs lang-placeholder" data-bn="ইউজার আইডি খুঁজুন" data-en="Search User ID" placeholder="Search User ID">
+                                <input type="text" id="searchUsers" onkeyup="filterTable('usersTableBody', 'searchUsers')" class="pl-8 pr-3 py-1.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 rounded w-full font-bold text-xs lang-placeholder transition" data-bn="ইউজার আইডি খুঁজুন" data-en="Search User ID" placeholder="Search User ID">
                             </div>
                         </div>
                         <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700">
@@ -612,7 +641,7 @@
                     </section>
 
                     <!-- CHECK ORDERS SECTION -->
-                    <section id="sec-check_orders" class="hidden">
+                    <section id="sec-check_orders" class="hidden fade-in-up">
                         <div class="max-w-2xl mx-auto">
                             <h3 class="font-bold text-gray-700 dark:text-gray-300 text-base mb-4 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-magnifying-glass mr-1 text-brand"></i> <span class="lang-str" data-bn="অর্ডার আইডি দিয়ে চেক করুন" data-en="Check by Order ID">অর্ডার আইডি দিয়ে চেক করুন</span></h3>
                             
@@ -621,7 +650,7 @@
                                 <div class="flex gap-2">
                                     <div class="relative flex-grow">
                                         <i class="fa-solid fa-hashtag absolute left-3 top-2.5 text-gray-400"></i>
-                                        <input type="text" id="adminCheckOrderId" class="w-full pl-9 pr-3 py-2 border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg font-bold focus:border-brand focus:ring-0" placeholder="ORD-XXXXXX">
+                                        <input type="text" id="adminCheckOrderId" class="w-full pl-9 pr-3 py-2 border-2 border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg font-bold focus:border-brand focus:ring-0 transition" placeholder="ORD-XXXXXX">
                                     </div>
                                     <button onclick="handleAdminCheckOrder()" class="bg-brand text-white px-5 py-2 rounded-lg font-bold hover:bg-brand-dark transition shadow"><i class="fa-solid fa-search mr-1"></i> <span class="lang-str" data-bn="খুঁজুন" data-en="Search">খুঁজুন</span></button>
                                 </div>
@@ -629,22 +658,20 @@
 
                             <div id="checkOrderResultArea" class="hidden">
                                 <h4 class="font-bold text-sm text-gray-700 dark:text-gray-300 mb-3"><span class="lang-str" data-bn="সার্চ রেজাল্ট:" data-en="Search Result:">সার্চ রেজাল্ট:</span></h4>
-                                <div id="checkOrderResultContent" class="space-y-3">
-                                    <!-- Results injected here -->
-                                </div>
+                                <div id="checkOrderResultContent" class="space-y-3"></div>
                             </div>
                         </div>
                     </section>
 
                     <!-- USER PROOFS / HISTORY SECTION -->
-                    <section id="sec-user_proofs" class="hidden">
+                    <section id="sec-user_proofs" class="hidden fade-in-up">
                         <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mb-4">
                             <h3 class="font-bold text-blue-700 dark:text-blue-400 text-sm mb-3"><i class="fa-solid fa-folder-open mr-1"></i> <span class="lang-str" data-bn="ইউজার প্রুফ ও অল হিস্ট্রি" data-en="User Proofs & All History">ইউজার প্রুফ ও অল হিস্ট্রি</span></h3>
                             <p class="text-[11px] text-gray-500 font-bold mb-3"><span class="lang-str" data-bn="যেকোনো ইউজারের ইউজারনেইম লিখে তার অতীতের সমস্ত রেকর্ড (পেইড এবং পেন্ডিং) একসাথে দেখুন এবং গুগল শিটে (CSV) ডাউনলোড করুন।" data-en="Search any username to see all past records (Paid & Pending) and download as CSV.">যেকোনো ইউজারের ইউজারনেইম লিখে তার অতীতের সমস্ত রেকর্ড (পেইড এবং পেন্ডিং) একসাথে দেখুন এবং গুগল শিটে (CSV) ডাউনলোড করুন।</span></p>
                             <div class="flex gap-2">
                                 <div class="relative flex-grow">
                                     <i class="fa-solid fa-user absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-                                    <input type="text" id="searchProofUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded font-bold text-sm focus:border-blue-500 focus:ring-0" data-bn="ইউজারনেইম লিখুন..." data-en="Enter username..." placeholder="ইউজারনেইম লিখুন...">
+                                    <input type="text" id="searchProofUsername" class="lang-placeholder w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded font-bold text-sm focus:border-blue-500 focus:ring-0 transition" data-bn="ইউজারনেইম লিখুন..." data-en="Enter username..." placeholder="ইউজারনেইম লিখুন...">
                                 </div>
                                 <button onclick="searchUserProof()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 transition shadow-sm text-sm"><i class="fa-solid fa-search mr-1"></i> <span class="lang-str" data-bn="খুঁজুন" data-en="Search">খুঁজুন</span></button>
                                 <button onclick="downloadProofCSV()" class="bg-green-600 text-white px-4 py-2 rounded font-bold hover:bg-green-700 transition shadow-sm text-sm whitespace-nowrap"><i class="fa-solid fa-file-csv mr-1"></i> <span class="lang-str" data-bn="শিটে ডাউনলোড" data-en="Download CSV">শিটে ডাউনলোড</span></button>
@@ -675,7 +702,7 @@
                     </section>
 
                     <!-- Archive Section -->
-                    <section id="sec-archive" class="hidden">
+                    <section id="sec-archive" class="hidden fade-in-up">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 p-2 rounded text-[11px] font-bold text-yellow-800 dark:text-yellow-400 w-full md:w-auto">
                                 <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবে পণ্ডিত না।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে পণ্ডিত না।</span>
@@ -705,16 +732,16 @@
                     </section>
 
                     <!-- Settings Section -->
-                    <section id="sec-settings" class="hidden max-w-5xl mx-auto space-y-4">
+                    <section id="sec-settings" class="hidden fade-in-up max-w-5xl mx-auto space-y-4">
                         <h2 class="text-xl font-bold text-gray-800 dark:text-white border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-sliders text-brand mr-2"></i> <span class="lang-str" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></h2>
                             
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 transition">
                             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4"><i class="fa-solid fa-globe text-brand mr-2"></i> <span class="lang-str" data-bn="সাধারণ সেটিংস" data-en="General Settings">সাধারণ সেটিংস</span></h3>
                             
                             <div class="flex flex-col md:flex-row gap-4 mb-4">
                                 <div class="flex-grow">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="ওয়েবসাইটের নাম:" data-en="Website Name:">ওয়েবসাইটের নাম:</span></label>
-                                    <input type="text" id="setSiteName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="NS & Top Coin">
+                                    <input type="text" id="setSiteName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand transition" placeholder="NS & Top Coin">
                                 </div>
                                 <div class="w-full md:w-40 shrink-0">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লোগো:" data-en="Logo:">লোগো:</span></label>
@@ -730,27 +757,27 @@
                             </div>
 
                             <label class="flex items-center space-x-2 cursor-pointer mb-2">
-                                <input type="checkbox" id="setTgRequired" class="w-4 h-4 text-brand rounded">
+                                <input type="checkbox" id="setTgRequired" class="w-4 h-4 text-brand rounded transition">
                                 <span class="font-bold text-sm text-gray-800 dark:text-gray-200"><span class="lang-str" data-bn="টেলিগ্রাম ইউজারনেম বাধ্যতামূলক করুন" data-en="Make Telegram Mandatory">টেলিগ্রাম ইউজারনেম বাধ্যতামূলক করুন</span></span>
                             </label>
 
                             <label class="flex items-center space-x-2 cursor-pointer mb-2">
-                                <input type="checkbox" id="setNoticeActive" class="w-4 h-4 text-brand rounded">
+                                <input type="checkbox" id="setNoticeActive" class="w-4 h-4 text-brand rounded transition">
                                 <span class="font-bold text-sm text-gray-800 dark:text-gray-200"><span class="lang-str" data-bn="ইউজার নোটিশ অন করুন" data-en="Enable User Notice">ইউজার নোটিশ অন করুন</span></span>
                             </label>
-                            <textarea id="setNoticeText" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="নোটিশ লিখুন" data-en="Write Notice" placeholder="নোটিশ লিখুন"></textarea>
+                            <textarea id="setNoticeText" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3 transition" data-bn="নোটিশ লিখুন" data-en="Write Notice" placeholder="নোটিশ লিখুন"></textarea>
                             
                             <button onclick="saveSiteInfo()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
                         <!-- Login Page Settings UI -->
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4 transition">
                             <h3 class="text-sm font-bold text-gray-800 dark:text-white mb-3"><i class="fa-solid fa-id-card text-brand mr-2"></i> <span class="lang-str" data-bn="লগইন পেজ ডিজাইন" data-en="Login Page Design">লগইন পেজ ডিজাইন</span></h3>
                     
                             <div class="flex flex-col md:flex-row gap-4 mb-4">
                                 <div class="flex-grow">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লেখা (Sub-title):" data-en="Login Page Text:">লগইন পেজের লেখা (Sub-title):</span></label>
-                                    <input type="text" id="setAuthText" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand" placeholder="একাউন্ট তৈরি করে এখনই শুরু করুন">
+                                    <input type="text" id="setAuthText" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-brand transition" placeholder="একাউন্ট তৈরি করে এখনই শুরু করুন">
                                 </div>
                                 <div class="w-full md:w-40 shrink-0">
                                     <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="লগইন পেজের লোগো:" data-en="Login Page Logo:">লগইন পেজের লোগো:</span></label>
@@ -767,13 +794,13 @@
                             <button onclick="saveAuthSettings()" class="px-4 py-1.5 bg-brand text-white text-sm font-bold rounded hover:bg-brand-dark transition shadow-sm"><i class="fa-solid fa-save mr-1"></i><span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 mt-4 transition">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-scale-balanced mr-1"></i> <span class="lang-str" data-bn="সেলের লিমিট (Min/Max)" data-en="Sale Limits (Min/Max)">সেলের লিমিট (Min/Max)</span></h3>
                                     <div class="flex gap-4 mb-3">
-                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Min k:</label><input type="number" id="setMinLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
-                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Max k:</label><input type="number" id="setMaxLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500"></div>
+                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Min k:</label><input type="number" id="setMinLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500 transition"></div>
+                                        <div class="flex-1"><label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">Max k:</label><input type="number" id="setMaxLimit" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500 transition"></div>
                                     </div>
                                     <button onclick="saveLimits()" class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                                 </div>
@@ -781,76 +808,76 @@
                                     <h3 class="text-sm font-bold text-yellow-600 dark:text-yellow-500 mb-3"><i class="fa-solid fa-dollar-sign mr-1"></i> <span class="lang-str" data-bn="বাইনান্স ডলার (USDT) রেট" data-en="Binance USDT Rate">বাইনান্স ডলার (USDT) রেট</span></h3>
                                     <div class="mb-3">
                                         <label class="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1"><span class="lang-str" data-bn="প্রতি ডলার (৳):" data-en="Per Dollar (৳):">প্রতি ডলার (৳):</span></label>
-                                        <input type="number" id="setBinanceRate" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500" placeholder="127">
+                                        <input type="number" id="setBinanceRate" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-3 py-1.5 text-sm font-bold focus:border-yellow-500 transition" placeholder="127">
                                     </div>
                                     <button onclick="saveBinanceRate()" class="px-4 py-1.5 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 transition">
                             <h3 class="text-sm font-bold text-green-600 dark:text-green-500 mb-3"><i class="fa-solid fa-wallet mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট মেথড ও সেন্ড মানি চার্জ" data-en="Payment Methods & Charge">পেমেন্ট মেথড ও সেন্ড মানি চার্জ</span></h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                                 <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
-                                    <input type="checkbox" id="payBkash" class="w-4 h-4 text-brand rounded">
+                                    <input type="checkbox" id="payBkash" class="w-4 h-4 text-brand rounded transition">
                                     <span class="text-sm font-bold text-pink-600 w-16">bKash</span>
-                                    <input type="number" id="chargeBkash" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-pink-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeBkash" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-pink-500 transition" placeholder="Charge ৳">
                                 </div>
                                 <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
-                                    <input type="checkbox" id="payNagad" class="w-4 h-4 text-brand rounded">
+                                    <input type="checkbox" id="payNagad" class="w-4 h-4 text-brand rounded transition">
                                     <span class="text-sm font-bold text-orange-500 w-16">Nagad</span>
-                                    <input type="number" id="chargeNagad" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-orange-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeNagad" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-orange-500 transition" placeholder="Charge ৳">
                                 </div>
                                 <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
-                                    <input type="checkbox" id="payRocket" class="w-4 h-4 text-brand rounded">
+                                    <input type="checkbox" id="payRocket" class="w-4 h-4 text-brand rounded transition">
                                     <span class="text-sm font-bold text-purple-600 w-16">Rocket</span>
-                                    <input type="number" id="chargeRocket" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-purple-500" placeholder="Charge ৳">
+                                    <input type="number" id="chargeRocket" class="w-20 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded px-2 py-1 text-xs font-bold focus:border-purple-500 transition" placeholder="Charge ৳">
                                 </div>
                                 <div class="flex items-center space-x-2 bg-gray-50 dark:bg-slate-700 px-3 py-2 rounded border dark:border-slate-600">
-                                    <input type="checkbox" id="payBinance" class="w-4 h-4 text-brand rounded">
+                                    <input type="checkbox" id="payBinance" class="w-4 h-4 text-brand rounded transition">
                                     <span class="text-sm font-bold text-yellow-500">Binance</span>
                                 </div>
                             </div>
                             <button onclick="savePaymentMethods()" class="px-4 py-1.5 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border dark:border-slate-700 transition">
                             <h3 class="text-sm font-bold text-blue-600 dark:text-blue-500 mb-3"><i class="fa-solid fa-headset mr-1"></i> <span class="lang-str" data-bn="সাপোর্ট লিংক" data-en="Support Links">সাপোর্ট লিংক</span></h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-youtube text-red-600"></i> YouTube:</label><input type="text" id="linkYt" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Channel Link..."></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-facebook text-blue-600"></i> Facebook:</label><input type="text" id="linkFb" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="Link..."></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-telegram text-blue-400"></i> Telegram:</label><input type="text" id="linkTg" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="@username"></div>
-                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-whatsapp text-green-500"></i> WhatsApp:</label><input type="text" id="linkWa" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium" placeholder="017..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-youtube text-red-600"></i> YouTube:</label><input type="text" id="linkYt" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium transition" placeholder="Channel Link..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-facebook text-blue-600"></i> Facebook:</label><input type="text" id="linkFb" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium transition" placeholder="Link..."></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-telegram text-blue-400"></i> Telegram:</label><input type="text" id="linkTg" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium transition" placeholder="@username"></div>
+                                <div><label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1"><i class="fa-brands fa-whatsapp text-green-500"></i> WhatsApp:</label><input type="text" id="linkWa" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1.5 text-xs font-medium transition" placeholder="017..."></div>
                             </div>
                             <button onclick="saveSupportLinks()" class="px-4 py-1.5 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg shadow-sm border border-red-200 dark:border-red-800">
+                        <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg shadow-sm border border-red-200 dark:border-red-800 transition">
                             <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-3"><i class="fa-solid fa-power-off mr-1"></i> <span class="lang-str" data-bn="ওয়েবসাইট অন/অফ" data-en="Website On/Off">ওয়েবসাইট অন/অফ</span></h3>
-                            <label class="flex items-center space-x-2 cursor-pointer mb-2"><input type="checkbox" id="setSystemActive" class="w-5 h-5 text-red-600 rounded"><span class="font-black text-red-700 dark:text-red-400 text-sm"><span class="lang-str" data-bn="কয়েন কেনা-বেচা চালু আছে?" data-en="Coin trading active?">কয়েন কেনা-বেচা চালু আছে?</span></span></label>
-                            <textarea id="setStopMsg" rows="1" class="lang-placeholder w-full border border-red-300 dark:border-red-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="বন্ধ থাকলে মেসেজ..." data-en="If closed, write message..." placeholder="বন্ধ থাকলে মেসেজ..."></textarea>
+                            <label class="flex items-center space-x-2 cursor-pointer mb-2"><input type="checkbox" id="setSystemActive" class="w-5 h-5 text-red-600 rounded transition"><span class="font-black text-red-700 dark:text-red-400 text-sm"><span class="lang-str" data-bn="কয়েন কেনা-বেচা চালু আছে?" data-en="Coin trading active?">কয়েন কেনা-বেচা চালু আছে?</span></span></label>
+                            <textarea id="setStopMsg" rows="1" class="lang-placeholder w-full border border-red-300 dark:border-red-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3 transition" data-bn="বন্ধ থাকলে মেসেজ..." data-en="If closed, write message..." placeholder="বন্ধ থাকলে মেসেজ..."></textarea>
                             <button onclick="saveSystemStatus()" class="px-4 py-1.5 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
                         
-                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg shadow-sm border border-green-200 dark:border-green-800 mt-4">
+                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg shadow-sm border border-green-200 dark:border-green-800 mt-4 transition">
                             <h3 class="text-sm font-bold text-green-700 dark:text-green-400 mb-2"><i class="fa-solid fa-comment-sms mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট সাকসেস মেসেজ" data-en="Payment Success Message">পেমেন্ট সাকসেস মেসেজ</span></h3>
                             <p class="text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-2">Tag: [account], [amount]</p>
-                            <textarea id="setSuccessSms" rows="2" class="lang-placeholder w-full border border-green-300 dark:border-green-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3" data-bn="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।" data-en="SMS: ৳[amount] sent to [account]." placeholder="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"></textarea>
+                            <textarea id="setSuccessSms" rows="2" class="lang-placeholder w-full border border-green-300 dark:border-green-600 dark:bg-slate-800 dark:text-white rounded px-3 py-1.5 text-sm font-medium mb-3 transition" data-bn="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।" data-en="SMS: ৳[amount] sent to [account]." placeholder="SMS: আপনার [account] নাম্বারে ৳[amount] পাঠানো হয়েছে।"></textarea>
                             <button onclick="saveSuccessSms()" class="px-4 py-1.5 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition shadow-sm"><i class="fa-solid fa-save mr-1"></i> <span class="lang-str" data-bn="সেভ করুন" data-en="Save">সেভ করুন</span></button>
                         </div>
 
-                        <div class="bg-brand-light/30 dark:bg-brand-dark/20 p-4 rounded-lg shadow-sm border border-brand-light dark:border-brand-dark mt-4">
+                        <div class="bg-brand-light/30 dark:bg-brand-dark/20 p-4 rounded-lg shadow-sm border border-brand-light dark:border-brand-dark mt-4 transition">
                             <h3 class="text-sm font-bold text-brand dark:text-brand-light mb-3"><i class="fa-solid fa-coins mr-1"></i> <span class="lang-str" data-bn="কয়েন ম্যানেজমেন্ট" data-en="Coin Management">কয়েন ম্যানেজমেন্ট</span></h3>
                             <div id="adminCoinList" class="space-y-2 mb-4 grid grid-cols-1 md:grid-cols-2 gap-3"></div>
 
-                            <div class="bg-white dark:bg-slate-800 p-3 rounded border border-gray-200 dark:border-slate-600 shadow-sm">
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded border border-gray-200 dark:border-slate-600 shadow-sm transition">
                                 <h4 class="font-bold text-gray-700 dark:text-gray-300 text-[11px] mb-2 border-b dark:border-slate-600 pb-1"><span class="lang-str" data-bn="নতুন কয়েন যুক্ত করুন:" data-en="Add New Coin:">নতুন কয়েন যুক্ত করুন:</span></h4>
                                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
-                                    <div><input type="text" id="newCoinName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Name"></div>
-                                    <div><input type="number" id="newCoinRate" step="0.01" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="1k Rate"></div>
-                                    <div><input type="text" id="newCoinUsername" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium" placeholder="Game ID"></div>
+                                    <div><input type="text" id="newCoinName" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium transition" placeholder="Name"></div>
+                                    <div><input type="number" id="newCoinRate" step="0.01" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium transition" placeholder="1k Rate"></div>
+                                    <div><input type="text" id="newCoinUsername" class="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded px-2 py-1 text-[11px] font-medium transition" placeholder="Game ID"></div>
                                     <div>
-                                        <label class="flex flex-col items-center justify-center w-full h-[26px] border border-gray-300 dark:border-slate-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 overflow-hidden">
+                                        <label class="flex flex-col items-center justify-center w-full h-[26px] border border-gray-300 dark:border-slate-600 border-dashed rounded cursor-pointer bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 overflow-hidden transition">
                                             <div class="flex items-center justify-center space-x-1" id="newCoinLogoPreviewContainer"><i class="fa-solid fa-image text-gray-400 text-[10px]" id="newCoinLogoIcon"></i><span class="text-[9px] font-bold text-gray-500" id="newCoinLogoText">Logo</span></div>
                                             <input type="file" id="newCoinLogo" accept="image/*" class="hidden">
                                         </label>
@@ -870,22 +897,19 @@
     <!-- ========================================== -->
     <!-- Compact User History Modal with Dashboard -->
     <div id="userHistoryModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex justify-center items-center z-[90] p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-gray-100 dark:bg-slate-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-slate-700 flex flex-col overflow-hidden">
+        <div class="bg-gray-100 dark:bg-slate-900 rounded-xl w-full max-w-sm max-h-[85vh] shadow-2xl border border-gray-300 dark:border-slate-700 flex flex-col overflow-hidden fade-in-up">
             <div class="p-3 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-white dark:bg-slate-800">
                 <h3 class="text-sm font-black text-gray-800 dark:text-white flex items-center"><i class="fa-solid fa-clock-rotate-left text-brand mr-2"></i> <span class="lang-str" data-bn="আপনার রিকোয়েস্ট হিস্ট্রি" data-en="Your Request History">আপনার রিকোয়েস্ট হিস্ট্রি</span></h3>
                 <button onclick="closeUserHistoryModal()" class="text-gray-400 hover:text-red-500 text-2xl px-2 leading-none transition">&times;</button>
             </div>
             
-            <!-- NEW: User Dashboard Stats (Premium Design) -->
             <div class="p-4 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 space-y-3">
-                <!-- Total Payment Card (Green) -->
-                <div class="bg-[#10b981] rounded-xl p-4 shadow-md text-white relative overflow-hidden">
+                <div class="bg-[#10b981] rounded-xl p-4 shadow-md text-white relative overflow-hidden transition-all duration-300">
                     <div class="absolute -right-4 -bottom-4 opacity-20"><i class="fa-solid fa-wallet text-8xl"></i></div>
                     <p class="text-[11px] font-black uppercase tracking-wider mb-1 opacity-90 lang-str" data-bn="Total Payment" data-en="Total Payment">Total Payment</p>
                     <h2 class="text-4xl font-black tracking-tight" id="userTotalPaymentUI">৳0</h2>
                 </div>
-                <!-- Total Pending Card (Dark) -->
-                <div class="bg-[#1e293b] border-l-[6px] border-[#f59e0b] rounded-xl p-3 shadow-md flex items-center justify-between">
+                <div class="bg-[#1e293b] border-l-[6px] border-[#f59e0b] rounded-xl p-3 shadow-md flex items-center justify-between transition-all duration-300">
                     <div>
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider lang-str" data-bn="Total Pending" data-en="Total Pending">Total Pending</p>
                         <h3 class="text-2xl font-black text-white mt-0.5" id="userTotalPendingUI">0</h3>
@@ -893,14 +917,6 @@
                     <div class="bg-[#f59e0b]/20 p-2 rounded-full">
                         <i class="fa-solid fa-clock text-xl text-[#f59e0b]"></i>
                     </div>
-                </div>
-
-                <!-- NEW: Coin Based Stats for User -->
-                <h4 class="font-bold text-gray-600 dark:text-gray-400 mt-4 mb-2 text-xs border-b dark:border-slate-700 pb-1 flex items-center">
-                    <i class="fa-solid fa-layer-group mr-1"></i> <span class="lang-str" data-bn="কয়েন ভিত্তিক হিসাব (পেইড)" data-en="Coin Based Stats (Paid)">কয়েন ভিত্তিক হিসাব (পেইড)</span>
-                </h4>
-                <div id="userCoinStatsContainer" class="grid grid-cols-2 gap-3 mb-2">
-                    <!-- Javascript will inject user coin stats here -->
                 </div>
             </div>
             
@@ -910,7 +926,7 @@
 
     <!-- Alert Modal (User) -->
     <div id="customAlert" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full text-center border dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-md w-full text-center border dark:border-slate-700 fade-in-up">
             <div id="alertIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
             <h3 id="alertTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
             <p id="alertMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
@@ -921,12 +937,12 @@
     <!-- Shared Image Modal -->
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-95 hidden flex items-center justify-center z-[200] p-4 transition-opacity">
         <button type="button" onclick="closeImageModal()" class="absolute top-6 right-6 text-white bg-red-600 rounded-full w-10 h-10 flex items-center justify-center text-xl z-50 hover:scale-110 shadow-lg transition"><i class="fa-solid fa-xmark pointer-events-none"></i></button>
-        <div class="w-full h-full flex justify-center items-center p-2"><img id="fullSizeImage" src="" class="max-w-full max-h-full object-contain rounded shadow-2xl"></div>
+        <div class="w-full h-full flex justify-center items-center p-2 fade-in-up"><img id="fullSizeImage" src="" class="max-w-full max-h-full object-contain rounded shadow-2xl"></div>
     </div>
 
     <!-- Admin Confirm Modal -->
     <div id="adminConfirmModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-sm shadow-2xl text-center border dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-sm shadow-2xl text-center border dark:border-slate-700 fade-in-up">
             <h3 id="adminConfirmTitle" class="text-lg font-bold text-gray-900 dark:text-white mb-2"></h3>
             <p id="adminConfirmMessage" class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-5"></p>
             <div id="adminConfirmBtns" class="flex justify-center gap-2"></div>
@@ -935,26 +951,26 @@
 
     <!-- Admin Approve Modal -->
     <div id="approveModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700 fade-in-up">
             <h3 class="text-lg font-bold text-green-700 dark:text-green-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-check-circle mr-1"></i> <span class="lang-str" data-bn="পেমেন্ট কনফার্ম" data-en="Confirm Payment">পেমেন্ট কনফার্ম</span></h3>
             <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-3"><span class="lang-str" data-bn="স্ক্রিনশট আপলোড (ঐচ্ছিক):" data-en="Upload proof (Optional):">স্ক্রিনশট আপলোড (ঐচ্ছিক):</span></p>
-            <input type="file" id="adminProofInput" accept="image/*" class="w-full border-2 border-dashed border-gray-300 dark:border-slate-600 p-2 rounded mb-4 cursor-pointer bg-gray-50 dark:bg-slate-700 text-xs text-gray-500">
+            <input type="file" id="adminProofInput" accept="image/*" class="w-full border-2 border-dashed border-gray-300 dark:border-slate-600 p-2 rounded mb-4 cursor-pointer bg-gray-50 dark:bg-slate-700 text-xs text-gray-500 transition">
             <div class="flex justify-end space-x-2">
-                <button onclick="closeApproveModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="বাতিল" data-en="Cancel">বাতিল</span></button>
-                <button onclick="confirmApproval()" class="px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="কনফার্ম" data-en="Confirm">কনফার্ম</span></button>
+                <button onclick="closeApproveModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded transition"><span class="lang-str" data-bn="বাতিল" data-en="Cancel">বাতিল</span></button>
+                <button onclick="confirmApproval()" class="px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded transition hover:bg-green-700"><span class="lang-str" data-bn="কনফার্ম" data-en="Confirm">কনফার্ম</span></button>
             </div>
         </div>
     </div>
 
     <!-- Admin Reject Modal -->
     <div id="rejectModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex justify-center items-center z-[150] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 w-full max-w-xs shadow-2xl border dark:border-slate-700 fade-in-up">
             <h3 class="text-lg font-bold text-red-600 dark:text-red-400 mb-3 border-b dark:border-slate-700 pb-2"><i class="fa-solid fa-ban mr-1"></i> <span class="lang-str" data-bn="বাতিল করুন" data-en="Reject">বাতিল করুন</span></h3>
             <p class="text-[11px] text-gray-600 dark:text-gray-300 font-bold mb-1"><span class="lang-str" data-bn="কারণ লিখুন:" data-en="Enter Reason:">কারণ লিখুন:</span></p>
-            <textarea id="rejectReason" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded p-2 text-xs mb-4 focus:border-red-500" data-bn="যেমন: আপনি কয়েন পাঠাননি..." data-en="E.g: Didn't send coins..." placeholder="যেমন: আপনি কয়েন পাঠাননি..."></textarea>
+            <textarea id="rejectReason" rows="2" class="lang-placeholder w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded p-2 text-xs mb-4 focus:border-red-500 transition" data-bn="যেমন: আপনি কয়েন পাঠাননি..." data-en="E.g: Didn't send coins..." placeholder="যেমন: আপনি কয়েন পাঠাননি..."></textarea>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeRejectModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded"><span class="lang-str" data-bn="ক্যান্সেল" data-en="Cancel">ক্যান্সেল</span></button>
-                <button onclick="confirmReject()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded"><span class="lang-str" data-bn="নিশ্চিত" data-en="Confirm">নিশ্চিত</span></button>
+                <button onclick="closeRejectModal()" class="px-3 py-1.5 bg-gray-200 dark:bg-slate-600 text-xs dark:text-white font-bold rounded transition"><span class="lang-str" data-bn="ক্যান্সেল" data-en="Cancel">ক্যান্সেল</span></button>
+                <button onclick="confirmReject()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded transition hover:bg-red-700"><span class="lang-str" data-bn="নিশ্চিত" data-en="Confirm">নিশ্চিত</span></button>
             </div>
         </div>
     </div>
@@ -1045,6 +1061,25 @@
         
         let notificationSound = null;
         try { notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); } catch(e) {}
+
+        // --- NEW: Animated Counter Logic ---
+        window.runCounter = function(elementId, targetValue, prefix = '', isCurrency = false) {
+            const el = document.getElementById(elementId);
+            if(!el) return;
+            const duration = 1500;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // Ease out quad
+                const easeProgress = progress * (2 - progress); 
+                let current = easeProgress * targetValue;
+                let displayVal = (isCurrency && current % 1 !== 0) ? current.toFixed(2) : Math.floor(current).toLocaleString('en-US');
+                el.innerText = prefix + displayVal;
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
 
         async function loadFirebaseBackground() {
             try {
@@ -1324,7 +1359,7 @@
                 if(action === 'register') {
                     let name = document.getElementById('regName').value.trim(); let uId = document.getElementById('regUserId').value.trim(); let pass = document.getElementById('regPassword').value; let cPass = document.getElementById('regConfirmPassword').value;
                     if(!name || !uId || !pass || !cPass) { errEl.innerText = window.t("সবগুলো তথ্য সঠিকভাবে দিন!", "Please fill all fields!"); errEl.classList.remove('hidden'); return; }
-                    if(pass !== cPass) { errEl.innerText = window.t("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে গঠন না!", "Passwords do not match!"); errEl.classList.remove('hidden'); return; }
+                    if(pass !== cPass) { errEl.innerText = window.t("পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মিলছে না!", "Passwords do not match!"); errEl.classList.remove('hidden'); return; }
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uId); const userDoc = await getDoc(userRef);
                     if(userDoc.exists()) { errEl.innerText = window.t("এই ইউজারনেমটি আগেই নেওয়া হয়েছে। অন্য নাম দিন।", "Username already exists."); errEl.classList.remove('hidden'); return; }
                     
@@ -1385,11 +1420,11 @@
                 if(globalSettings.coins) {
                     globalSettings.coins.forEach(coin => {
                         let btn = document.createElement('button'); btn.type = 'button'; let isActive = (coin.id === activeCoinId);
-                        let classes = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 ';
-                        classes += isActive ? 'border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2' : 'border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg';
+                        let classes = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 transform hover:-translate-y-1 hover:shadow-lg duration-300 ';
+                        classes += isActive ? 'border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2' : 'border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand';
                         btn.className = classes; btn.id = 'btn-' + coin.id;
                         let iconHtml = coin.logo ? `<img src="${coin.logo}" alt="${coin.name}" class="w-10 h-10 object-cover rounded-full mb-0.5 pointer-events-none shadow-sm">` : `<div class="bg-brand-light dark:bg-brand-dark/50 p-2 rounded-full mb-0.5 pointer-events-none"><i class="fa-solid fa-coins text-2xl text-brand dark:text-brand-light"></i></div>`;
-                        btn.innerHTML = `${iconHtml}<span class="text-sm font-black tracking-wide pointer-events-none">${coin.name}</span><div class="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded border mt-0.5 shadow-sm pointer-events-none"><span class="text-[11px] font-bold">1k = ৳${coin.price}</span></div>`;
+                        btn.innerHTML = `${iconHtml}<span class="text-sm font-black tracking-wide pointer-events-none">${coin.name}</span><div class="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded border mt-0.5 shadow-sm pointer-events-none transition"><span class="text-[11px] font-bold">1k = ৳${coin.price}</span></div>`;
                         btn.addEventListener('click', e => { e.preventDefault(); selectCoinUser(coin.id, coin.name, coin.price, coin.username); });
                         coinContainer.appendChild(btn);
                     });
@@ -1496,14 +1531,25 @@
             document.getElementById('coinType').value = name; 
             document.getElementById('selectedCoinRate').value = price;
             
-            document.querySelectorAll('.coin-btn').forEach(btn => { btn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg'; });
+            document.querySelectorAll('.coin-btn').forEach(btn => { btn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 transform hover:-translate-y-1 hover:shadow-lg duration-300 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand'; });
             const activeBtn = document.getElementById('btn-' + id);
-            if(activeBtn) activeBtn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2';
+            if(activeBtn) activeBtn.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 transform -translate-y-1 shadow-lg duration-300 border-brand bg-brand-light dark:bg-brand-dark/30 ring-2 ring-brand-light border-2';
             
             document.getElementById('step4-initial').classList.add('hidden');
             const transferSec = document.getElementById('transfer-section');
             if(username && username.trim() !== '') { transferSec.classList.remove('hidden'); document.getElementById('dynamic-username').textContent = username; document.getElementById('dynamic-username').setAttribute('data-username', username); } else { transferSec.classList.add('hidden'); }
             calculateTotalUser();
+            
+            // Auto Scroll smoothly to amount section (Step 2) when a category is tapped
+            setTimeout(() => {
+                const stepBox = document.getElementById('step2-box');
+                if(stepBox) {
+                    stepBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // slight highlight effect
+                    stepBox.classList.add('ring-4', 'ring-brand/30', 'transition-all', 'duration-500');
+                    setTimeout(()=> stepBox.classList.remove('ring-4', 'ring-brand/30'), 800);
+                }
+            }, 100);
         }
 
         window.calculateTotalUser = function() {
@@ -1533,9 +1579,9 @@
                 submitBaseTotal = baseTotalTk % 1 !== 0 ? parseFloat(baseTotalTk.toFixed(2)) : baseTotalTk;
                 let formattedBase = submitBaseTotal;
                 
-                if(calcRate) calcRate.textContent = price;
-                if(calcAmount) calcAmount.textContent = amount;
-                if(calcTotalVal) calcTotalVal.textContent = formattedBase;
+                if(calcRate) window.runCounter('calcRate', price);
+                if(calcAmount) window.runCounter('calcAmount', amount);
+                if(calcTotalVal) window.runCounter('calcTotalVal', formattedBase);
                 
                 if(eqRate) eqRate.textContent = price;
                 if(eqAmount) eqAmount.textContent = amount;
@@ -1549,7 +1595,7 @@
                     submitChargeAmt = rate; 
                     submitChargeName = 'Binance Rate';
 
-                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
+                    if(calcFinalAmt) window.runCounter('calcFinalAmt', dollars, '$', true); 
                     if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
                     
                     if(chargeRowDetails) {
@@ -1571,7 +1617,7 @@
                     let netTk = baseTotalTk - charge;
                     currentNetAmountDisplay = `৳${netTk % 1 !== 0 ? netTk.toFixed(2) : netTk}`; 
                     
-                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay;
+                    if(calcFinalAmt) window.runCounter('calcFinalAmt', netTk, '৳', true);
                     if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
                     
                     if (charge > 0) {
@@ -1579,7 +1625,7 @@
                         if(chargeRowDetails) {
                             calcChargeName.innerHTML = method + " " + window.t("সেন্ড মানি চার্জ:", "Send Money Charge:");
                             calcChargeName.parentElement.className = "flex justify-between items-center text-sm font-bold mb-3 border-b border-green-200 dark:border-green-800/50 pb-3 text-red-600 dark:text-red-400";
-                            calcChargeAmt.textContent = `-৳${charge}`;
+                            window.runCounter('calcChargeAmt', charge, '-৳');
                             chargeRowDetails.classList.remove('hidden');
                             if(eqChargeStr) eqChargeStr.textContent = `- ৳${charge}`;
                         }
@@ -1594,7 +1640,7 @@
                     submitChargeAmt = 0;
                     submitChargeName = 'None';
                     
-                    if(calcFinalAmt) calcFinalAmt.textContent = currentNetAmountDisplay; 
+                    if(calcFinalAmt) window.runCounter('calcFinalAmt', formattedBase, '৳', true); 
                     if(eqFinalAmt) eqFinalAmt.textContent = currentNetAmountDisplay;
                     if(chargeRowDetails) chargeRowDetails.classList.add('hidden');
                     if(eqChargeStr) eqChargeStr.textContent = `- ৳0`;
@@ -1617,7 +1663,7 @@
         if(document.getElementById('proofImage')) {
             document.getElementById('proofImage').addEventListener('change', function(event) {
                 const file = event.target.files[0];
-                if (file) { document.getElementById('fileNameDisplay').textContent = window.t("ছবি সিলেক্ট করা হয়েছে", "Image selected"); document.getElementById('fileNameDisplay').classList.remove('hidden'); document.getElementById('uploadIcon').className = 'fa-solid fa-file-circle-check text-3xl text-green-500 mb-1 pointer-events-none'; window.compressImage(file, function(cb) { uploadedImageBase64 = cb; }); }
+                if (file) { document.getElementById('fileNameDisplay').textContent = window.t("ছবি সিলেক্ট করা হয়েছে", "Image selected"); document.getElementById('fileNameDisplay').classList.remove('hidden'); document.getElementById('uploadIcon').className = 'fa-solid fa-file-circle-check text-3xl text-green-500 mb-1 pointer-events-none transition transform scale-110'; window.compressImage(file, function(cb) { uploadedImageBase64 = cb; }); }
             });
         }
 
@@ -1628,16 +1674,16 @@
             const pendingReqs = allRequests.filter(r => r.userId === userId && r.status === 'pending');
             if (pendingReqs.length === 0) { pendingSec.classList.add('hidden'); 
             } else {
-                pendingSec.classList.remove('hidden'); document.getElementById('pendingCountBadge').textContent = pendingReqs.length; pendingContainer.innerHTML = '';
+                pendingSec.classList.remove('hidden'); window.runCounter('pendingCountBadge', pendingReqs.length); pendingContainer.innerHTML = '';
                 pendingReqs.forEach(req => {
                     let chargeLine = req.chargeAmt > 0 && req.method !== 'Binance' ? `<div class="text-[10px] text-red-500 border-b border-red-200 dark:border-red-900/50 mb-0.5 pb-0.5">-৳${req.chargeAmt} (${window.t('চার্জ', 'Charge')})</div>` : '';
                     if(req.method === 'Binance') chargeLine = `<div class="text-[10px] text-blue-500 border-b border-blue-200 dark:border-blue-900/50 mb-0.5 pb-0.5">Rate: ৳${req.chargeAmt}/$</div>`;
 
                     pendingContainer.innerHTML += `
-                    <div class="bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-slate-600 p-3 rounded-lg shadow-sm relative">
+                    <div class="bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-slate-600 p-3 rounded-lg shadow-sm relative transition duration-300 hover:shadow-md">
                         <div class="flex justify-between items-center mb-2 border-b border-blue-100 dark:border-slate-700 pb-2">
                             <span class="font-bold text-blue-700 dark:text-blue-400 text-[11px]"><i class="fa-solid fa-clock mr-1"></i> ${window.t('অ্যাডমিন চেক করছে', 'Admin is checking')}</span>
-                            <span class="text-[10px] font-mono text-brand font-black bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')"></i></span>
+                            <span class="text-[10px] font-mono text-brand font-black bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand transition" onclick="copyNumber('${req.orderId}')"></i></span>
                         </div>
                         <div class="flex justify-between items-end mt-2">
                             <div>
@@ -1659,49 +1705,32 @@
         window.closeUserHistoryModal = function() { document.getElementById('userHistoryModal').classList.add('hidden'); }
 
         function renderUserHistoryModal() {
-            const userId = loggedInUserId; 
-            const container = document.getElementById('userHistoryContainer'); 
-            const statsContainer = document.getElementById('userCoinStatsContainer');
-            
+            const userId = loggedInUserId, container = document.getElementById('userHistoryContainer'); 
             if(!container) return;
             container.innerHTML = '';
             
             let userTotalTk = 0;
             let userPendingCount = 0;
-            let userCoinStats = {};
-
-            if (globalSettings.coins) {
-                globalSettings.coins.forEach(c => { userCoinStats[c.name] = { totalTk: 0, totalCoins: 0 }; });
-            }
 
             if (!userId || allRequests.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
                 document.getElementById('userTotalPaymentUI').innerText = '৳0';
                 document.getElementById('userTotalPendingUI').innerText = '0';
-                if(statsContainer) statsContainer.innerHTML = `<div class="col-span-full text-center py-2 text-gray-500 text-[11px] font-bold bg-gray-50 dark:bg-slate-800 rounded border border-dashed">${window.t('কোনো কয়েন ডাটা নেই', 'No Coin Data')}</div>`;
                 return; 
             }
             
-            // Filter strictly to only show the logged-in user's data
             const myReqs = allRequests.filter(r => r.userId === userId); 
             
             if (myReqs.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
                 document.getElementById('userTotalPaymentUI').innerText = '৳0';
                 document.getElementById('userTotalPendingUI').innerText = '0';
-                if(statsContainer) statsContainer.innerHTML = `<div class="col-span-full text-center py-2 text-gray-500 text-[11px] font-bold bg-gray-50 dark:bg-slate-800 rounded border border-dashed">${window.t('কোনো কয়েন ডাটা নেই', 'No Coin Data')}</div>`;
                 return; 
             }
 
             myReqs.forEach(req => {
                 if (req.status === 'paid') {
-                    let reqTotal = parseFloat(req.total) || 0;
-                    userTotalTk += reqTotal;
-                    
-                    if (!userCoinStats[req.type]) userCoinStats[req.type] = { totalTk: 0, totalCoins: 0 };
-                    userCoinStats[req.type].totalTk += reqTotal;
-                    userCoinStats[req.type].totalCoins += parseFloat(req.amount) || 0;
-                    
+                    userTotalTk += parseFloat(req.total) || 0;
                 } else if (req.status === 'pending') {
                     userPendingCount++;
                 }
@@ -1721,9 +1750,9 @@
                 if(req.method === 'Binance') chargeLine = `<div class="text-[9px] text-blue-500 border-b border-blue-200 dark:border-blue-900/50 mb-0.5 pb-0.5">Rate: ৳${req.chargeAmt}/$</div>`;
 
                 container.innerHTML += `
-                <div class="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded p-2.5 shadow-sm">
+                <div class="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded p-2.5 shadow-sm transition hover:shadow-md">
                     <div class="flex justify-between items-center mb-2 border-b dark:border-slate-700 pb-1.5">
-                        <span class="text-[10px] font-mono font-black text-brand bg-brand-light/20 px-1.5 py-0.5 rounded">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand" onclick="copyNumber('${req.orderId}')" title="Copy Order ID"></i></span>
+                        <span class="text-[10px] font-mono font-black text-brand bg-brand-light/20 px-1.5 py-0.5 rounded">${req.orderId || ''} <i class="fa-regular fa-copy ml-1 text-slate-400 cursor-pointer hover:text-brand transition" onclick="copyNumber('${req.orderId}')" title="Copy Order ID"></i></span>
                         <span class="text-[10px] font-bold text-gray-500">${shortDate}</span>
                     </div>
                     <div class="flex justify-between items-end mt-1 mb-2">
@@ -1742,38 +1771,9 @@
                 </div>`;
             });
             
-            // Update Top Global Stats for User
-            document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
-            document.getElementById('userTotalPendingUI').innerText = userPendingCount;
-            
-            // Update Coin Based Stats for User
-            if(statsContainer) {
-                statsContainer.innerHTML = '';
-                let hasUserStats = false;
-                for (const [coinName, data] of Object.entries(userCoinStats)) {
-                    let isDefinedCoin = globalSettings.coins && globalSettings.coins.find(c => c.name === coinName);
-                    if (isDefinedCoin || data.totalTk > 0 || data.totalCoins > 0) {
-                        hasUserStats = true;
-                        statsContainer.innerHTML += `
-                        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">
-                            <h5 class="font-bold text-[13px] mb-2 flex items-center border-b dark:border-slate-700 pb-1 text-gray-800 dark:text-gray-200"><i class="fa-solid fa-coins text-yellow-500 mr-1.5"></i> ${coinName}</h5>
-                            <div class="flex justify-between items-end mt-1">
-                                <div>
-                                    <p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('মোট পেইড', 'Total Paid')}</p>
-                                    <p class="text-[14px] font-black text-green-600">৳${data.totalTk % 1 !== 0 ? data.totalTk.toFixed(2) : data.totalTk.toLocaleString('en-US')}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('রিসিভড', 'Received')}</p>
-                                    <p class="text-[13px] font-bold text-yellow-600 dark:text-yellow-500">${data.totalCoins}k</p>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-                }
-                if (!hasUserStats) {
-                    statsContainer.innerHTML = `<div class="col-span-full text-center py-3 text-gray-500 text-[11px] font-bold bg-gray-50 dark:bg-slate-800 rounded border border-dashed">${window.t('কোনো কয়েন ডাটা নেই', 'No Coin Data')}</div>`;
-                }
-            }
+            // Apply Animated Counter
+            window.runCounter('userTotalPaymentUI', userTotalTk, '৳', true);
+            window.runCounter('userTotalPendingUI', userPendingCount);
         }
 
         function showAlert(type, title, message) {
@@ -1843,8 +1843,8 @@
                         archived: false
                     });
 
-                    document.getElementById('coinType').value = ''; document.getElementById('coinAmount').value = ''; document.getElementById('paymentMethod').value = ''; document.getElementById('accountNumber').value = ''; document.getElementById('proofImage').value = ''; document.getElementById('telegramUsername').value = ''; activeCoinId = null; document.getElementById('calculatorDisplay').classList.add('hidden'); uploadedImageBase64 = null; document.getElementById('uploadIcon').className = 'fa-solid fa-image text-3xl text-brand mb-1 pointer-events-none'; document.getElementById('fileNameDisplay').classList.add('hidden'); document.getElementById('step4-initial').classList.remove('hidden'); document.getElementById('transfer-section').classList.add('hidden');
-                    document.querySelectorAll('.coin-btn').forEach(b => { b.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand hover:shadow-lg'; });
+                    document.getElementById('coinType').value = ''; document.getElementById('coinAmount').value = ''; document.getElementById('paymentMethod').value = ''; document.getElementById('accountNumber').value = ''; document.getElementById('proofImage').value = ''; document.getElementById('telegramUsername').value = ''; activeCoinId = null; document.getElementById('calculatorDisplay').classList.add('hidden'); uploadedImageBase64 = null; document.getElementById('uploadIcon').className = 'fa-solid fa-image text-3xl text-brand mb-1 pointer-events-none transition'; document.getElementById('fileNameDisplay').classList.add('hidden'); document.getElementById('step4-initial').classList.remove('hidden'); document.getElementById('transfer-section').classList.add('hidden');
+                    document.querySelectorAll('.coin-btn').forEach(b => { b.className = 'coin-btn relative py-3 px-2 rounded-xl transition-all font-bold text-gray-700 dark:text-gray-200 flex flex-col items-center gap-1.5 border-brand-light dark:border-slate-600 bg-white dark:bg-slate-800 border-2 hover:border-brand transition duration-300'; });
 
                     if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#10b981', '#f59e0b', '#e11d48', '#3b82f6'] });
                     
@@ -1877,7 +1877,14 @@
                 if(sec) sec.classList.add('hidden'); if(btn) btn.classList.remove('tab-active'); 
             });
             const activeSec = document.getElementById('sec-' + tab); const activeBtn = document.getElementById('tab-' + tab);
-            if(activeSec) activeSec.classList.remove('hidden'); if(activeBtn) activeBtn.classList.add('tab-active');
+            if(activeSec) {
+                activeSec.classList.remove('hidden');
+                // Re-trigger animation by re-adding the class
+                activeSec.classList.remove('fade-in-up');
+                void activeSec.offsetWidth; // trigger reflow
+                activeSec.classList.add('fade-in-up');
+            }
+            if(activeBtn) activeBtn.classList.add('tab-active');
         }
 
         window.adminCustomAlert = function(title, msg) {
@@ -1890,7 +1897,7 @@
         window.adminCustomConfirm = function(title, msg) {
             return new Promise(resolve => {
                 document.getElementById('adminConfirmTitle').innerText = title; document.getElementById('adminConfirmMessage').innerText = msg;
-                document.getElementById('adminConfirmBtns').innerHTML = `<button onclick="resolveAdminConfirm(false)" class="flex-1 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white font-bold py-1.5 rounded transition text-xs">${window.t('বাতিল', 'Cancel')}</button><button onclick="resolveAdminConfirm(true)" class="flex-1 bg-red-600 text-white font-bold py-1.5 rounded shadow transition text-xs">${window.t('নিশ্চিত', 'Confirm')}</button>`;
+                document.getElementById('adminConfirmBtns').innerHTML = `<button onclick="resolveAdminConfirm(false)" class="flex-1 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white font-bold py-1.5 rounded transition text-xs hover:bg-gray-300 dark:hover:bg-slate-600">${window.t('বাতিল', 'Cancel')}</button><button onclick="resolveAdminConfirm(true)" class="flex-1 bg-red-600 text-white font-bold py-1.5 rounded shadow transition text-xs hover:bg-red-700">${window.t('নিশ্চিত', 'Confirm')}</button>`;
                 document.getElementById('adminConfirmModal').classList.remove('hidden'); modalResolver = resolve;
             });
         }
@@ -1956,12 +1963,12 @@
 
             allUsers.forEach(user => {
                 let statusBadge = user.blocked ? `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-red-200">Blocked</span>` : `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-green-200">Active</span>`;
-                let actionBtn = user.blocked ? `<button onclick="toggleUserBlock('${user.dbId}', true)" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-green-600 w-14">Unblock</button>` : `<button onclick="toggleUserBlock('${user.dbId}', false)" class="bg-red-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-red-600 w-14">Block</button>`;
-                let copyBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.dbId}')" title="Copy Username"></i>`;
-                let copyPassBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700" onclick="copyNumber('${user.password}')" title="Copy Password"></i>`;
+                let actionBtn = user.blocked ? `<button onclick="toggleUserBlock('${user.dbId}', true)" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-green-600 w-14 transition">Unblock</button>` : `<button onclick="toggleUserBlock('${user.dbId}', false)" class="bg-red-500 text-white px-2 py-1 rounded text-[10px] font-bold hover:bg-red-600 w-14 transition">Block</button>`;
+                let copyBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700 transition" onclick="copyNumber('${user.dbId}')" title="Copy Username"></i>`;
+                let copyPassBtn = `<i class="fa-regular fa-copy ml-1 cursor-pointer text-blue-500 hover:text-blue-700 transition" onclick="copyNumber('${user.password}')" title="Copy Password"></i>`;
                 let deleteBtn = `<button onclick="deleteUser('${user.dbId}')" class="bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded transition text-[10px] font-bold"><i class="fa-solid fa-trash-can mr-1"></i> Delete</button>`;
 
-                uBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
+                uBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition"><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.name || 'N/A'}</td><td class="p-3 text-xs font-bold text-gray-800 dark:text-gray-200">${user.dbId} ${copyBtn}</td><td class="p-3 text-xs font-mono text-gray-600 dark:text-gray-400">${user.password} ${copyPassBtn}</td><td class="p-3 text-center">${statusBadge}</td><td class="p-3 text-center">${actionBtn}</td><td class="p-3 text-center">${deleteBtn}</td></tr>`;
             });
         }
 
@@ -1976,7 +1983,7 @@
             const foundReq = allRequests.find(r => r.orderId === searchId);
             
             if(!foundReq) {
-                resultContent.innerHTML = `<div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg border border-red-200 dark:border-red-800 text-center font-bold text-sm"><i class="fa-solid fa-circle-exclamation text-xl mb-2 block"></i> ${window.t('এই অর্ডার আইডির কোনো রিকোয়েস্ট পাওয়া যায়নি!', 'No request found for this Order ID!')}</div>`;
+                resultContent.innerHTML = `<div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg border border-red-200 dark:border-red-800 text-center font-bold text-sm fade-in-up"><i class="fa-solid fa-circle-exclamation text-xl mb-2 block"></i> ${window.t('এই অর্ডার আইডির কোনো রিকোয়েস্ট পাওয়া যায়নি!', 'No request found for this Order ID!')}</div>`;
                 return;
             }
 
@@ -1986,13 +1993,13 @@
             else statusBadge = `<span class="bg-blue-100 text-blue-800 text-xs font-black px-2 py-1 rounded border border-blue-300 shadow-sm"><i class="fa-solid fa-spinner fa-spin mr-1"></i>${window.t('পেন্ডিং আছে', 'Pending')}</span>`;
 
             resultContent.innerHTML = `
-                <div class="bg-white dark:bg-slate-800 border-2 border-brand-light dark:border-brand-dark rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 border-2 border-brand-light dark:border-brand-dark rounded-xl p-4 shadow-sm relative overflow-hidden fade-in-up">
                     ${foundReq.archived ? `<div class="absolute -right-6 top-3 bg-yellow-500 text-white text-[9px] font-black py-0.5 px-8 transform rotate-45">ARCHIVED</div>` : ''}
                     
                     <div class="flex justify-between items-start mb-4 border-b dark:border-slate-700 pb-3">
                         <div>
                             <div class="text-[10px] text-gray-500 font-bold mb-1">${window.t('অর্ডার আইডি:', 'Order ID:')}</div>
-                            <div class="font-mono text-lg font-black text-brand bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600 inline-block">${foundReq.orderId}</div>
+                            <div class="font-mono text-lg font-black text-brand bg-brand-light/20 px-2 py-0.5 rounded border border-brand-light dark:border-slate-600 inline-block transition hover:bg-brand-light/40 cursor-pointer" onclick="copyNumber('${foundReq.orderId}')">${foundReq.orderId}</div>
                         </div>
                         <div class="text-right">
                             ${statusBadge}
@@ -2011,14 +2018,14 @@
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-slate-700/50 p-3 rounded-lg border dark:border-slate-600 mb-4">
+                    <div class="bg-gray-50 dark:bg-slate-700/50 p-3 rounded-lg border dark:border-slate-600 mb-4 transition">
                         <div class="flex justify-between items-center mb-2">
                             <div class="text-[11px] font-bold text-gray-600 dark:text-gray-400">${window.t('পেমেন্ট মেথড:', 'Payment Method:')} <span class="text-gray-900 dark:text-white">${foundReq.method}</span></div>
                             <div class="font-black text-green-600 text-lg">${foundReq.netAmountDisplay || `৳${foundReq.total}`}</div>
                         </div>
                         <div class="flex items-center">
                             <div class="text-[13px] font-mono font-black text-gray-800 dark:text-gray-200 mr-2">${foundReq.account}</div>
-                            <button onclick="copyNumber('${foundReq.account}')" class="text-blue-500 hover:text-blue-700"><i class="fa-regular fa-copy"></i></button>
+                            <button onclick="copyNumber('${foundReq.account}')" class="text-blue-500 hover:text-blue-700 transition"><i class="fa-regular fa-copy"></i></button>
                         </div>
                         ${foundReq.paymentNote ? `<div class="text-[10px] text-yellow-600 font-bold mt-1">${foundReq.paymentNote}</div>` : ''}
                     </div>
@@ -2031,9 +2038,6 @@
             `;
         }
         
-        // ==========================================
-        // ADMIN USER PROOFS SEARCH (BUG FIXED)
-        // ==========================================
         window.searchUserProof = function() {
             try {
                 let inputElement = document.getElementById('searchProofUsername');
@@ -2051,14 +2055,13 @@
                     return; 
                 }
 
-                // Added strict checking and fallback to prevent '.toLowerCase()' errors on undefined data
                 let foundData = allRequests.filter(entry => {
                     let uId = entry.userId || '';
                     return uId.trim().toLowerCase() === username;
                 });
 
                 if (foundData.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-500 font-bold text-sm">${window.t('এই ইউজারের কোনো রেকর্ড পাওয়া যায়নি।', 'No records found for this user.')}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-500 font-bold text-sm fade-in-up">${window.t('এই ইউজারের কোনো রেকর্ড পাওয়া যায়নি।', 'No records found for this user.')}</td></tr>`;
                     return;
                 }
 
@@ -2070,12 +2073,11 @@
                     
                     let amountDisplay = req.netAmountDisplay || `৳${req.total || 0}`;
                     
-                    // Button Safety Checks for images
                     let proofBtnHtml = req.image ? `<button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap mb-1 w-full"><i class="fa-solid fa-expand"></i> Image</button>` : '';
                     let adminProofHtml = req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-700 bg-green-100 px-2 py-1 rounded font-bold text-[10px] hover:bg-green-200 transition whitespace-nowrap w-full"><i class="fa-solid fa-file-invoice"></i> Admin</button>` : '';
 
                     tbody.innerHTML += `
-                        <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                        <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
                             <td class="p-2 text-[10px] font-bold">${req.date || '-'}</td>
                             <td class="p-2 text-[10px] font-mono font-black text-brand">${req.orderId || '-'}</td>
                             <td class="p-2 text-[11px] font-bold">${req.amount || 0}k ${req.type || '-'}</td>
@@ -2099,7 +2101,6 @@
             }
         }
         
-        // CSV DOWNLOAD (BUG FIXED)
         window.downloadProofCSV = function() {
             try {
                 let inputElement = document.getElementById('searchProofUsername');
@@ -2164,22 +2165,23 @@
 
                 let tgDisplay = req.telegramUser ? `<a href="https://t.me/${req.telegramUser.replace('@', '').trim()}" target="_blank" title="${window.t('টেলিগ্রামে মেসেজ দিন', 'Message on Telegram')}" class="text-[10px] font-bold text-blue-600 dark:text-blue-400 mt-1 inline-flex items-center hover:underline bg-blue-50 dark:bg-blue-900/30 px-1 py-0.5 rounded"><i class="fa-brands fa-telegram mr-1"></i> ${req.telegramUser}</a>` : `<span class="text-[9px] text-gray-400 mt-1 block">(No TG)</span>`;
                 let paymentNoteDisplay = req.paymentNote ? `<div class="text-[9px] text-yellow-600 dark:text-yellow-400 font-bold mt-1 bg-yellow-50 dark:bg-yellow-900/20 px-1 rounded inline-block">${req.paymentNote}</div>` : '';
-                let numberDisplay = `<div class="text-[11px] font-bold text-gray-900 dark:text-gray-200 mb-0.5 whitespace-nowrap">${req.method}</div><div class="flex items-center flex-wrap"><div class="text-[11px] font-mono tracking-wider font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-brand bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border dark:border-slate-600 inline-flex items-center whitespace-nowrap" onclick="copyNumber('${req.account}')">${req.account} <i class="fa-regular fa-copy ml-1"></i></div></div>`;
-                let orderDateDisplay = `<div class="text-[10px] font-bold text-gray-600 dark:text-gray-400">${req.date}</div><div class="text-[10px] font-mono font-black text-brand mt-1 bg-brand-light/30 px-1 py-0.5 rounded border border-brand-light dark:border-brand-dark/50 inline-flex items-center cursor-pointer hover:bg-brand-light/60" onclick="copyNumber('${req.orderId}')">${req.orderId || 'N/A'} <i class="fa-regular fa-copy ml-1 text-gray-500"></i></div>`;
+                let numberDisplay = `<div class="text-[11px] font-bold text-gray-900 dark:text-gray-200 mb-0.5 whitespace-nowrap">${req.method}</div><div class="flex items-center flex-wrap"><div class="text-[11px] font-mono tracking-wider font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-brand bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border dark:border-slate-600 inline-flex items-center whitespace-nowrap transition" onclick="copyNumber('${req.account}')">${req.account} <i class="fa-regular fa-copy ml-1"></i></div></div>`;
+                let orderDateDisplay = `<div class="text-[10px] font-bold text-gray-600 dark:text-gray-400">${req.date}</div><div class="text-[10px] font-mono font-black text-brand mt-1 bg-brand-light/30 px-1 py-0.5 rounded border border-brand-light dark:border-brand-dark/50 inline-flex items-center cursor-pointer hover:bg-brand-light/60 transition" onclick="copyNumber('${req.orderId}')">${req.orderId || 'N/A'} <i class="fa-regular fa-copy ml-1 text-gray-500"></i></div>`;
                 let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
 
                 if (req.status === 'pending') {
                     pendingCount++;
-                    if(pBody) pBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[90px]"><div class="text-[11px] font-black text-brand whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[11px] font-black text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded inline-block mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2"><textarea onchange="saveAdminNote('${req.dbId}', this.value)" placeholder="${window.t('নোট...', 'Note...')}" class="w-full text-[10px] font-medium p-1 border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-700 dark:text-white h-10 min-w-[100px]">${req.adminNote||''}</textarea></td><td class="p-2 text-center"><button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> ${window.t('ছবি', 'Image')}</button></td><td class="p-2 text-center space-y-1 min-w-[80px]"><button onclick="openApproveModal('${req.dbId}')" class="w-full bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 font-bold text-[10px] whitespace-nowrap">${window.t('পে', 'Pay')}</button><button onclick="openRejectModal('${req.dbId}')" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 px-2 py-1 rounded hover:bg-red-200 font-bold text-[10px] whitespace-nowrap">${window.t('বাতিল', 'Reject')}</button><button onclick="handleDeleteHistory('${req.dbId}')" class="text-[9px] text-red-500 hover:underline w-full">${window.t('ডিলিট', 'Delete')}</button></td></tr>`;
+                    if(pBody) pBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[90px]"><div class="text-[11px] font-black text-brand whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[11px] font-black text-green-600 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded inline-block mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2"><textarea onchange="saveAdminNote('${req.dbId}', this.value)" placeholder="${window.t('নোট...', 'Note...')}" class="w-full text-[10px] font-medium p-1 border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-700 dark:text-white h-10 min-w-[100px] transition">${req.adminNote||''}</textarea></td><td class="p-2 text-center"><button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> ${window.t('ছবি', 'Image')}</button></td><td class="p-2 text-center space-y-1 min-w-[80px]"><button onclick="openApproveModal('${req.dbId}')" class="w-full bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 font-bold text-[10px] whitespace-nowrap transition">${window.t('পে', 'Pay')}</button><button onclick="openRejectModal('${req.dbId}')" class="w-full bg-red-100 text-red-700 dark:bg-red-900/30 px-2 py-1 rounded hover:bg-red-200 font-bold text-[10px] whitespace-nowrap transition">${window.t('বাতিল', 'Reject')}</button><button onclick="handleDeleteHistory('${req.dbId}')" class="text-[9px] text-red-500 hover:underline w-full transition">${window.t('ডিলিট', 'Delete')}</button></td></tr>`;
                 } else if (req.archived === true) {
-                    if(aBody) aBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td></tr>`;
+                    if(aBody) aBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand transition"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5 transition"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td></tr>`;
                 } else {
-                    if(hBody) hBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="handleDeleteHistory('${req.dbId}')" class="text-red-500 hover:bg-red-100 p-1.5 rounded"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
+                    if(hBody) hBody.innerHTML += `<tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition"><td class="p-2 min-w-[90px]">${orderDateDisplay}</td><td class="p-2 min-w-[100px]"><div class="text-[10px] font-bold whitespace-nowrap">${req.amount}k ${req.type}</div><div class="text-[10px] font-black text-green-600 mt-0.5">${amountDisplay}</div>${paymentNoteDisplay}</td><td class="p-2 min-w-[120px]">${numberDisplay}${tgDisplay}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="openImageModal('${req.image}')" class="text-gray-500 hover:text-brand transition"><i class="fa-solid fa-image"></i></button>${req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-500 hover:text-green-700 ml-1.5 transition"><i class="fa-solid fa-file-invoice"></i></button>` : ''}</td><td class="p-2 text-center whitespace-nowrap">${statusBadge}</td><td class="p-2 text-center whitespace-nowrap"><button onclick="handleDeleteHistory('${req.dbId}')" class="text-red-500 hover:bg-red-100 p-1.5 rounded transition"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
                 }
             });
 
-            const statPending = document.getElementById('stat-pending'); if(statPending) statPending.innerText = pendingCount; 
-            const statTotal = document.getElementById('stat-total-paid'); if(statTotal) statTotal.innerText = '৳' + (totalPaidTkAll % 1 !== 0 ? totalPaidTkAll.toFixed(2) : totalPaidTkAll.toLocaleString('en-US'));
+            // Applying Animated Counter for Admin UI
+            window.runCounter('stat-pending', pendingCount); 
+            window.runCounter('stat-total-paid', totalPaidTkAll, '৳', true);
             
             const statsContainer = document.getElementById('dynamic-stats-container'); 
             if(statsContainer) {
@@ -2188,7 +2190,13 @@
                     let isDefinedCoin = globalSettings.coins && globalSettings.coins.find(c => c.name === coinName);
                     if (isDefinedCoin || data.totalTk > 0 || data.totalCoins > 0) {
                         hasStats = true;
-                        statsContainer.innerHTML += `<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm"><h5 class="font-bold text-[13px] mb-2 flex items-center border-b dark:border-slate-700 pb-1"><i class="fa-solid fa-coins text-brand mr-1"></i> ${coinName}</h5><div class="flex justify-between items-end"><div><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('মোট পেইড', 'Total Paid')}</p><p class="text-[15px] font-black text-green-600">৳${data.totalTk % 1 !== 0 ? data.totalTk.toFixed(2) : data.totalTk.toLocaleString('en-US')}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('রিসিভড', 'Received')}</p><p class="text-[13px] font-bold text-brand">${data.totalCoins}k</p></div></div></div>`;
+                        // Generating a unique ID for the counter
+                        const tkId = `admin-stat-tk-${coinName.replace(/\s+/g, '-')}`;
+                        
+                        statsContainer.innerHTML += `<div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm transition hover:shadow-md"><h5 class="font-bold text-[13px] mb-2 flex items-center border-b dark:border-slate-700 pb-1"><i class="fa-solid fa-coins text-brand mr-1"></i> ${coinName}</h5><div class="flex justify-between items-end"><div><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('মোট পেইড', 'Total Paid')}</p><p class="text-[15px] font-black text-green-600" id="${tkId}">৳${data.totalTk % 1 !== 0 ? data.totalTk.toFixed(2) : data.totalTk.toLocaleString('en-US')}</p></div><div class="text-right"><p class="text-[10px] text-gray-500 font-bold mb-0.5">${window.t('রিসিভড', 'Received')}</p><p class="text-[13px] font-bold text-brand">${data.totalCoins}k</p></div></div></div>`;
+                        
+                        // Fire counter right after insertion
+                        setTimeout(() => window.runCounter(tkId, data.totalTk, '৳', true), 50);
                     }
                 }
                 if (!hasStats) statsContainer.innerHTML = `<div class="col-span-full text-center py-2 text-gray-500 text-[11px] font-bold bg-gray-50 rounded border border-dashed">${window.t('কোনো কয়েন ডাটা নেই', 'No Coin Data')}</div>`;
@@ -2384,7 +2392,7 @@
             globalSettings.coins.forEach((c, i) => {
                 let logoHtml = c.logo ? `<img src="${c.logo}" class="w-8 h-8 rounded-full object-cover mr-2 border dark:border-slate-600">` : `<div class="w-8 h-8 rounded-full bg-brand-light dark:bg-brand-dark/50 flex items-center justify-center mr-2 text-brand"><i class="fa-solid fa-coins text-xs"></i></div>`;
                 list.innerHTML += `
-                <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-600 relative shadow-sm flex items-center">
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border dark:border-slate-600 relative shadow-sm flex items-center transition hover:shadow-md">
                     ${logoHtml}
                     <div>
                         <div class="font-bold text-sm leading-tight pr-14">${c.name}</div>
@@ -2392,8 +2400,8 @@
                         ${c.username ? `<div class="text-[10px] font-mono text-brand bg-brand-light/40 px-1.5 py-0.5 mt-1 rounded inline-block ml-1 border border-brand-light">ID: ${c.username}</div>` : ''}
                     </div>
                     <div class="absolute top-1/2 -translate-y-1/2 right-2 flex gap-1">
-                        <button onclick="promptEditRate(${i})" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded" title="Edit Rate"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
-                        <button onclick="handleRemoveCoin(${i})" class="text-red-500 hover:bg-red-100 p-1.5 rounded" title="Delete"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <button onclick="promptEditRate(${i})" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded transition" title="Edit Rate"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                        <button onclick="handleRemoveCoin(${i})" class="text-red-500 hover:bg-red-100 p-1.5 rounded transition" title="Delete"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </div>
                 </div>`;
             });
@@ -2413,7 +2421,7 @@
         }
 
         window.handleRemoveCoin = async function(i) { if(await window.adminCustomConfirm(window.t('সতর্কতা', 'Warning'), window.t('কয়েনটি ডিলিট করবেন?', 'Delete this coin?'))) { globalSettings.coins.splice(i, 1); forceSaveAndAlert(window.t('কয়েন ডিলিট করা হয়েছে!', 'Coin Deleted!')); } }
-        window.toggleSound = function() { isSoundEnabled = !isSoundEnabled; document.getElementById('soundToggleBtn').querySelector('i').className = isSoundEnabled ? 'fa-solid fa-bell text-sm text-green-300' : 'fa-solid fa-bell-slash text-sm text-gray-400'; }
+        window.toggleSound = function() { isSoundEnabled = !isSoundEnabled; document.getElementById('soundToggleBtn').querySelector('i').className = isSoundEnabled ? 'fa-solid fa-bell text-sm text-green-300 transition' : 'fa-solid fa-bell-slash text-sm text-gray-400 transition'; }
 
         // ==========================================
         //              APP INITIALIZATION
