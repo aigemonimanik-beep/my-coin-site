@@ -56,7 +56,7 @@
     <div id="js-error-fallback" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center hidden">
         <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
         <h2 class="text-xl font-bold text-gray-800">Please Wait...</h2>
-        <p class="text-gray-500 text-sm mt-2">Connecting to server.</p>
+        <p class="text-gray-500 text-sm mt-2">Connecting to server or loading failed.</p>
     </div>
 
     <!-- ========================================== -->
@@ -201,7 +201,6 @@
                 </div>
 
                 <div class="mt-6 flex flex-col gap-3">
-                    <!-- ALL PROOF FOLDER BUTTON -->
                     <button type="button" onclick="closeUserProfileModal(); openUserHistoryModal();" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 font-bold py-2.5 rounded-xl transition flex justify-center items-center text-sm border border-blue-200 dark:border-blue-800 shadow-sm">
                         <i class="fa-solid fa-folder-open mr-2"></i><span class="lang-str" data-bn="সব হিস্ট্রি ও প্রুফ দেখুন" data-en="View All History & Proofs">সব হিস্ট্রি ও প্রুফ দেখুন</span>
                     </button>
@@ -403,8 +402,7 @@
                                 <i class="fa-solid fa-paper-plane mr-2 text-xl pointer-events-none"></i> <span id="submitBtnText" class="lang-str" data-bn="রিকোয়েস্ট পাঠিয়ে দিন" data-en="Send Request">রিকোয়েস্ট পাঠিয়ে দিন</span>
                             </button>
                             
-                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS (Under Submit Button, in Row) -->
-                            <!-- Sequence: YouTube(Red) -> Facebook(Blue) -> Telegram(Sky) -> WhatsApp(Green) -->
+                            <!-- HORIZONTAL SOCIAL SUPPORT LINKS -->
                             <div class="mt-6 flex justify-center w-full" id="horizontalSocialLinksContainer">
                                 <div class="flex flex-row gap-4 items-center justify-center" id="horizontalSocialLinks">
                                     <!-- Links injected here by JS -->
@@ -953,7 +951,6 @@
         </div>
     </div>
 
-
     <!-- ========================================== -->
     <!--            MAIN JAVASCRIPT LOGIC           -->
     <!-- ========================================== -->
@@ -1037,9 +1034,10 @@
 
         async function loadFirebaseBackground() {
             try {
-                const fbApp = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const fbAuth = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                const fbFs = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                // FIXED VERSION: Used version 10.8.0 to ensure correct loading and avoid the "Connecting to Server" stuck error
+                const fbApp = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                const fbAuth = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+                const fbFs = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
 
                 initializeApp = fbApp.initializeApp; getAuth = fbAuth.getAuth; signInAnonymously = fbAuth.signInAnonymously;
                 getFirestore = fbFs.getFirestore; doc = fbFs.doc; setDoc = fbFs.setDoc; getDoc = fbFs.getDoc; onSnapshot = fbFs.onSnapshot; collection = fbFs.collection; updateDoc = fbFs.updateDoc; deleteDoc = fbFs.deleteDoc;
@@ -1176,16 +1174,16 @@
         function checkUserLoginStatus() {
             if(!loggedInUserId) {
                 document.getElementById('authModal').classList.remove('hidden');
-                document.getElementById('displayUserId').classList.add('hidden');
-                document.getElementById('logoutBtn').classList.add('hidden');
-                document.getElementById('navDivider').classList.add('hidden');
+                document.getElementById('displayUserId')?.classList.add('hidden');
+                document.getElementById('logoutBtn')?.classList.add('hidden');
+                document.getElementById('navDivider')?.classList.add('hidden');
                 switchAuthTab('login');
             } else {
                 document.getElementById('authModal').classList.add('hidden');
-                document.getElementById('displayUserId').classList.remove('hidden');
-                document.getElementById('uidText').innerText = loggedInUserId;
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                document.getElementById('navDivider').classList.remove('hidden');
+                document.getElementById('displayUserId')?.classList.remove('hidden');
+                if(document.getElementById('uidText')) document.getElementById('uidText').innerText = loggedInUserId;
+                document.getElementById('logoutBtn')?.classList.remove('hidden');
+                document.getElementById('navDivider')?.classList.remove('hidden');
             }
         }
 
@@ -1260,7 +1258,7 @@
                 const newPic = document.getElementById('userProfileImgPreview').src;
                 
                 if(!newName || !newPass) {
-                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে মিলিটারি।', 'Name and password cannot be empty.'));
+                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে না।', 'Name and password cannot be empty.'));
                     return;
                 }
                 
@@ -1317,24 +1315,9 @@
             });
         }
 
-        // ============== UPDATED HANDLE AUTH FUNCTION ================
         window.handleAuth = async function(action) {
             let errEl = document.getElementById('authErrorMsg'); errEl.classList.add('hidden');
-            
-            // ডাটাবেস লোড হওয়ার জন্য সাইলেন্টলি অপেক্ষা করবে
-            if(!db) { 
-                let waitTime = 0;
-                while(!db && waitTime < 8000) { // ৮ সেকেন্ড পর্যন্ত অপেক্ষা করবে
-                    await new Promise(r => setTimeout(r, 500)); 
-                    waitTime += 500; 
-                }
-                if(!db) { 
-                    errEl.innerText = window.t("সার্ভার কানেক্ট হতে পারছে না! ব্রাউজারের AdBlocker বন্ধ করুন অথবা পেজটি রিফ্রেশ দিন।", "Server connection failed! Disable AdBlocker or refresh."); 
-                    errEl.classList.remove('hidden'); 
-                    return; 
-                }
-            }
-
+            if(!db) { errEl.innerText = window.t("সার্ভার কানেক্ট হচ্ছে, একটু অপেক্ষা করুন...", "Connecting to server, please wait..."); errEl.classList.remove('hidden'); return; }
             try {
                 if(action === 'register') {
                     let name = document.getElementById('regName').value.trim(); let uId = document.getElementById('regUserId').value.trim(); let pass = document.getElementById('regPassword').value; let cPass = document.getElementById('regConfirmPassword').value;
@@ -1370,7 +1353,6 @@
                 }
             } catch(e) { errEl.innerText = "Error: " + e.message; errEl.classList.remove('hidden'); }
         }
-        // ============================================================
 
         window.logoutUser = function() { 
             loggedInUserId = null; 
@@ -1448,34 +1430,30 @@
             if(document.getElementById('limitWarningText')) document.getElementById('limitWarningText').textContent = `${window.t('লিমিট', 'Limit')}: ${minL}k - ${maxL}k`;
             if(document.getElementById('coinAmount') && document.activeElement !== document.getElementById('coinAmount')){ document.getElementById('coinAmount').min = minL; document.getElementById('coinAmount').max = maxL; }
 
-            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER (Row Layout: 🔴🔵✈️🟢)
+            // HORIZONTAL SOCIAL SUPPORT LINKS RENDER
             const horizContainer = document.getElementById('horizontalSocialLinks'); 
             const mainContainer = document.getElementById('horizontalSocialLinksContainer');
             if(horizContainer && mainContainer) {
                 let supHtml = '';
                 
-                // 1. YouTube 🔴
                 let ytLink = globalSettings.support?.yt || '';
                 if(ytLink) { 
                     if(!ytLink.startsWith('http')) { if(ytLink.startsWith('@')) ytLink = 'https://youtube.com/' + ytLink.trim(); else ytLink = 'https://youtube.com/@' + ytLink.trim(); } 
                     supHtml += `<a href="${ytLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#ff0000] text-white text-2xl shadow-lg hover:scale-110 transition" title="YouTube"><i class="fa-brands fa-youtube"></i></a>`; 
                 }
                 
-                // 2. Facebook 🔵
                 let fbLink = globalSettings.support?.fb || '';
                 if(fbLink) { 
                     if(!fbLink.startsWith('http')) { fbLink = 'https://facebook.com/' + fbLink.trim(); } 
                     supHtml += `<a href="${fbLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#1877F2] text-white text-2xl shadow-lg hover:scale-110 transition" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>`; 
                 }
 
-                // 3. Telegram ✈️
                 let tgLink = globalSettings.support?.tg || '';
                 if(tgLink) { 
                     if(!tgLink.startsWith('http')) { tgLink = 'https://t.me/' + tgLink.replace('@', '').trim(); } 
                     supHtml += `<a href="${tgLink}" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#0088cc] text-white text-2xl shadow-lg hover:scale-110 transition" title="Telegram"><i class="fa-brands fa-telegram"></i></a>`; 
                 }
                 
-                // 4. WhatsApp 🟢
                 let waLink = globalSettings.support?.wa || '';
                 if(waLink) { 
                     if(!waLink.startsWith('http')) { let cWa = waLink.replace(/[^0-9+]/g, ''); if(cWa.startsWith('01') && cWa.length === 11) cWa = '88' + cWa; waLink = 'https://wa.me/' + cWa; } 
@@ -1693,8 +1671,8 @@
 
             if (!userId || allRequests.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
-                document.getElementById('userTotalPaymentUI').innerText = '৳0';
-                document.getElementById('userTotalPendingUI').innerText = '0';
+                if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = '0';
                 return; 
             }
             
@@ -1702,20 +1680,14 @@
             
             if (myReqs.length === 0) { 
                 container.innerHTML = `<div class="text-center text-gray-500 mt-6 font-bold text-sm">${window.t('কোনো হিস্ট্রি নেই।', 'No history yet.')}</div>`; 
-                document.getElementById('userTotalPaymentUI').innerText = '৳0';
-                document.getElementById('userTotalPendingUI').innerText = '0';
+                if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳0';
+                if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = '0';
                 return; 
             }
 
             myReqs.forEach(req => {
-                // Dashboard calculations
-                if (req.status === 'paid') {
-                    userTotalTk += parseFloat(req.total) || 0;
-                } else if (req.status === 'pending') {
-                    userPendingCount++;
-                }
+                if (req.status === 'paid') { userTotalTk += parseFloat(req.total) || 0; } else if (req.status === 'pending') { userPendingCount++; }
 
-                // UI list rendering
                 let statusText, statusClass, proofBtn = '';
                 if (req.status === 'paid') {
                     statusText = window.t('পেমেন্ট কমপ্লিট', 'Payment Complete'); statusClass = "text-green-700 bg-green-100 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800";
@@ -1752,9 +1724,8 @@
                 </div>`;
             });
             
-            // Update Dashboard values
-            document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
-            document.getElementById('userTotalPendingUI').innerText = userPendingCount;
+            if(document.getElementById('userTotalPaymentUI')) document.getElementById('userTotalPaymentUI').innerText = '৳' + (userTotalTk % 1 !== 0 ? userTotalTk.toFixed(2) : userTotalTk.toLocaleString('en-US'));
+            if(document.getElementById('userTotalPendingUI')) document.getElementById('userTotalPendingUI').innerText = userPendingCount;
         }
 
         function showAlert(type, title, message) {
@@ -1846,7 +1817,6 @@
                 } finally { btnText.innerHTML = window.t('রিকোয়েস্ট পাঠিয়ে দিন', 'Send Request'); document.getElementById('submitBtn').disabled = false; }
             });
         }
-
 
         // ==========================================
         //              ADMIN LOGIC
@@ -2357,7 +2327,7 @@
         window.toggleSound = function() { isSoundEnabled = !isSoundEnabled; document.getElementById('soundToggleBtn').querySelector('i').className = isSoundEnabled ? 'fa-solid fa-bell text-sm text-green-300' : 'fa-solid fa-bell-slash text-sm text-gray-400'; }
 
         // ==========================================
-        //              APP INITIALIZATION (ZERO-SECOND LOAD)
+        //              APP INITIALIZATION
         // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
             
