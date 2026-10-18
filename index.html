@@ -1540,17 +1540,34 @@
             if(username && username.trim() !== '') { transferSec.classList.remove('hidden'); document.getElementById('dynamic-username').textContent = username; document.getElementById('dynamic-username').setAttribute('data-username', username); } else { transferSec.classList.add('hidden'); }
             calculateTotalUser();
             
-            // Auto Scroll smoothly to amount section (Step 2) when a category is tapped
+                        // Auto Scroll and Magical Magic Effect to Next Step
             setTimeout(() => {
+                // ১. প্রথম ধাপে একটি সুন্দর টিক (✅) মার্ক দেওয়া
+                const step1Title = document.querySelector('#step1-box h3');
+                if(step1Title && !step1Title.innerHTML.includes('fa-circle-check')) {
+                    step1Title.innerHTML += ' <i class="fa-solid fa-circle-check text-green-500 ml-2 animate-bounce"></i>';
+                    document.getElementById('step1-box').classList.add('border-green-500', 'border-2');
+                }
+
+                // ২. দ্বিতীয় ধাপে যাদুর মতো গ্লো (Glow) ইফেক্ট এবং অটো স্ক্রল করা
                 const stepBox = document.getElementById('step2-box');
                 if(stepBox) {
                     stepBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // slight highlight effect
-                    stepBox.classList.add('ring-4', 'ring-brand/30', 'transition-all', 'duration-500');
-                    setTimeout(()=> stepBox.classList.remove('ring-4', 'ring-brand/30'), 800);
+                    // ম্যাজিক গ্লো ইফেক্ট
+                    stepBox.classList.add('ring-4', 'ring-green-400', 'shadow-2xl', 'shadow-green-500/50', 'transition-all', 'duration-500', 'transform', 'scale-[1.02]');
+                    
+                    // হালকা ম্যাজিক কনফেটি (তারার মতো)
+                    if(typeof confetti === 'function') {
+                         confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 }, colors: ['#10b981', '#f59e0b'] });
+                    }
+                    
+                    // গ্লো ইফেক্টটি ১.৫ সেকেন্ড পর স্বাভাবিক করে দেওয়া
+                    setTimeout(() => {
+                        stepBox.classList.remove('ring-4', 'ring-green-400', 'shadow-2xl', 'shadow-green-500/50', 'transform', 'scale-[1.02]');
+                    }, 1500);
                 }
-            }, 100);
-        }
+            }, 200);
+
 
         window.calculateTotalUser = function() {
             if(!document.getElementById('coinAmount')) return;
@@ -2464,4 +2481,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
