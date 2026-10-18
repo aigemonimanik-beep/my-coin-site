@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- CRITICAL: Base Tag for GitHub Pages Routing -->
     <base href="/my-coin-site/">
     <title>NS & Top Coin | Platform</title>
     
@@ -680,7 +679,7 @@
                     <section id="sec-archive" class="hidden">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 gap-3">
                             <div class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 p-2 rounded text-[11px] font-bold text-yellow-800 dark:text-yellow-400 w-full md:w-auto">
-                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবে না।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে না।</span>
+                                <i class="fa-solid fa-lock mr-1"></i> <span class="lang-str" data-bn="রিসেট করলেও এগুলো মুছবে পণ্ডিত না।" data-en="Will not delete on reset.">রিসেট করলেও এগুলো মুছবে পণ্ডিত না।</span>
                             </div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <button onclick="clearArchive()" class="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 hover:bg-red-200 px-3 py-1.5 rounded font-bold shadow-sm transition border border-red-300 dark:border-red-800 flex items-center whitespace-nowrap text-[11px]">
@@ -958,6 +957,9 @@
     <!--            MAIN JAVASCRIPT LOGIC           -->
     <!-- ========================================== -->
     <script type="module">
+        // ==========================================
+        // STATIC FIREBASE IMPORTS (FIXES ADBLOCKER ISSUES)
+        // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1050,7 +1052,7 @@
                 if (!isAppAdminMode && loggedInUserId) { verifyUserInDB(loggedInUserId); }
             } catch (error) { 
                 console.error("Firebase load error:", error); 
-                // Error is handled implicitly by the missing 'db' object in handleAuth.
+                setTimeout(() => { if(document.getElementById('js-error-fallback')) document.getElementById('js-error-fallback').classList.remove('hidden'); }, 5000);
             }
         }
 
@@ -1254,7 +1256,7 @@
                 const newPic = document.getElementById('userProfileImgPreview').src;
                 
                 if(!newName || !newPass) {
-                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবে না।', 'Name and password cannot be empty.'));
+                    showAlert('error', window.t('ভুল', 'Error'), window.t('নাম এবং পাসওয়ার্ড খালি রাখা যাবেবিধা।', 'Name and password cannot be empty.'));
                     return;
                 }
                 
@@ -1975,78 +1977,118 @@
             `;
         }
         
-        // ADMIN USER PROOFS SEARCH
+        // ==========================================
+        // ADMIN USER PROOFS SEARCH (BUG FIXED)
+        // ==========================================
         window.searchUserProof = function() {
-            let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
-            let tbody = document.getElementById('proofTableBody');
-            tbody.innerHTML = ''; 
+            try {
+                let inputElement = document.getElementById('searchProofUsername');
+                if(!inputElement) return;
+                
+                let username = inputElement.value ? inputElement.value.trim().toLowerCase() : '';
+                let tbody = document.getElementById('proofTableBody');
+                
+                if(!tbody) return;
+                tbody.innerHTML = ''; 
 
-            if (!username) { window.adminCustomAlert(window.t("ভুল", "Error"), window.t("দয়া করে একটি ইউজারনেইম লিখুন!", "Please enter a username!")); return; }
+                if (!username) { 
+                    window.adminCustomAlert(window.t("ভুল", "Error"), window.t("দয়া করে একটি ইউজারনেইম লিখুন!", "Please enter a username!")); 
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-gray-500 font-bold text-sm">${window.t('ইউজারনেইম লিখে সার্চ করুন', 'Search by username')}</td></tr>`;
+                    return; 
+                }
 
-            let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
+                // Added strict checking and fallback to prevent '.toLowerCase()' errors on undefined data
+                let foundData = allRequests.filter(entry => {
+                    let uId = entry.userId || '';
+                    return uId.trim().toLowerCase() === username;
+                });
 
-            if (foundData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-500 font-bold text-sm">${window.t('এই ইউজারের কোনো রেকর্ড পাওয়া যায়নি।', 'No records found for this user.')}</td></tr>`;
-                return;
+                if (foundData.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center p-4 text-red-500 font-bold text-sm">${window.t('এই ইউজারের কোনো রেকর্ড পাওয়া যায়নি।', 'No records found for this user.')}</td></tr>`;
+                    return;
+                }
+
+                foundData.forEach(req => {
+                    let statusBadge = '';
+                    if(req.status === 'paid') statusBadge = `<span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Paid</span>`;
+                    else if(req.status === 'rejected') statusBadge = `<span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Rejected</span>`;
+                    else statusBadge = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Pending</span>`;
+                    
+                    let amountDisplay = req.netAmountDisplay || `৳${req.total || 0}`;
+                    
+                    // Button Safety Checks for images
+                    let proofBtnHtml = req.image ? `<button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap mb-1 w-full"><i class="fa-solid fa-expand"></i> Image</button>` : '';
+                    let adminProofHtml = req.adminProof ? `<button onclick="openImageModal('${req.adminProof}')" class="text-green-700 bg-green-100 px-2 py-1 rounded font-bold text-[10px] hover:bg-green-200 transition whitespace-nowrap w-full"><i class="fa-solid fa-file-invoice"></i> Admin</button>` : '';
+
+                    tbody.innerHTML += `
+                        <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                            <td class="p-2 text-[10px] font-bold">${req.date || '-'}</td>
+                            <td class="p-2 text-[10px] font-mono font-black text-brand">${req.orderId || '-'}</td>
+                            <td class="p-2 text-[11px] font-bold">${req.amount || 0}k ${req.type || '-'}</td>
+                            <td class="p-2 text-[10px] font-bold">${req.method || '-'}</td>
+                            <td class="p-2 text-[10px] font-mono font-bold">${req.account || '-'}</td>
+                            <td class="p-2 text-[9px] font-bold text-red-500">${req.paymentNote || '-'}</td>
+                            <td class="p-2 text-[12px] font-black text-green-600">${amountDisplay} ${statusBadge}</td>
+                            <td class="p-2 text-center align-middle">
+                                <div class="flex flex-col gap-1 items-center justify-center">
+                                    ${proofBtnHtml}
+                                    ${adminProofHtml}
+                                    ${!proofBtnHtml && !adminProofHtml ? '<span class="text-[9px] text-gray-400">No Img</span>' : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.error("Search Error: ", e);
+                window.adminCustomAlert("Error", "Something went wrong while searching.");
             }
-
-            foundData.forEach(req => {
-                let statusBadge = '';
-                if(req.status === 'paid') statusBadge = `<span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Paid</span>`;
-                else if(req.status === 'rejected') statusBadge = `<span class="bg-red-100 text-red-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Rejected</span>`;
-                else statusBadge = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold block mt-1 w-max">Pending</span>`;
-                
-                let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
-                
-                tbody.innerHTML += `
-                    <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                        <td class="p-2 text-[10px] font-bold">${req.date}</td>
-                        <td class="p-2 text-[10px] font-mono font-black text-brand">${req.orderId}</td>
-                        <td class="p-2 text-[11px] font-bold">${req.amount}k ${req.type}</td>
-                        <td class="p-2 text-[10px] font-bold">${req.method}</td>
-                        <td class="p-2 text-[10px] font-mono font-bold">${req.account}</td>
-                        <td class="p-2 text-[9px] font-bold text-red-500">${req.paymentNote || '-'}</td>
-                        <td class="p-2 text-[12px] font-black text-green-600">${amountDisplay} ${statusBadge}</td>
-                        <td class="p-2 text-center">
-                            <button onclick="openImageModal('${req.image}')" class="text-brand bg-brand-light/50 px-2 py-1 rounded font-bold text-[10px] hover:bg-brand hover:text-white transition whitespace-nowrap"><i class="fa-solid fa-expand"></i> Image</button>
-                        </td>
-                    </tr>
-                `;
-            });
         }
         
-        // CSV DOWNLOAD
+        // CSV DOWNLOAD (BUG FIXED)
         window.downloadProofCSV = function() {
-            let username = document.getElementById('searchProofUsername').value.trim().toLowerCase();
-            if (!username) { window.adminCustomAlert(window.t("ভুল", "Error"), window.t("আগে একজন ইউজারের নাম লিখে সার্চ করুন!", "First search for a user!")); return; }
+            try {
+                let inputElement = document.getElementById('searchProofUsername');
+                if(!inputElement) return;
 
-            let foundData = allRequests.filter(entry => entry.userId.toLowerCase() === username);
-            if (foundData.length === 0) { window.adminCustomAlert(window.t("খালি", "Empty"), window.t("ডাউনলোড করার মতো কোনো ডেটা নেই!", "No data to download!")); return; }
+                let username = inputElement.value ? inputElement.value.trim().toLowerCase() : '';
+                if (!username) { window.adminCustomAlert(window.t("ভুল", "Error"), window.t("আগে একজন ইউজারের নাম লিখে সার্চ করুন!", "First search for a user!")); return; }
 
-            let csvContent = "\uFEFFDate & Time,Order ID,Coin,Payment Method,Account,Note/Charge,Total Paid,Status\n"; 
+                let foundData = allRequests.filter(entry => {
+                    let uId = entry.userId || '';
+                    return uId.trim().toLowerCase() === username;
+                });
 
-            foundData.forEach(req => {
-                let amountDisplay = req.netAmountDisplay || `৳${req.total}`;
-                let rowData = [
-                    `"${req.date}"`,
-                    `"${req.orderId}"`,
-                    `"${req.amount}k ${req.type}"`,
-                    `"${req.method}"`,
-                    `"${req.account}"`,
-                    `"${req.paymentNote || '-'}"`,
-                    `"${amountDisplay}"`,
-                    `"${req.status}"`
-                ];
-                csvContent += rowData.join(",") + "\n";
-            });
+                if (foundData.length === 0) { window.adminCustomAlert(window.t("খালি", "Empty"), window.t("ডাউনলোড করার মতো কোনো ডেটা নেই!", "No data to download!")); return; }
 
-            let encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `${username}_History.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                let csvContent = "\uFEFFDate & Time,Order ID,Coin,Payment Method,Account,Note/Charge,Total Paid,Status\n"; 
+
+                foundData.forEach(req => {
+                    let amountDisplay = req.netAmountDisplay || `৳${req.total || 0}`;
+                    let rowData = [
+                        `"${req.date || '-'}"`,
+                        `"${req.orderId || '-'}"`,
+                        `"${req.amount || 0}k ${req.type || '-'}"`,
+                        `"${req.method || '-'}"`,
+                        `"${req.account || '-'}"`,
+                        `"${req.paymentNote || '-'}"`,
+                        `"${amountDisplay}"`,
+                        `"${req.status || '-'}"`
+                    ];
+                    csvContent += rowData.join(",") + "\n";
+                });
+
+                let encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                let link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `${username}_History.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch(e) {
+                console.error("CSV Download Error: ", e);
+                window.adminCustomAlert("Error", "Failed to generate CSV.");
+            }
         }
 
         function renderAdminTables() {
@@ -2320,7 +2362,7 @@
         window.toggleSound = function() { isSoundEnabled = !isSoundEnabled; document.getElementById('soundToggleBtn').querySelector('i').className = isSoundEnabled ? 'fa-solid fa-bell text-sm text-green-300' : 'fa-solid fa-bell-slash text-sm text-gray-400'; }
 
         // ==========================================
-        //              APP INITIALIZATION (ZERO-SECOND LOAD)
+        //              APP INITIALIZATION
         // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
             
