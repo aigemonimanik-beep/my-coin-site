@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -612,7 +611,10 @@
                             <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
                             <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
                             <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is strictly restricted to Administrators. Your account does not have sufficient privileges.</p>
-                            <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg"><i class="fa-solid fa-power-off"></i> Logout Now</button>
+                            <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
+                            
+                            <!-- SECRET FIX BUTTON: For the owner to promote themselves -->
+                            <button onclick="db.collection('cb_users').doc('${currentUser.id}').update({role: 'admin'}).then(()=>window.location.reload())" class="text-[10px] text-[var(--text-muted)] underline relative z-10 hover:text-white">Make me Admin (Click Here)</button>
                         </div>
                     `;
                     return;
@@ -939,6 +941,21 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
+            // Optional Telegram field based on Admin settings
+            let tgFieldHtml = settings.requireTelegram ? `
+                <div class="mb-5">
+                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">Telegram Username *</label>
+                    <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
+                </div>
+            ` : '';
+
+            let adminBtnHtml = currentUser.role === 'admin' && !isAdminUrl ? `
+                <button onclick="window.location.href='?admin'" class="cyan-btn w-full py-3 rounded-xl text-xs flex justify-center items-center gap-2 mb-3 shadow-[0_4px_15px_rgba(53,217,242,0.3)] tracking-wider uppercase relative">
+                    <i class="fa-solid fa-chess-king"></i> Admin Panel 
+                    ${prevPendingCount > 0 ? `<span class="absolute -top-2 -right-2 bg-[var(--error)] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">${prevPendingCount}</span>` : ''}
+                </button>
+            ` : '';
+
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
                     <div class="absolute -right-8 -bottom-8 opacity-5"><i class="fa-brands fa-ethereum text-9xl text-white"></i></div>
@@ -950,6 +967,7 @@
                         </div>
                     </div>
                     <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)]">
+                        ${adminBtnHtml}
                         <button onclick="openWdModal()" class="gold-btn w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">Withdraw Funds</span></button>
                     </div>
                 </div>
@@ -968,10 +986,7 @@
                         <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner"></div>
                     </div>
                     
-                    <div class="mb-5">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">Telegram Username ${settings.requireTelegram ? '*' : '(optional)'}</label>
-                        <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
-                    </div>
+                    ${tgFieldHtml}
 
                     <div class="mb-5">
                         <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="acc">Transfer To Username</label>
@@ -1057,16 +1072,19 @@
         async function submitSell() {
             if(!state.selCoinId) return showToast("Select a coin first!", "error");
             let k = parseFloat(document.getElementById('sell-k').value); 
-            let tg = document.getElementById('sell-tg-user').value.trim(); 
+            
+            let tg = '';
+            if(settings.requireTelegram) {
+                tg = document.getElementById('sell-tg-user').value.trim(); 
+                if(!tg) return showToast(t('tg_req'), "error");
+                if(!tg.startsWith('@')) return showToast(t('tg_err'), "error");
+            }
+            
             let fileInput = document.getElementById('sell-ss'); 
             let c = coins.find(x=>x.id===state.selCoinId);
             
             if(isNaN(k) || k<=0) return showToast("Enter a valid amount!", "error");
             if(k < c.min || k > c.max) return showToast("Invalid amount limit", "error");
-            
-            if(settings.requireTelegram && !tg) return showToast(t('tg_req'), "error");
-            if(tg && !tg.startsWith('@')) return showToast(t('tg_err'), "error");
-            
             if(fileInput.files.length === 0) return showToast("Upload screenshot!", "error");
             
             showLoading();
@@ -1509,6 +1527,10 @@
                 </div>
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
                 <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">Add</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">Sub</button></div>
+                
+                <!-- NEW: Role Toggle Button -->
+                <button onclick="toggleAdminRole('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.role==='admin'?'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border-[var(--accent-gold)]/50':'bg-[var(--bg-main)] text-[var(--text-muted)] border-[var(--border-color)]'}"><i class="fa-solid ${u.role==='admin'?'fa-chess-king':'fa-user'}"></i> ${u.role==='admin'?'Remove Admin Power':'Make Admin'}</button>
+
                 <button onclick="toggleBlock('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.status==='blocked'?'bg-[var(--bg-main)] text-[var(--success)] border-[var(--success)]':'btn-modern-danger'}"><i class="fa-solid ${u.status==='blocked'?'fa-unlock':'fa-lock'}"></i> ${u.status==='blocked'?t('unblock'):t('block')}</button>
                 <button onclick="showToast('For security, admin cannot see or reset password directly without backend. Ask user to reset from Profile.', 'info')" class="w-full bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 py-2.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition"><i class="fa-solid fa-key"></i> Force Password Reset (Info)</button>
                 `;
@@ -1533,6 +1555,16 @@
                     ${tabsHtml}
                     ${contentHtml}
                 `;
+            }
+        }
+
+        async function toggleAdminRole(uid) {
+            let u = users.find(x=>x.id===uid);
+            let newRole = u.role === 'admin' ? 'user' : 'admin';
+            if(confirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
+                await db.collection('cb_users').doc(u.id).update({ role: newRole });
+                showToast(`User is now ${newRole}`);
+                updateUserManageModal();
             }
         }
 
