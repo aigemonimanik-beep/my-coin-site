@@ -92,6 +92,10 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // Explicitly set persistence to LOCAL so users/admin stay logged in across sessions
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((error) => console.error("Auth persistence error:", error));
+
         const translations = {
             'en': { 
                 home: 'Home', admin: 'Admin', balance: 'Available Balance', sell_coin: 'Sell Coin', wd: 'Withdraw', 
@@ -144,6 +148,9 @@
         let prevPendingCount = 0;
         const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
+        // Check if URL has Admin parameter globally
+        const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
+
         function t(key) { return translations[settings.lang || 'bn'][key] || key; }
         function generateId(prefix) { return `${prefix}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`; }
     </script>
@@ -161,7 +168,7 @@
                 <div class="w-16 h-16 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center mx-auto mb-3 bg-[#091B30] shadow-[0_0_20px_rgba(232,199,121,0.2)]">
                     <i class="fa-solid fa-gem text-2xl gold-text"></i>
                 </div>
-                <h1 class="text-2xl font-black text-white tracking-tight">Coin Bazar</h1>
+                <h1 class="text-2xl font-black text-white tracking-tight" id="nav-title-auth">Coin Bazar</h1>
                 <p class="text-xs text-[var(--text-muted)] font-bold mt-1" id="auth-subtitle">Login to your account</p>
             </div>
 
@@ -181,7 +188,7 @@
                     </div>
                 </div>
                 <button onclick="handleLogin()" class="w-full cyan-btn py-3.5 rounded-xl text-sm mt-2 flex items-center justify-center gap-2 uppercase tracking-widest"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
-                <p class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Don't have an account? <button onclick="switchAuth('register')" class="text-[var(--accent-gold)] hover:underline ml-1">Register Now</button></p>
+                <p id="reg-link-text" class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Don't have an account? <button onclick="switchAuth('register')" class="text-[var(--accent-gold)] hover:underline ml-1">Register Now</button></p>
             </div>
 
             <!-- Register Form -->
@@ -318,6 +325,16 @@
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
     <script>
+        // ================= PRE-AUTH SETUP =================
+        window.onload = () => {
+            if (isAdminUrl) {
+                document.getElementById('auth-subtitle').innerText = "Admin Portal Login";
+                let regLink = document.getElementById('reg-link-text');
+                if (regLink) regLink.style.display = 'none';
+                document.getElementById('nav-title-auth').innerText = "Admin Portal";
+            }
+        };
+
         // ================= AUTHENTICATION & INITIALIZATION LOGIC =================
         function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
@@ -363,11 +380,13 @@
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Login to your account"; }
+            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = isAdminUrl ? "Admin Portal Login" : "Login to your account"; }
             if(type === 'register') { document.getElementById('form-register').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Create a new account"; }
         }
 
         async function handleRegister() {
+            if(isAdminUrl) return; // Prevent registration from admin link just in case
+            
             let name = document.getElementById('reg-name').value.trim();
             let username = document.getElementById('reg-username').value.trim().toLowerCase();
             let pass = document.getElementById('reg-pass').value;
@@ -375,7 +394,7 @@
 
             if(!name || !username || !pass || !cpass) return showToast("সবগুলো তথ্য সঠিকভাবে দিন!", "error");
             if(/\s/.test(username)) return showToast("ইউজারনেমে কোনো স্পেস দেওয়া যাবে না!", "error");
-            if(username.includes('@')) return showToast("ইউজারনেমে '@' চিহ্ন দেওয়া যাবে না, শুধু নাম ও সংখ্যা দিন!", "error");
+            if(username.includes('@')) return showToast("ইউজারনেমে '@' বা স্পেশাল ক্যারেক্টার দেওয়া যাবে না!", "error");
             if(pass !== cpass) return showToast("পাসওয়ার্ড দুটি মিলেনি!", "error");
             if(pass.length < 6) return showToast("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।", "error");
 
@@ -416,7 +435,7 @@
             let pass = document.getElementById('log-pass').value;
             if(!username || !pass) return showToast("ইউজারনেইম এবং পাসওয়ার্ড দিন!", "error");
             if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে না!", "error");
-            if(username.includes('@')) return showToast("সঠিক ইউজারনেম দিন (কোনো @ বা স্পেশাল ক্যারেক্টার ছাড়া)!", "error");
+            if(username.includes('@')) return showToast("সঠিক ইউজারনেম দিন (কোনো @ ছাড়া)!", "error");
             let email = username + "@coinbazar.app";
 
             showLoading();
@@ -426,7 +445,7 @@
 
         async function handleLogout() {
             showLoading();
-            try { await auth.signOut(); window.location.reload(); } 
+            try { await auth.signOut(); window.location.href = window.location.pathname; } 
             catch (e) { hideLoading(); showToast("Error logging out", "error"); }
         }
 
@@ -455,7 +474,8 @@
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
                     
-                    if(settings.maintenanceMode === true) {
+                    // Auto turn off maintenance mode if logged in as admin via ?admin link
+                    if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
                         db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
                     }
@@ -577,30 +597,43 @@
         function renderApp() {
             if(!currentUser) return; 
             
-            // Handle URL-based Admin Isolation
-            const isStrictAdmin = new URLSearchParams(window.location.search).has('admin') && currentUser.role === 'admin';
-            if (isStrictAdmin) {
-                state.view = 'admin'; // Lock view to admin
-            }
-
-            // Hide main header and marquee if strictly in admin view
-            let mHeader = document.getElementById('main-header');
-            let mMarquee = document.getElementById('marquee-wrapper');
+            const cont = document.getElementById('app-container');
             
-            if(state.view === 'admin') {
-                if(mHeader) mHeader.style.display = 'none';
-                if(mMarquee) mMarquee.style.display = 'none';
+            // SECURITY: Handle Strict Admin Isolation based on URL
+            if (isAdminUrl) {
+                if (currentUser.role === 'admin') {
+                    state.view = 'admin'; // Lock view to admin completely
+                } else {
+                    // Normal user trying to access admin link - Block them completely
+                    hideUserHeaderElements();
+                    cont.innerHTML = `
+                        <div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_40px_rgba(255,100,124,0.2)] relative overflow-hidden">
+                            <div class="absolute -right-10 -top-10 opacity-10"><i class="fa-solid fa-ban text-[150px] text-[var(--error)]"></i></div>
+                            <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
+                            <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
+                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is strictly restricted to Administrators. Your account does not have sufficient privileges.</p>
+                            <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg"><i class="fa-solid fa-power-off"></i> Logout Now</button>
+                        </div>
+                    `;
+                    return;
+                }
             } else {
-                if(mHeader) mHeader.style.display = 'flex';
-                if(mMarquee) mMarquee.style.display = 'block';
+                if (state.view === 'admin') {
+                    state.view = 'home'; // Normal URL cannot see admin view
+                }
             }
 
+            // Hide/Show headers based on exact view mode
+            if(state.view === 'admin') {
+                hideUserHeaderElements();
+            } else {
+                showUserHeaderElements();
+            }
+            
             document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
             document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
             document.getElementById('nav-logo').classList.remove('hidden');
             document.getElementById('live-notice').innerText = settings.notice || '';
-            
-            const cont = document.getElementById('app-container');
             
             if (currentUser.status === 'blocked' && state.view !== 'admin') {
                 cont.innerHTML = `<div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_30px_rgba(255,100,124,0.1)]"><i class="fa-solid fa-user-lock text-6xl text-[var(--error)] mb-4"></i><h2 class="text-xl font-black text-white mb-2 uppercase">Account Suspended</h2><p class="text-sm text-[var(--text-muted)] mb-6">Your account has been temporarily blocked. You cannot perform any transactions at this time.</p><button onclick="switchView('support')" class="cyan-btn px-6 py-2.5 rounded-xl font-black text-sm w-full"><i class="fa-solid fa-headset"></i> ${t('contact_sup')}</button></div>`;
@@ -625,6 +658,19 @@
             if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
                 setTimeout(() => { let box = document.getElementById('chat-box'); if(box) box.scrollTop = box.scrollHeight; }, 50);
             }
+        }
+
+        function hideUserHeaderElements() {
+            let mHeader = document.getElementById('main-header');
+            let mMarquee = document.getElementById('marquee-wrapper');
+            if(mHeader) mHeader.style.display = 'none';
+            if(mMarquee) mMarquee.style.display = 'none';
+        }
+        function showUserHeaderElements() {
+            let mHeader = document.getElementById('main-header');
+            let mMarquee = document.getElementById('marquee-wrapper');
+            if(mHeader) mHeader.style.display = 'flex';
+            if(mMarquee) mMarquee.style.display = 'block';
         }
 
         // ================= USER PROFILE VIEW =================
@@ -871,11 +917,6 @@
             if(settings.yt) socials += `<a href="${settings.yt}" target="_blank" class="w-10 h-10 bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/30 rounded-full flex items-center justify-center shadow hover:bg-[#FF0000] hover:text-white transition"><i class="fa-brands fa-youtube text-xl"></i></a>`;
             let socialDiv = socials ? `<div class="mt-8 flex justify-center gap-4 border-t border-[var(--border-color)] pt-6 pb-4">${socials}</div>` : '';
 
-            let pendingCountAll = 0;
-            if (currentUser.role === 'admin') {
-                pendingCountAll = orders.filter(o => o.status === 'pending').length;
-            }
-
             let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
             let activeHtml = activeOrders.map(o => {
                 let sClass = `status-badge ${o.status}`; let sIcon = o.status === 'pending' ? 'fa-clock' : 'fa-spinner fa-spin';
@@ -883,6 +924,7 @@
                 let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName}`;
                 let amtText = o.type === 'sell' ? `+ ৳${o.paidAmount || o.receive}` : `- ৳${o.total}`;
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
+                let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
@@ -890,16 +932,15 @@
                         <span class="text-[9px] font-mono text-[var(--text-muted)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--border-color)]">ID: ${o.id.split('-')[1]}</span>
                     </div>
                     <div class="flex justify-between items-end">
-                        <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span></div>
+                        <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
                         <div class="text-right"><span class="font-black text-lg ${amtColor}">${amtText}</span></div>
                     </div>
                 </div>`;
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
-
             return `
-                <div class="glass-panel rounded-3xl p-6 mb-2 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
+                <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
                     <div class="absolute -right-8 -bottom-8 opacity-5"><i class="fa-brands fa-ethereum text-9xl text-white"></i></div>
                     <div class="relative z-10 flex justify-between items-start">
                         <div>
@@ -907,20 +948,11 @@
                             <h2 class="text-4xl font-black gold-text drop-shadow-lg mb-1 flex items-baseline gap-1"><span class="text-2xl text-[var(--accent-gold-dark)]">৳</span>${(Number(currentUser.balance) || 0).toFixed(2)}</h2>
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mt-1">@${currentUser.username}</p>
                         </div>
-                        <div class="flex flex-col items-end mt-1 w-1/2">
-                            <button onclick="openWdModal()" class="gold-btn px-5 py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 relative z-10 w-full shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-wider"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">Withdraw</span></button>
-                        </div>
+                    </div>
+                    <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)]">
+                        <button onclick="openWdModal()" class="gold-btn w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">Withdraw Funds</span></button>
                     </div>
                 </div>
-
-                ${currentUser.role === 'admin' ? `
-                <div class="mb-6 relative">
-                    <button onclick="switchView('admin')" class="w-full bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white py-3.5 rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(53,217,242,0.4)] uppercase tracking-wider border border-[var(--accent-cyan)]/50 transition active:scale-95">
-                        <i class="fa-solid fa-chess-king text-[var(--accent-gold)] text-lg"></i> অ্যাডমিন প্যানেল (কন্ট্রোল)
-                    </button>
-                    ${pendingCountAll > 0 ? `<span class="absolute -top-2 -right-2 bg-[var(--error)] text-white text-xs w-7 h-7 rounded-full flex items-center justify-center shadow-lg border-2 border-[var(--bg-main)] animate-bounce font-black z-20">${pendingCountAll}</span>` : ''}
-                </div>
-                ` : ''}
 
                 <div id="coin-select-section" class="mb-6 mt-4">
                     <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-cyan)] to-[#1a9bb0] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">1</span> <span data-i18n="sel_coin">SELECT COIN TO SELL</span></h3>
@@ -1143,11 +1175,6 @@
 
         // ================= ADMIN VIEW =================
         function renderAdmin() {
-            const isStrictAdmin = new URLSearchParams(window.location.search).has('admin');
-            let exitBtn = isStrictAdmin ? 
-                `<button onclick="handleLogout()" class="absolute top-4 right-4 text-[var(--error)] bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white transition active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-power-off"></i> Logout</button>` : 
-                `<button onclick="switchView('home')" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--error)] bg-[var(--bg-sidebar)] w-7 h-7 rounded-full flex items-center justify-center transition active:scale-90 border border-[var(--border-color)]"><i class="fa-solid fa-times"></i></button>`;
-
             let tabs = [
                 { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, { id: 'manual', icon: 'fa-users', label: t('users') },
@@ -1174,7 +1201,7 @@
 
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
-                    ${exitBtn}
+                    <button onclick="handleLogout()" class="absolute top-4 right-4 text-[var(--error)] bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white transition active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-power-off"></i> Logout</button>
                     <h2 class="text-xl font-black text-white mb-5 flex items-center gap-3"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">Admin Control</span></h2>
                     ${tabHtml}
                     ${contentHtml}
