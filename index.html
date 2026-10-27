@@ -92,7 +92,6 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Explicitly set persistence to LOCAL so users/admin stay logged in across sessions
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             .catch((error) => console.error("Auth persistence error:", error));
 
@@ -110,7 +109,15 @@
                 site_set: 'Site Identity', social_set: 'Social Links', faq_set: 'FAQ Settings', coin_set: 'Coins Setup', pm_set: 'Withdraw Methods',
                 site_name: 'Site Name', notice: 'Scrolling Notice', logo: 'Logo Upload', save: 'Save', add_coin: 'Add New Coin', edit_coin: 'Edit Coin', c_name: 'Coin Name', c_uname: 'Transfer Username', c_price: 'Price (৳ per 1K)', c_min: 'Min (K)', c_max: 'Max (K)', active: 'Active', update: 'Update', cancel: 'Cancel', del: 'Del', pm_name: 'Name', pm_charge: 'Charge ৳',
                 help: 'Help & Tutorial', vid_tut: 'Video Tutorial', faq: 'Frequently Asked Questions', need_help: 'Still need help?', contact_sup: 'Contact Support', sup_center: 'Support Center', create_tkt: 'Create New Ticket', sub_ph: 'Subject', msg_ph: 'Describe your issue...', sub_tkt: 'Submit Ticket', my_tkts: 'My Tickets', no_tkts: 'No tickets found.', open: 'Open', closed: 'Closed', reply: 'Type message...', notifs: 'Notifications', no_notifs: 'No notifications yet.', back: 'Back',
-                reset_confirm: 'Are you sure? This will hide your history. Admin can still see it.'
+                reset_confirm: 'Are you sure? This will hide your history. Admin can still see it.',
+                // Extra Admin translations
+                sys_ctrl: 'System Controls', maint_mode: 'Maintenance Mode', maint_desc: 'Show "Under Maintenance" to users',
+                req_tg: 'Require Telegram Username', req_tg_desc: 'Make TG username mandatory for selling',
+                base_price: 'Base Price', bulk_rates: 'Bulk Rates (Tiers)', add_tier: 'Add Tier',
+                wd_limits: 'Withdraw Methods & Limits', min_wd: 'Min Withdraw (৳)', wd_notice: 'Withdraw Notice',
+                en_dis: 'Enable/Disable & Charges', save_setup: 'Save Setup',
+                today_live: 'Today\'s Live Summary', arch_hist: 'Archived History', reset_arch: 'RESET & ARCHIVE TODAY\'S DATA',
+                exp_data: 'Export Data to CSV (Excel)', active_on: 'ON', active_off: 'OFF', cancel_btn: 'Cancel', search_ph: 'Search by name, username...'
             },
             'bn': { 
                 home: 'হোম', admin: 'এডমিন', balance: 'অ্যাভেইলেবল ব্যালেন্স', sell_coin: 'কয়েন বিক্রি', wd: 'উত্তোলন করুন', 
@@ -124,8 +131,16 @@
                 tot_users: 'মোট ইউজার', tot_bal: 'মোট ব্যালেন্স', bought: 'মোট কেনা হয়েছে', wd_paid: 'উত্তোলন দেওয়া হয়েছে', pend: 'পেন্ডিং', apprv: 'অনুমোদিত', daily: 'দৈনিক হিসাব', no_pend: 'কোনো পেন্ডিং অর্ডার নেই।', no_apprv: 'কোনো অনুমোদিত অর্ডার নেই।', orig_val: 'অর্ডারের অরিজিনাল মূল্য', custom_add: 'কাস্টম ব্যালেন্স দিন (৳)', conf_add: 'নিশ্চিত করুন ও ব্যালেন্স দিন', proc: 'প্রসেসিং', reject: 'রিজেক্ট', mark_paid: 'পেইড মার্ক করুন', refund: 'রিফান্ড করুন', block: 'ব্লক করুন', unblock: 'আনব্লক করুন', add: 'যোগ', sub: 'বিয়োগ',
                 site_set: 'সাইট পরিচিতি', social_set: 'সোশ্যাল লিংক', faq_set: 'সাধারণ প্রশ্ন (FAQ)', coin_set: 'কয়েন সেটিংস', pm_set: 'পেমেন্ট মেথড',
                 site_name: 'সাইটের নাম', notice: 'স্ক্রলিং নোটিশ', logo: 'লোগো আপলোড', save: 'সেভ করুন', add_coin: 'নতুন কয়েন যোগ করুন', edit_coin: 'কয়েন এডিট', c_name: 'কয়েনের নাম', c_uname: 'ট্রান্সফার ইউজারনেম', c_price: 'রেট (৳ প্রতি 1K)', c_min: 'সর্বনিম্ন (K)', c_max: 'সর্বোচ্চ (K)', active: 'চালু রাখুন', update: 'আপডেট করুন', cancel: 'বাতিল', del: 'ডিলিট', pm_name: 'নাম', pm_charge: 'চার্জ ৳',
-                help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'No notifications yet.', back: 'ব্যাক',
-                reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা হবে, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?'
+                help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'কোনো নোটিফিকেশন নেই।', back: 'ব্যাক',
+                reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা হবে, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?',
+                // Extra Admin translations
+                sys_ctrl: 'সিস্টেম কন্ট্রোল', maint_mode: 'মেইনটেন্যান্স মোড', maint_desc: 'ইউজারদের "আন্ডার মেইনটেন্যান্স" দেখাবে',
+                req_tg: 'টেলিগ্রাম ইউজারনেম বাধ্যতামূলক', req_tg_desc: 'কয়েন সেলের জন্য টেলিগ্রাম বাধ্যতামূলক করুন',
+                base_price: 'বেস প্রাইস (৳)', bulk_rates: 'বাল্ক রেট (Tiers)', add_tier: 'টায়ার যোগ করুন',
+                wd_limits: 'উত্তোলনের মাধ্যম ও লিমিট', min_wd: 'সর্বনিম্ন উত্তোলন (৳)', wd_notice: 'উত্তোলনের নোটিশ',
+                en_dis: 'চালু/বন্ধ ও চার্জ', save_setup: 'সেটআপ সেভ করুন',
+                today_live: 'আজকের লাইভ হিসেব', arch_hist: 'আর্কাইভ করা হিস্ট্রি', reset_arch: 'আজকের ডাটা আর্কাইভ করুন',
+                exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম বা ইউজারনেম দিয়ে খুঁজুন...'
             }
         };
 
@@ -134,10 +149,11 @@
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
         let dataLoaded = false;
+        let isAdminLoggingIn = false;
         
         // Navigation States
         let state = { 
-            view: 'home', // home, history, profile, admin, support, faq
+            view: 'home', 
             selCoinId: null, selWdId: null, 
             adminTab: 'dash', adminSellTab: 'pending', editCoinId: null, 
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
@@ -148,7 +164,7 @@
         let prevPendingCount = 0;
         const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
-        // Check if URL has Admin parameter globally
+        // URL Check
         const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
         function t(key) { return translations[settings.lang || 'bn'][key] || key; }
@@ -162,6 +178,7 @@
             <div id="auth-loading" class="absolute inset-0 bg-[#071426]/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm hidden">
                 <i class="fa-solid fa-spinner fa-spin text-4xl text-[var(--accent-cyan)] mb-3"></i>
                 <p class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase">Processing...</p>
+                <p id="admin-auto-login-msg" class="text-[9px] text-[var(--text-muted)] mt-2 hidden">Authenticating Admin...</p>
             </div>
 
             <div class="text-center mb-8">
@@ -217,13 +234,6 @@
                 </div>
                 <button onclick="handleRegister()" class="w-full gold-btn py-3.5 rounded-xl text-sm mt-2 flex items-center justify-center gap-2 uppercase tracking-widest"><i class="fa-solid fa-user-plus"></i> Create Account</button>
                 <p class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Already have an account? <button onclick="switchAuth('login')" class="text-[var(--accent-cyan)] hover:underline ml-1">Login</button></p>
-            </div>
-
-            <!-- ADMIN AUTO-LOGIN MESSAGE -->
-            <div id="admin-auto-login-msg" class="hidden text-center">
-                <i class="fa-solid fa-circle-notch fa-spin text-5xl text-[var(--accent-cyan)] mb-5"></i>
-                <h3 class="text-white font-black text-xl mb-1">Authenticating Admin</h3>
-                <p class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Please wait...</p>
             </div>
         </div>
     </div>
@@ -335,8 +345,7 @@
         // ================= PRE-AUTH SETUP =================
         window.onload = () => {
             if (isAdminUrl) {
-                // If the user visits the ?admin URL, hide regular login and prepare for magic login
-                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-login').classList.add('hidden'); // Hide login form initially
                 document.getElementById('reg-link-text').style.display = 'none';
                 let autoMsg = document.getElementById('admin-auto-login-msg');
                 if(autoMsg) autoMsg.classList.remove('hidden');
@@ -388,7 +397,7 @@
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Login to your account"; }
+            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = isAdminUrl ? "Admin Portal Login" : "Login to your account"; }
             if(type === 'register') { document.getElementById('form-register').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Create a new account"; }
         }
 
@@ -442,7 +451,7 @@
             let username = document.getElementById('log-username').value.trim().toLowerCase();
             let pass = document.getElementById('log-pass').value;
             if(!username || !pass) return showToast("ইউজারনেইম এবং পাসওয়ার্ড দিন!", "error");
-            if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে না!", "error");
+            if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে কেজি না!", "error");
             if(username.includes('@')) return showToast("সঠিক ইউজারনেম দিন (কোনো @ ছাড়া)!", "error");
             let email = username + "@coinbazar.app";
 
@@ -458,18 +467,17 @@
         }
 
         // ================= MAGIC ADMIN LOGIN LOGIC =================
-        let isAdminLoggingIn = false;
         async function autoLoginAdmin() {
             if(isAdminLoggingIn) return;
             isAdminLoggingIn = true;
-            // Secret System Admin Credentials
+            showLoading();
             let adminEmail = "masteradmin2026@coinbazar.app";
             let adminPass = "MasterAdmin2026!@#";
             try {
                 await auth.signInWithEmailAndPassword(adminEmail, adminPass);
                 isAdminLoggingIn = false;
             } catch (e) {
-                // If it doesn't exist, create it instantly
+                // If it fails, create the admin instantly
                 try {
                     let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
                     await db.collection('cb_users').doc(cred.user.uid).set({
@@ -481,9 +489,8 @@
                 } catch (err) {
                     console.error("Auto admin setup failed", err);
                     isAdminLoggingIn = false;
-                    // Fallback just in case
-                    document.getElementById('admin-auto-login-msg').classList.add('hidden');
-                    document.getElementById('form-login').classList.remove('hidden');
+                    hideLoading();
+                    switchAuth('login');
                 }
             }
         }
@@ -513,8 +520,7 @@
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
                     
-                    // Auto turn off maintenance mode if logged in as admin via ?admin link
-                    if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
+                    if(settings.maintenanceMode === true && isAdminUrl) {
                         settings.maintenanceMode = false;
                         db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
                     }
@@ -522,18 +528,31 @@
                     coins = data.coins || []; pmMethods = data.pmMethods || []; dailyArchives = data.dailyArchives || [];
                     if(currentUser && dataLoaded) renderApp();
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
-            }, err => console.log(err));
+            }, err => {
+                console.error(err);
+                hideLoading();
+            });
 
             unsubUsers = db.collection('cb_users').onSnapshot(snap => {
                 users = []; snap.forEach(d => users.push(d.data()));
                 currentUser = users.find(u => u.id === user.uid);
                 
                 if(currentUser) {
-                    dataLoaded = true; hideLoading();
-                    document.getElementById('auth-wrapper').style.display = 'none'; document.getElementById('main-ui').classList.remove('hidden');
+                    dataLoaded = true; 
+                    hideLoading();
+                    document.getElementById('auth-wrapper').style.display = 'none'; 
+                    document.getElementById('main-ui').classList.remove('hidden');
                     renderApp(); 
-                } else { hideLoading(); }
-            }, err => { hideLoading(); showToast("Error loading user data", "error"); });
+                } else { 
+                    // Prevent endless loading if user doc is somehow missing
+                    hideLoading();
+                    auth.signOut();
+                }
+            }, err => { 
+                console.error(err);
+                hideLoading(); 
+                showToast("Error loading user data", "error"); 
+            });
 
             unsubOrders = db.collection('cb_orders').onSnapshot(snap => {
                 orders = []; snap.forEach(d => orders.push(d.data()));
@@ -572,38 +591,25 @@
             if(unsubGlobal) unsubGlobal(); if(unsubUsers) unsubUsers(); if(unsubOrders) unsubOrders(); if(unsubTickets) unsubTickets(); if(unsubNotifications) unsubNotifications();
         }
 
-        auth.onAuthStateChanged(async user => {
+        auth.onAuthStateChanged(user => {
             if (isRegistering) return;
             if (user) { 
-                showLoading(); requestNotificationPermission(); 
-                
-                // Magic Link Validation
-                if (isAdminUrl) {
-                    try {
-                        let doc = await db.collection('cb_users').doc(user.uid).get();
-                        if (doc.exists && doc.data().role !== 'admin') {
-                            // Current logged in user is a regular user trying to access the ?admin link.
-                            // Sign them out so the system can run autoLoginAdmin()
-                            await auth.signOut();
-                            return; 
-                        }
-                    } catch(e) { console.error(e); }
-                }
-
-                startDataSync(user); 
-            } 
-            else {
+                showLoading(); requestNotificationPermission(); startDataSync(user); 
+            } else {
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
-                    // MAGIC ADMIN AUTO-LOGIN
                     autoLoginAdmin();
                 } else {
                     document.getElementById('auth-wrapper').style.display = 'flex'; 
                     document.getElementById('main-ui').classList.add('hidden');
-                    switchAuth('login'); hideLoading();
+                    switchAuth('login'); 
+                    hideLoading();
                 }
             }
         });
+        
+        // Safety net to ensure loading hides after 5 seconds if something fails
+        setTimeout(() => { hideLoading(); }, 5000);
 
         // ================= HELPER FUNCTIONS =================
         async function addNotification(userId, title, message, type='info') {
@@ -652,7 +658,7 @@
             }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + data.map(e => e.map(item => `"${item}"`).join(",")).join("\n");
             let encodedUri = encodeURI(csvContent); let link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", filename);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast("Exported to CSV!");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast(t('copied') + " (Exported)");
         }
 
         // ================= MAIN UI RENDERER =================
@@ -666,14 +672,14 @@
                 if (currentUser.role === 'admin') {
                     state.view = 'admin'; // Lock view to admin completely
                 } else {
-                    // Fallback if the auto-logout failed somehow
+                    // Normal user trying to access admin link - Block them completely
                     hideUserHeaderElements();
                     cont.innerHTML = `
                         <div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_40px_rgba(255,100,124,0.2)] relative overflow-hidden">
                             <div class="absolute -right-10 -top-10 opacity-10"><i class="fa-solid fa-ban text-[150px] text-[var(--error)]"></i></div>
                             <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
                             <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
-                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">You cannot access this portal.</p>
+                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is strictly restricted to Administrators.</p>
                             <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
                         </div>
                     `;
@@ -685,7 +691,6 @@
                 }
             }
 
-            // Hide/Show headers based on exact view mode
             if(state.view === 'admin') {
                 hideUserHeaderElements();
             } else {
@@ -970,7 +975,7 @@
 
             let selC = coins.find(x => x.id === state.selCoinId);
             let unameDisplay = selC ? selC.username : '---';
-            let unameBtn = selC ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">Copy</span></button>` : '';
+            let unameBtn = selC ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">${t('copy')}</span></button>` : '';
 
             let socials = '';
             if(settings.wa) socials += `<a href="${settings.wa}" target="_blank" class="w-10 h-10 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-full flex items-center justify-center shadow hover:bg-[#25D366] hover:text-white transition"><i class="fa-brands fa-whatsapp text-xl"></i></a>`;
@@ -1001,47 +1006,40 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
-            // Optional Telegram field based on Admin settings
             let tgFieldHtml = settings.requireTelegram ? `
                 <div class="mb-5">
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">Telegram Username *</label>
+                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
                     <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
                 </div>
             ` : '';
 
-            let adminBtnHtml = currentUser.role === 'admin' && !isAdminUrl ? `
-                <button onclick="window.location.href='?admin'" class="cyan-btn w-full py-3 rounded-xl text-xs flex justify-center items-center gap-2 mb-3 shadow-[0_4px_15px_rgba(53,217,242,0.3)] tracking-wider uppercase relative">
-                    <i class="fa-solid fa-chess-king"></i> Admin Panel 
-                    ${prevPendingCount > 0 ? `<span class="absolute -top-2 -right-2 bg-[var(--error)] text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">${prevPendingCount}</span>` : ''}
-                </button>
-            ` : '';
+            // User gets no Admin Button anymore.
 
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
                     <div class="absolute -right-8 -bottom-8 opacity-5"><i class="fa-brands fa-ethereum text-9xl text-white"></i></div>
                     <div class="relative z-10 flex justify-between items-start">
                         <div>
-                            <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-2" data-i18n="balance">Available Balance</p>
+                            <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-2" data-i18n="balance">${t('balance')}</p>
                             <h2 class="text-4xl font-black gold-text drop-shadow-lg mb-1 flex items-baseline gap-1"><span class="text-2xl text-[var(--accent-gold-dark)]">৳</span>${(Number(currentUser.balance) || 0).toFixed(2)}</h2>
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mt-1">@${currentUser.username}</p>
                         </div>
                     </div>
                     <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)]">
-                        ${adminBtnHtml}
-                        <button onclick="openWdModal()" class="gold-btn w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">Withdraw Funds</span></button>
+                        <button onclick="openWdModal()" class="gold-btn w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">${t('wd')}</span></button>
                     </div>
                 </div>
 
                 <div id="coin-select-section" class="mb-6 mt-4">
-                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-cyan)] to-[#1a9bb0] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">1</span> <span data-i18n="sel_coin">SELECT COIN TO SELL</span></h3>
+                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-cyan)] to-[#1a9bb0] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">1</span> <span data-i18n="sel_coin">${t('sel_coin')}</span></h3>
                     <div class="grid grid-cols-2 gap-4">${coinHtml}</div>
                 </div>
 
                 <div id="sell-form-box" class="glass-panel rounded-3xl p-5 mb-8 shadow-lg">
-                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide border-b border-[var(--border-color)] pb-3"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-gold)] to-[var(--accent-gold-dark)] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">2</span> <span data-i18n="order_details">ORDER DETAILS</span></h3>
+                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide border-b border-[var(--border-color)] pb-3"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-gold)] to-[var(--accent-gold-dark)] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">2</span> <span data-i18n="order_details">${t('order_details')}</span></h3>
 
                     <div class="mb-5">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="amt">Amount (K)</label>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="amt">${t('amt')}</label>
                         <div class="relative"><input type="number" id="sell-k" oninput="calcSell()" class="w-full input-premium rounded-xl p-3.5 pr-12 font-black text-lg text-[var(--accent-cyan)] focus:ring-2 focus:ring-[var(--accent-cyan)]/20" placeholder="${t('e_g')} 5"><span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[var(--text-muted)] bg-[var(--bg-main)] w-8 h-8 rounded-lg flex items-center justify-center text-sm border border-[var(--border-color)]">K</span></div>
                         <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner"></div>
                     </div>
@@ -1049,16 +1047,16 @@
                     ${tgFieldHtml}
 
                     <div class="mb-5">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="acc">Transfer To Username</label>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="acc">${t('acc')}</label>
                         <div class="input-premium rounded-xl p-2.5 flex justify-between items-center bg-[var(--bg-sidebar)]"><span class="font-black text-[var(--accent-gold)] text-sm tracking-wide select-all ml-2">${unameDisplay}</span>${unameBtn}</div>
                     </div>
 
                     <div class="mb-6">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-camera text-[var(--accent-cyan)]"></i> <span data-i18n="ss">Upload Screenshot (SS) *</span></label>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-camera text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
                         <input type="file" id="sell-ss" accept="image/*" class="w-full text-xs text-[var(--text-muted)] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-[var(--accent-cyan)] file:text-[var(--bg-main)] hover:file:opacity-90 input-premium rounded-xl p-1.5 cursor-pointer">
                     </div>
 
-                    <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">Submit Order</span></button>
+                    <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">${t('submit')}</span></button>
                 </div>
                 
                 ${activeSection}
@@ -1069,7 +1067,7 @@
                 <div id="wd-modal" class="fixed inset-0 bg-[#071426]/90 z-[110] hidden flex justify-center items-end sm:items-center transition-all duration-300 opacity-0 backdrop-blur-sm">
                     <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-gold)]" id="wd-modal-content">
                         <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3">
-                            <h2 class="text-xl font-black gold-text flex items-center gap-2"><i class="fa-solid fa-vault"></i> <span data-i18n="wd_title">Withdraw Funds</span></h2>
+                            <h2 class="text-xl font-black gold-text flex items-center gap-2"><i class="fa-solid fa-vault"></i> <span data-i18n="wd_title">${t('wd_title')}</span></h2>
                             <button onclick="closeWdModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
                         </div>
                         <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-cyan)]/30 mb-4 flex justify-between items-center shadow-inner">
@@ -1079,23 +1077,23 @@
                         
                         <div id="wd-notice-box" class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-gold)]/30 mb-4 text-[10px] font-bold text-[var(--accent-gold)] shadow-inner hidden"></div>
                         
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-3 ml-1" data-i18n="sel_method">Select Method</label>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-3 ml-1" data-i18n="sel_method">${t('sel_method')}</label>
                         <div class="grid grid-cols-2 gap-3 mb-5" id="wd-methods-grid"></div>
                         
                         <div class="mb-4">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">Account Number</label>
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
                             <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
                         </div>
                         
                         <div class="mb-5">
                             <div class="flex justify-between items-end mb-2 ml-1 pr-1">
-                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" data-i18n="wd_amt">Amount (৳)</label>
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" data-i18n="wd_amt">${t('wd_amt')}</label>
                                 <span class="text-[9px] text-[var(--accent-gold)] font-black">Min: ৳${settings.minWd || 50}</span>
                             </div>
                             <input type="number" id="wd-amt" oninput="calcWd()" class="w-full input-premium rounded-xl p-3.5 font-black text-lg text-[var(--accent-gold)]" placeholder="0">
                         </div>
                         <div id="wd-calc-res" class="hidden bg-[var(--bg-sidebar)] border border-[var(--accent-cyan)]/30 rounded-xl p-4 text-xs font-bold text-[var(--text-main)] mb-6 space-y-2 shadow-inner"></div>
-                        <button onclick="submitWd()" class="w-full gold-btn py-4 rounded-xl uppercase tracking-widest text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="send_req">Send Request</span></button>
+                        <button onclick="submitWd()" class="w-full gold-btn py-4 rounded-xl uppercase tracking-widest text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="send_req">${t('send_req')}</span></button>
                     </div>
                 </div>
             `;
@@ -1202,7 +1200,7 @@
                 if(accLabel) accLabel.innerText = "Binance UID / Pay ID";
                 if(accInput) accInput.placeholder = "e.g. 123456789";
             } else {
-                if(accLabel) accLabel.innerText = "Account Number (11 Digits)";
+                if(accLabel) accLabel.innerText = t('acc_no');
                 if(accInput) accInput.placeholder = "017XXXXXXXX";
             }
             calcWd(); 
@@ -1280,7 +1278,7 @@
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
                     <button onclick="handleLogout()" class="absolute top-4 right-4 text-[var(--error)] bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white transition active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-power-off"></i> Logout</button>
-                    <h2 class="text-xl font-black text-white mb-5 flex items-center gap-3"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">Admin Control</span></h2>
+                    <h2 class="text-xl font-black text-white mb-5 flex items-center gap-3"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">${t('admin_ctrl')}</span></h2>
                     ${tabHtml}
                     ${contentHtml}
                 </div>
@@ -1291,13 +1289,13 @@
                         <button onclick="closeApproveModal()" class="absolute top-3 right-3 text-[var(--text-muted)] hover:text-white"><i class="fa-solid fa-times text-lg"></i></button>
                         <h3 class="font-black text-[var(--success)] text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Approve Sell</h3>
                         <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-lg mb-4 text-center shadow-inner">
-                            <span class="text-[10px] font-bold text-[var(--text-muted)] block uppercase" data-i18n="orig_val">Original Value</span>
+                            <span class="text-[10px] font-bold text-[var(--text-muted)] block uppercase" data-i18n="orig_val">${t('orig_val')}</span>
                             <span class="text-xl font-black text-white drop-shadow-lg" id="sa-orig-val">৳0</span>
                         </div>
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1 uppercase" data-i18n="custom_add">Custom Add Balance (৳)</label>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1 uppercase" data-i18n="custom_add">${t('custom_add')}</label>
                         <input type="number" id="sa-custom-amt" class="w-full input-premium p-3.5 rounded-xl font-black text-lg text-[var(--accent-gold)] mb-5 text-center shadow-inner focus:border-[var(--success)]" placeholder="Enter amount to add">
                         <button onclick="confirmApproveSell()" class="w-full btn-modern-success py-3.5 rounded-xl flex justify-center items-center gap-2 uppercase tracking-widest text-[11px] shadow-[0_4px_15px_rgba(22,199,132,0.3)]">
-                            <i class="fa-solid fa-plus-circle"></i> <span data-i18n="conf_add">Confirm & Add Balance</span>
+                            <i class="fa-solid fa-plus-circle"></i> <span data-i18n="conf_add">${t('conf_add')}</span>
                         </button>
                     </div>
                 </div>
@@ -1333,12 +1331,12 @@
 
             return `
                 <div class="grid grid-cols-2 gap-3 mb-5">
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">Total Users</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">Total User Bal</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">Bought (Paid)</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">Wd Paid</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
                 </div>
-                <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-1"><i class="fa-solid fa-file-csv text-[var(--accent-gold)]"></i> Export Data to CSV (Excel)</h3>
+                <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-1"><i class="fa-solid fa-file-csv text-[var(--accent-gold)]"></i> ${t('exp_data')}</h3>
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="exportCSV('users')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] py-3 rounded-xl text-[10px] font-black shadow-sm hover:shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:-translate-y-0.5 hover:bg-[var(--accent-cyan)] hover:text-white transition-all duration-300 active:scale-95 flex flex-col items-center justify-center"><i class="fa-solid fa-file-export block text-base mb-1.5"></i> Users</button>
                     <button onclick="exportCSV('sells')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--success)]/40 text-[var(--success)] py-3 rounded-xl text-[10px] font-black shadow-sm hover:shadow-[0_4px_15px_rgba(22,199,132,0.3)] hover:-translate-y-0.5 hover:bg-[var(--success)] hover:text-white transition-all duration-300 active:scale-95 flex flex-col items-center justify-center"><i class="fa-solid fa-file-export block text-base mb-1.5"></i> Sells</button>
@@ -1354,7 +1352,7 @@
                 return `<button onclick="state.adminSellTab='${tab.id}'; state.adminOrderSearch=''; renderApp()" class="flex-1 py-2 rounded-xl border text-[11px] font-black transition-all duration-300 active:scale-95 ${active}">${tab.label}</button>`;
             }).join('') + `</div>`;
 
-            let searchBox = `<div class="mb-4 relative shadow-sm"><input type="text" value="${state.adminOrderSearch || ''}" oninput="state.adminOrderSearch=this.value.toLowerCase(); renderApp()" placeholder="Search Telegram or Order ID..." class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-gold)]"><i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
+            let searchBox = `<div class="mb-4 relative shadow-sm"><input type="text" value="${state.adminOrderSearch || ''}" oninput="state.adminOrderSearch=this.value.toLowerCase(); renderApp()" placeholder="${t('search_ph')}" class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-gold)]"><i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
 
             let contentHtml = '';
             let q = state.adminOrderSearch || '';
@@ -1413,12 +1411,12 @@
                 let sumHtml = Object.keys(summary).map(c => `<div class="flex justify-between border-b border-[var(--border-color)] pb-2 mb-2"><span class="text-[11px] font-black text-white">${c}</span><div class="text-right"><span class="text-xs text-[var(--accent-cyan)] font-bold">${summary[c].k}K</span> <span class="text-[11px] text-[var(--success)] ml-2">৳${summary[c].paid}</span></div></div>`).join('');
                 contentHtml = `
                 <div class="glass-panel p-4 rounded-xl mb-5 border-t-2 border-[var(--accent-gold)] shadow-lg">
-                    <h3 class="text-xs font-black gold-text mb-3 border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Today's Live Summary</h3>
+                    <h3 class="text-xs font-black gold-text mb-3 border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> ${t('today_live')}</h3>
                     ${sumHtml || '<p class="text-[10px] text-[var(--text-muted)] mb-2 italic">No buys today.</p>'}
                     <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}K</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
-                    <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> RESET & ARCHIVE TODAY'S DATA</button>
+                    <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
-                <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Archived History</h3>
+                <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
                 ${dailyArchives.map((a) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div></div>`).join('')}`;
             }
             return subTabHtml + searchBox + contentHtml;
@@ -1456,7 +1454,7 @@
         }
 
         function renderAdminWds() {
-            let searchBox = `<div class="mb-4 relative shadow-sm"><input type="text" value="${state.adminOrderSearch || ''}" oninput="state.adminOrderSearch=this.value.toLowerCase(); renderApp()" placeholder="Search Account or Order ID..." class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
+            let searchBox = `<div class="mb-4 relative shadow-sm"><input type="text" value="${state.adminOrderSearch || ''}" oninput="state.adminOrderSearch=this.value.toLowerCase(); renderApp()" placeholder="${t('search_ph')}" class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
             
             let list = orders.filter(o => o.type === 'wd' && o.status !== 'approved' && o.status !== 'rejected');
             let q = state.adminOrderSearch || '';
@@ -1515,7 +1513,7 @@
 
         // --- ADVANCED USER MANAGEMENT SYSTEM ---
         function renderAdminManual() {
-            let searchBox = `<div class="mb-5 relative shadow-sm"><input type="text" id="user-search-input" value="${state.userSearchQuery || ''}" oninput="state.userSearchQuery=this.value.toLowerCase(); document.getElementById('admin-user-list').innerHTML=renderUserList()" placeholder="Search by name, username..." class="w-full input-premium p-3.5 rounded-xl text-[11px] font-bold pl-11 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
+            let searchBox = `<div class="mb-5 relative shadow-sm"><input type="text" id="user-search-input" value="${state.userSearchQuery || ''}" oninput="state.userSearchQuery=this.value.toLowerCase(); document.getElementById('admin-user-list').innerHTML=renderUserList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3.5 rounded-xl text-[11px] font-bold pl-11 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
             return searchBox + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
         }
 
@@ -1586,7 +1584,7 @@
                     <div class="flex flex-wrap gap-2">${breakdown}</div>
                 </div>
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
-                <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">Add</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">Sub</button></div>
+                <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('add')}</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('sub')}</button></div>
                 
                 <!-- NEW: Role Toggle Button -->
                 <button onclick="toggleAdminRole('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.role==='admin'?'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border-[var(--accent-gold)]/50':'bg-[var(--bg-main)] text-[var(--text-muted)] border-[var(--border-color)]'}"><i class="fa-solid ${u.role==='admin'?'fa-chess-king':'fa-user'}"></i> ${u.role==='admin'?'Remove Admin Power':'Make Admin'}</button>
@@ -1665,13 +1663,13 @@
             let cList = coins.map(c => `
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl mb-2 flex justify-between items-center hover:shadow-md transition hover:-translate-y-0.5">
                     <div>
-                        <div class="text-xs font-black text-white flex items-center gap-2">${c.name} ${c.active ? `<span class="text-[8px] bg-[var(--success)]/20 text-[var(--success)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--success)]/30">ON</span>` : `<span class="text-[8px] bg-[var(--error)]/20 text-[var(--error)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/30">OFF</span>`}</div>
-                        <div class="text-[9px] text-[var(--text-muted)] mt-1.5 bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)] inline-block"><span class="text-[var(--accent-gold)] font-bold">৳${c.price}</span>/1K | Limit: ${c.min}-${c.max}K</div>
+                        <div class="text-xs font-black text-white flex items-center gap-2">${c.name} ${c.active ? `<span class="text-[8px] bg-[var(--success)]/20 text-[var(--success)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--success)]/30">${t('active_on')}</span>` : `<span class="text-[8px] bg-[var(--error)]/20 text-[var(--error)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/30">${t('active_off')}</span>`}</div>
+                        <div class="text-[9px] text-[var(--text-muted)] mt-1.5 bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)] inline-block"><span class="text-[var(--accent-gold)] font-bold">৳${c.price}</span>/1K | ${t('limit')} ${c.min}-${c.max}K</div>
                         <div class="text-[8px] mt-1 text-[var(--accent-cyan)]">${c.tiers ? c.tiers.length + ' Tiers active' : ''}</div>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="editCoin(${c.id})" class="text-[10px] cyan-btn px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button onclick="delCoin(${c.id})" class="text-[10px] btn-modern-danger px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-trash"></i> Del</button>
+                        <button onclick="editCoin(${c.id})" class="text-[10px] cyan-btn px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-pen"></i> ${t('edit_coin').split(' ')[0]}</button>
+                        <button onclick="delCoin(${c.id})" class="text-[10px] btn-modern-danger px-3 py-2 rounded-lg flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-trash"></i> ${t('del')}</button>
                     </div>
                 </div>`).join('');
                 
@@ -1689,21 +1687,21 @@
             <div class="glass-panel border-dashed p-4 rounded-xl mb-5 shadow-inner">
                 <h4 class="text-[11px] font-black text-[var(--accent-gold)] mb-3 flex items-center gap-2 uppercase tracking-wide"><i class="fa-solid fa-coins"></i> ${editC?t('edit_coin'):t('add_coin')}</h4>
                 <div class="grid grid-cols-2 gap-3 mb-3"><input type="text" id="c-name" value="${editC?editC.name:''}" placeholder="${t('c_name')}" class="input-premium p-3 rounded-xl text-xs font-bold"><input type="text" id="c-uname" value="${editC?editC.username:''}" placeholder="${t('c_uname')}" class="input-premium p-3 rounded-xl text-xs font-bold"></div>
-                <div class="grid grid-cols-3 gap-3 mb-3"><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">Base Price</label><input type="number" id="c-price" value="${editC?editC.price:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-black text-center focus:border-[var(--accent-gold)]"></div><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">${t('c_min')}</label><input type="number" id="c-min" value="${editC?editC.min:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-bold text-center focus:border-[var(--accent-cyan)]"></div><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">${t('c_max')}</label><input type="number" id="c-max" value="${editC?editC.max:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-bold text-center focus:border-[var(--accent-cyan)]"></div></div>
+                <div class="grid grid-cols-3 gap-3 mb-3"><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">${t('base_price')}</label><input type="number" id="c-price" value="${editC?editC.price:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-black text-center focus:border-[var(--accent-gold)]"></div><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">${t('c_min')}</label><input type="number" id="c-min" value="${editC?editC.min:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-bold text-center focus:border-[var(--accent-cyan)]"></div><div><label class="text-[9px] font-bold text-[var(--text-muted)] mb-1.5 block uppercase">${t('c_max')}</label><input type="number" id="c-max" value="${editC?editC.max:''}" class="w-full input-premium p-2.5 rounded-xl text-xs font-bold text-center focus:border-[var(--accent-cyan)]"></div></div>
                 
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 p-3 rounded-xl mb-3">
-                    <label class="text-[9px] font-bold text-[var(--accent-gold)] mb-2 block uppercase"><i class="fa-solid fa-layer-group"></i> Bulk Rates (Tiers)</label>
+                    <label class="text-[9px] font-bold text-[var(--accent-gold)] mb-2 block uppercase"><i class="fa-solid fa-layer-group"></i> ${t('bulk_rates')}</label>
                     <div id="coin-tier-list" class="mb-2">${tierListHtml}</div>
                     <div class="flex gap-2">
                         <input type="number" id="t-min" placeholder="Min (K)" class="w-1/3 input-premium p-2 rounded text-xs text-center">
                         <input type="number" id="t-price" placeholder="Price ৳" class="w-1/3 input-premium p-2 rounded text-xs text-center">
-                        <button onclick="addCoinTier()" class="w-1/3 bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] font-bold text-xs rounded border border-[var(--accent-gold)]/40 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition">Add Tier</button>
+                        <button onclick="addCoinTier()" class="w-1/3 bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] font-bold text-xs rounded border border-[var(--accent-gold)]/40 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition">${t('add_tier')}</button>
                     </div>
                 </div>
 
-                <div class="mb-4 flex items-center justify-between bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm"><div><label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5" data-i18n="logo">Logo Upload</label><input type="file" id="c-logo" class="text-[9px] text-[var(--accent-cyan)] w-[140px] font-bold"></div><label class="text-[11px] text-white flex items-center gap-2 font-black cursor-pointer bg-[var(--bg-main)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-sm"><input type="checkbox" id="c-active" class="w-3.5 h-3.5 accent-[var(--success)]" ${editC?(editC.active?'checked':''):'checked'}> ${t('active')}</label></div>
+                <div class="mb-4 flex items-center justify-between bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm"><div><label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5" data-i18n="logo">${t('logo')}</label><input type="file" id="c-logo" class="text-[9px] text-[var(--accent-cyan)] w-[140px] font-bold"></div><label class="text-[11px] text-white flex items-center gap-2 font-black cursor-pointer bg-[var(--bg-main)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-sm"><input type="checkbox" id="c-active" class="w-3.5 h-3.5 accent-[var(--success)]" ${editC?(editC.active?'checked':''):'checked'}> ${t('active')}</label></div>
                 <button onclick="saveCoin()" class="w-full cyan-btn py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-check-circle"></i> ${editC?t('update'):t('add')}</button>
-                ${editC?`<button onclick="state.editCoinId=null; state.editCoinTiers=[]; renderApp()" class="w-full mt-2 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3 rounded-xl text-[11px] font-black border border-[var(--border-color)] hover:text-white uppercase transition shadow-sm">Cancel</button>`:''}
+                ${editC?`<button onclick="state.editCoinId=null; state.editCoinTiers=[]; renderApp()" class="w-full mt-2 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3 rounded-xl text-[11px] font-black border border-[var(--border-color)] hover:text-white uppercase transition shadow-sm">${t('cancel_btn')}</button>`:''}
             </div>`;
 
             let pmListHtml = pmMethods.map(m => {
@@ -1724,7 +1722,7 @@
                         ${isBinance ? 
                             `<span class="text-[10px] text-[var(--text-muted)] font-bold px-3 py-2 bg-[var(--bg-main)] rounded-lg border border-[var(--border-color)] shadow-sm">No Charge</span>` 
                             : 
-                            `<input type="number" id="pm-chg-${m.id}" value="${m.charge||''}" placeholder="Charge ৳" class="w-[80px] input-premium p-2 rounded-lg text-[11px] font-bold text-center focus:border-[var(--accent-cyan)] shadow-sm">`
+                            `<input type="number" id="pm-chg-${m.id}" value="${m.charge||''}" placeholder="${t('pm_charge')}" class="w-[80px] input-premium p-2 rounded-lg text-[11px] font-bold text-center focus:border-[var(--accent-cyan)] shadow-sm">`
                         }
                     </div>
                 </div>`;
@@ -1734,26 +1732,26 @@
             <div class="space-y-6">
                 <!-- System Controls -->
                 <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> System Controls</h3>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> ${t('sys_ctrl')}</h3>
                     
                     <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm">
-                        <div><div class="text-[11px] font-black text-white">Maintenance Mode</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Show "Under Maintenance" to users</div></div>
+                        <div><div class="text-[11px] font-black text-white">${t('maint_mode')}</div><div class="text-[9px] text-[var(--text-muted)] mt-1">${t('maint_desc')}</div></div>
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-maintenance" class="sr-only peer" ${settings.maintenanceMode ? 'checked' : ''} onchange="toggleMaintenance(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--error)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
                     </div>
                     
                     <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
-                        <div><div class="text-[11px] font-black text-white">Require Telegram Username</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Make TG username mandatory for selling</div></div>
+                        <div><div class="text-[11px] font-black text-white">${t('req_tg')}</div><div class="text-[9px] text-[var(--text-muted)] mt-1">${t('req_tg_desc')}</div></div>
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-req-tg" class="sr-only peer" ${settings.requireTelegram ? 'checked' : ''} onchange="toggleReqTg(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--success)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
                     </div>
                 </div>
                 <!-- Site Identity -->
                 <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="site_set"><i class="fa-solid fa-globe"></i> Site Identity</h3>
-                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><input type="text" id="set-name" value="${settings.name}" placeholder="${t('site_name')}" class="w-full input-premium p-3 rounded-xl text-xs font-black"><input type="text" id="set-notice" value="${settings.notice}" placeholder="${t('notice')}" class="w-full input-premium p-3 rounded-xl text-xs"><div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex flex-col gap-2 mt-1 shadow-inner"><label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">Upload New Logo:</label><input type="file" id="set-logo" accept="image/*" class="w-full text-[10px] text-[var(--accent-cyan)] font-bold"></div><button onclick="saveSiteIdentity()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button></div>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="site_set"><i class="fa-solid fa-globe"></i> ${t('site_set')}</h3>
+                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><input type="text" id="set-name" value="${settings.name}" placeholder="${t('site_name')}" class="w-full input-premium p-3 rounded-xl text-xs font-black"><input type="text" id="set-notice" value="${settings.notice}" placeholder="${t('notice')}" class="w-full input-premium p-3 rounded-xl text-xs"><div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex flex-col gap-2 mt-1 shadow-inner"><label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">${t('logo')}</label><input type="file" id="set-logo" accept="image/*" class="w-full text-[10px] text-[var(--accent-cyan)] font-bold"></div><button onclick="saveSiteIdentity()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button></div>
                 </div>
                 <!-- FAQ & Help Settings -->
                 <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="faq_set"><i class="fa-solid fa-circle-question"></i> FAQ & Tutorial Settings</h3>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="faq_set"><i class="fa-solid fa-circle-question"></i> ${t('faq_set')}</h3>
                     <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
                         <div>
                             <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">YouTube Video Link (Embed URL)</label>
@@ -1771,33 +1769,33 @@
                             <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 2 - Answer</label>
                             <textarea id="set-fa2" class="w-full input-premium p-3 rounded-xl text-xs">${settings.faq2_a || ''}</textarea>
                         </div>
-                        <button onclick="saveFaqSettings()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save FAQ Setup</button>
+                        <button onclick="saveFaqSettings()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button>
                     </div>
                 </div>
                 <!-- Social Links -->
                 <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="social_set"><i class="fa-solid fa-share-nodes"></i> Social Links</h3>
-                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><div class="grid grid-cols-2 gap-3"><input type="text" id="set-wa" value="${settings.wa}" placeholder="WhatsApp" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#25D366]"><input type="text" id="set-tg" value="${settings.tg}" placeholder="Telegram" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#0088cc]"><input type="text" id="set-fb" value="${settings.fb}" placeholder="Facebook" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#1877F2]"><input type="text" id="set-yt" value="${settings.yt}" placeholder="YouTube" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#FF0000]"></div><button onclick="saveSocialLinks()" class="w-full gold-btn py-3.5 rounded-xl mt-1 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save</button></div>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="social_set"><i class="fa-solid fa-share-nodes"></i> ${t('social_set')}</h3>
+                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><div class="grid grid-cols-2 gap-3"><input type="text" id="set-wa" value="${settings.wa}" placeholder="WhatsApp" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#25D366]"><input type="text" id="set-tg" value="${settings.tg}" placeholder="Telegram" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#0088cc]"><input type="text" id="set-fb" value="${settings.fb}" placeholder="Facebook" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#1877F2]"><input type="text" id="set-yt" value="${settings.yt}" placeholder="YouTube" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#FF0000]"></div><button onclick="saveSocialLinks()" class="w-full gold-btn py-3.5 rounded-xl mt-1 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button></div>
                 </div>
                 <!-- Coins Setup -->
-                <div><h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="coin_set"><i class="fa-brands fa-bitcoin"></i> Coins Setup</h3>${cForm}${cList}</div>
+                <div><h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="coin_set"><i class="fa-brands fa-bitcoin"></i> ${t('coin_set')}</h3>${cForm}${cList}</div>
                 <!-- Withdraw PMs -->
                 <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw Methods & Limits</h3>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> ${t('wd_limits')}</h3>
                     <div class="glass-panel p-4 rounded-xl shadow-sm mb-4">
                         <div class="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-[var(--border-color)]">
                             <div>
-                                <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">Min Withdraw (৳)</label>
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('min_wd')}</label>
                                 <input type="number" id="set-min-wd" value="${settings.minWd || 50}" class="w-full input-premium p-2.5 rounded-lg text-xs font-black text-center focus:border-[var(--accent-gold)]">
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">Withdraw Notice</label>
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('wd_notice')}</label>
                                 <input type="text" id="set-wd-notice" value="${settings.wdNotice || 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।'}" placeholder="Important notice..." class="w-full input-premium p-2.5 rounded-lg text-xs font-bold focus:border-[var(--accent-cyan)]">
                             </div>
                         </div>
-                        <h4 class="text-[10px] font-black text-[var(--text-muted)] mb-3 flex items-center gap-2"><i class="fa-solid fa-toggle-on text-[var(--success)]"></i> Enable/Disable & Charges</h4>
+                        <h4 class="text-[10px] font-black text-[var(--text-muted)] mb-3 flex items-center gap-2"><i class="fa-solid fa-toggle-on text-[var(--success)]"></i> ${t('en_dis')}</h4>
                         ${pmListHtml}
-                        <button onclick="savePmSettings()" class="w-full btn-modern-success py-3.5 rounded-xl mt-4 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save Setup</button>
+                        <button onclick="savePmSettings()" class="w-full btn-modern-success py-3.5 rounded-xl mt-4 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save_setup')}</button>
                     </div>
                 </div>
             </div>`;
@@ -1880,7 +1878,7 @@
         function getBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error); }); }
         
         function renderFaq() {
-            return `<div class="mb-4 flex items-center justify-between"><button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs font-bold active:scale-95"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="back">Back</span></button><h2 class="text-lg font-black text-white"><i class="fa-solid fa-circle-question text-[var(--success)]"></i> <span data-i18n="help">Help & Tutorial</span></h2></div><div class="glass-panel rounded-2xl p-4 mb-6 shadow-md"><h3 class="font-black text-sm text-[var(--accent-gold)] mb-3 flex items-center gap-2"><i class="fa-brands fa-youtube text-red-500 text-lg"></i> <span data-i18n="vid_tut">Video Tutorial</span></h3><div class="video-container border border-[var(--border-color)] shadow-inner"><iframe src="${settings.videoUrl}" frameborder="0" allowfullscreen></iframe></div></div><div class="glass-panel rounded-2xl p-4 mb-6 shadow-md"><h3 class="font-black text-sm text-[var(--accent-cyan)] mb-4 flex items-center gap-2"><i class="fa-solid fa-clipboard-list"></i> <span data-i18n="faq">Frequently Asked Questions</span></h3><div class="space-y-4">${settings.faq1_q ? `<div class="bg-[var(--bg-sidebar)] p-3.5 rounded-xl border border-[var(--border-color)] shadow-sm hover:border-[var(--accent-cyan)]/30 transition"><h4 class="text-xs font-black text-white mb-2 border-b border-[var(--border-color)] pb-1.5">Q: ${settings.faq1_q}</h4><p class="text-[11px] text-[var(--text-muted)] leading-relaxed"><span class="text-[var(--success)] font-black mr-1">A:</span> ${settings.faq1_a}</p></div>` : ''}${settings.faq2_q ? `<div class="bg-[var(--bg-sidebar)] p-3.5 rounded-xl border border-[var(--border-color)] shadow-sm hover:border-[var(--accent-cyan)]/30 transition"><h4 class="text-xs font-black text-white mb-2 border-b border-[var(--border-color)] pb-1.5">Q: ${settings.faq2_q}</h4><p class="text-[11px] text-[var(--text-muted)] leading-relaxed"><span class="text-[var(--success)] font-black mr-1">A:</span> ${settings.faq2_a}</p></div>` : ''}</div><div class="mt-6 text-center border-t border-[var(--border-color)] pt-5"><p class="text-[10px] text-[var(--text-muted)] mb-2 uppercase tracking-wide" data-i18n="need_help">Still need help?</p><button onclick="switchView('support')" class="cyan-btn px-4 py-3 rounded-xl text-xs font-black w-full shadow-[0_4px_15px_rgba(53,217,242,0.3)]"><i class="fa-solid fa-headset"></i> <span data-i18n="contact_sup">Contact Support</span></button></div></div>`;
+            return `<div class="mb-4 flex items-center justify-between"><button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs font-bold active:scale-95"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="back">${t('back')}</span></button><h2 class="text-lg font-black text-white"><i class="fa-solid fa-circle-question text-[var(--success)]"></i> <span data-i18n="help">${t('help')}</span></h2></div><div class="glass-panel rounded-2xl p-4 mb-6 shadow-md"><h3 class="font-black text-sm text-[var(--accent-gold)] mb-3 flex items-center gap-2"><i class="fa-brands fa-youtube text-red-500 text-lg"></i> <span data-i18n="vid_tut">${t('vid_tut')}</span></h3><div class="video-container border border-[var(--border-color)] shadow-inner"><iframe src="${settings.videoUrl}" frameborder="0" allowfullscreen></iframe></div></div><div class="glass-panel rounded-2xl p-4 mb-6 shadow-md"><h3 class="font-black text-sm text-[var(--accent-cyan)] mb-4 flex items-center gap-2"><i class="fa-solid fa-clipboard-list"></i> <span data-i18n="faq">${t('faq')}</span></h3><div class="space-y-4">${settings.faq1_q ? `<div class="bg-[var(--bg-sidebar)] p-3.5 rounded-xl border border-[var(--border-color)] shadow-sm hover:border-[var(--accent-cyan)]/30 transition"><h4 class="text-xs font-black text-white mb-2 border-b border-[var(--border-color)] pb-1.5">Q: ${settings.faq1_q}</h4><p class="text-[11px] text-[var(--text-muted)] leading-relaxed"><span class="text-[var(--success)] font-black mr-1">A:</span> ${settings.faq1_a}</p></div>` : ''}${settings.faq2_q ? `<div class="bg-[var(--bg-sidebar)] p-3.5 rounded-xl border border-[var(--border-color)] shadow-sm hover:border-[var(--accent-cyan)]/30 transition"><h4 class="text-xs font-black text-white mb-2 border-b border-[var(--border-color)] pb-1.5">Q: ${settings.faq2_q}</h4><p class="text-[11px] text-[var(--text-muted)] leading-relaxed"><span class="text-[var(--success)] font-black mr-1">A:</span> ${settings.faq2_a}</p></div>` : ''}</div><div class="mt-6 text-center border-t border-[var(--border-color)] pt-5"><p class="text-[10px] text-[var(--text-muted)] mb-2 uppercase tracking-wide" data-i18n="need_help">${t('need_help')}</p><button onclick="switchView('support')" class="cyan-btn px-4 py-3 rounded-xl text-xs font-black w-full shadow-[0_4px_15px_rgba(53,217,242,0.3)]"><i class="fa-solid fa-headset"></i> <span data-i18n="contact_sup">${t('contact_sup')}</span></button></div></div>`;
         }
 
         function renderSupport() {
