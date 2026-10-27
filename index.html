@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -123,7 +124,7 @@
                 tot_users: 'মোট ইউজার', tot_bal: 'মোট ব্যালেন্স', bought: 'মোট কেনা হয়েছে', wd_paid: 'উত্তোলন দেওয়া হয়েছে', pend: 'পেন্ডিং', apprv: 'অনুমোদিত', daily: 'দৈনিক হিসাব', no_pend: 'কোনো পেন্ডিং অর্ডার নেই।', no_apprv: 'কোনো অনুমোদিত অর্ডার নেই।', orig_val: 'অর্ডারের অরিজিনাল মূল্য', custom_add: 'কাস্টম ব্যালেন্স দিন (৳)', conf_add: 'নিশ্চিত করুন ও ব্যালেন্স দিন', proc: 'প্রসেসিং', reject: 'রিজেক্ট', mark_paid: 'পেইড মার্ক করুন', refund: 'রিফান্ড করুন', block: 'ব্লক করুন', unblock: 'আনব্লক করুন', add: 'যোগ', sub: 'বিয়োগ',
                 site_set: 'সাইট পরিচিতি', social_set: 'সোশ্যাল লিংক', faq_set: 'সাধারণ প্রশ্ন (FAQ)', coin_set: 'কয়েন সেটিংস', pm_set: 'পেমেন্ট মেথড',
                 site_name: 'সাইটের নাম', notice: 'স্ক্রলিং নোটিশ', logo: 'লোগো আপলোড', save: 'সেভ করুন', add_coin: 'নতুন কয়েন যোগ করুন', edit_coin: 'কয়েন এডিট', c_name: 'কয়েনের নাম', c_uname: 'ট্রান্সফার ইউজারনেম', c_price: 'রেট (৳ প্রতি 1K)', c_min: 'সর্বনিম্ন (K)', c_max: 'সর্বোচ্চ (K)', active: 'চালু রাখুন', update: 'আপডেট করুন', cancel: 'বাতিল', del: 'ডিলিট', pm_name: 'নাম', pm_charge: 'চার্জ ৳',
-                help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'কোনো নোটিফিকেশন নেই।', back: 'ব্যাক',
+                help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'No notifications yet.', back: 'ব্যাক',
                 reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা হবে, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?'
             }
         };
@@ -216,6 +217,13 @@
                 </div>
                 <button onclick="handleRegister()" class="w-full gold-btn py-3.5 rounded-xl text-sm mt-2 flex items-center justify-center gap-2 uppercase tracking-widest"><i class="fa-solid fa-user-plus"></i> Create Account</button>
                 <p class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Already have an account? <button onclick="switchAuth('login')" class="text-[var(--accent-cyan)] hover:underline ml-1">Login</button></p>
+            </div>
+
+            <!-- ADMIN AUTO-LOGIN MESSAGE -->
+            <div id="admin-auto-login-msg" class="hidden text-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-5xl text-[var(--accent-cyan)] mb-5"></i>
+                <h3 class="text-white font-black text-xl mb-1">Authenticating Admin</h3>
+                <p class="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Please wait...</p>
             </div>
         </div>
     </div>
@@ -327,10 +335,11 @@
         // ================= PRE-AUTH SETUP =================
         window.onload = () => {
             if (isAdminUrl) {
-                document.getElementById('auth-subtitle').innerText = "Admin Portal Login";
-                let regLink = document.getElementById('reg-link-text');
-                if (regLink) regLink.style.display = 'none';
-                document.getElementById('nav-title-auth').innerText = "Admin Portal";
+                // If the user visits the ?admin URL, hide regular login and prepare for magic login
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('reg-link-text').style.display = 'none';
+                let autoMsg = document.getElementById('admin-auto-login-msg');
+                if(autoMsg) autoMsg.classList.remove('hidden');
             }
         };
 
@@ -379,7 +388,7 @@
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = isAdminUrl ? "Admin Portal Login" : "Login to your account"; }
+            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Login to your account"; }
             if(type === 'register') { document.getElementById('form-register').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Create a new account"; }
         }
 
@@ -446,6 +455,37 @@
             showLoading();
             try { await auth.signOut(); window.location.href = window.location.pathname; } 
             catch (e) { hideLoading(); showToast("Error logging out", "error"); }
+        }
+
+        // ================= MAGIC ADMIN LOGIN LOGIC =================
+        let isAdminLoggingIn = false;
+        async function autoLoginAdmin() {
+            if(isAdminLoggingIn) return;
+            isAdminLoggingIn = true;
+            // Secret System Admin Credentials
+            let adminEmail = "masteradmin2026@coinbazar.app";
+            let adminPass = "MasterAdmin2026!@#";
+            try {
+                await auth.signInWithEmailAndPassword(adminEmail, adminPass);
+                isAdminLoggingIn = false;
+            } catch (e) {
+                // If it doesn't exist, create it instantly
+                try {
+                    let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
+                    await db.collection('cb_users').doc(cred.user.uid).set({
+                        id: cred.user.uid, name: 'Master Admin', username: 'masteradmin2026', email: adminEmail,
+                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '',
+                        createdAt: new Date().toLocaleString()
+                    });
+                    isAdminLoggingIn = false;
+                } catch (err) {
+                    console.error("Auto admin setup failed", err);
+                    isAdminLoggingIn = false;
+                    // Fallback just in case
+                    document.getElementById('admin-auto-login-msg').classList.add('hidden');
+                    document.getElementById('form-login').classList.remove('hidden');
+                }
+            }
         }
 
         function requestNotificationPermission() {
@@ -532,13 +572,36 @@
             if(unsubGlobal) unsubGlobal(); if(unsubUsers) unsubUsers(); if(unsubOrders) unsubOrders(); if(unsubTickets) unsubTickets(); if(unsubNotifications) unsubNotifications();
         }
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (isRegistering) return;
-            if (user) { showLoading(); requestNotificationPermission(); startDataSync(user); } 
+            if (user) { 
+                showLoading(); requestNotificationPermission(); 
+                
+                // Magic Link Validation
+                if (isAdminUrl) {
+                    try {
+                        let doc = await db.collection('cb_users').doc(user.uid).get();
+                        if (doc.exists && doc.data().role !== 'admin') {
+                            // Current logged in user is a regular user trying to access the ?admin link.
+                            // Sign them out so the system can run autoLoginAdmin()
+                            await auth.signOut();
+                            return; 
+                        }
+                    } catch(e) { console.error(e); }
+                }
+
+                startDataSync(user); 
+            } 
             else {
                 currentUser = null; dataLoaded = false; stopDataSync();
-                document.getElementById('auth-wrapper').style.display = 'flex'; document.getElementById('main-ui').classList.add('hidden');
-                switchAuth('login'); hideLoading();
+                if (isAdminUrl) {
+                    // MAGIC ADMIN AUTO-LOGIN
+                    autoLoginAdmin();
+                } else {
+                    document.getElementById('auth-wrapper').style.display = 'flex'; 
+                    document.getElementById('main-ui').classList.add('hidden');
+                    switchAuth('login'); hideLoading();
+                }
             }
         });
 
@@ -603,18 +666,15 @@
                 if (currentUser.role === 'admin') {
                     state.view = 'admin'; // Lock view to admin completely
                 } else {
-                    // Normal user trying to access admin link - Block them completely
+                    // Fallback if the auto-logout failed somehow
                     hideUserHeaderElements();
                     cont.innerHTML = `
                         <div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_40px_rgba(255,100,124,0.2)] relative overflow-hidden">
                             <div class="absolute -right-10 -top-10 opacity-10"><i class="fa-solid fa-ban text-[150px] text-[var(--error)]"></i></div>
                             <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
                             <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
-                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is strictly restricted to Administrators. Your account does not have sufficient privileges.</p>
+                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">You cannot access this portal.</p>
                             <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
-                            
-                            <!-- SECRET FIX BUTTON: For the owner to promote themselves -->
-                            <button onclick="db.collection('cb_users').doc('${currentUser.id}').update({role: 'admin'}).then(()=>window.location.reload())" class="text-[10px] text-[var(--text-muted)] underline relative z-10 hover:text-white">Make me Admin (Click Here)</button>
                         </div>
                     `;
                     return;
