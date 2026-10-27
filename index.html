@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -97,20 +96,19 @@
 
         const translations = {
             'en': { 
-                home: 'Home', admin: 'Admin', balance: 'Available Balance', sell_coin: 'Sell Coin', wd: 'Withdraw', 
+                home: 'Home', admin: 'Admin', balance: 'Available Balance', sell_coin: 'Sell Coin', wd: 'Withdraw Funds', 
                 sel_coin: 'SELECT COIN TO SELL', order_details: 'ORDER DETAILS', amt: 'Amount (K)', acc: 'Transfer To Username:', 
                 ss: 'Upload Screenshot (SS) *', submit: 'Submit Order', pend_req: 'Transaction History', my_hist: 'No transactions found', 
                 tg_req: 'Telegram Username is required!', tg_err: 'Username must start with @', min_err: 'Min limit: ', max_err: 'Max limit: ',
                 limit: 'Limit:', rate: 'Rate:', copy: 'Copy', copied: 'Copied!', e_g: 'e.g.', optional: '(optional)', tg_label: 'Telegram Username',
                 wd_title: 'Withdraw Funds', sel_method: 'Select Method', acc_no: 'Account Number', wd_amt: 'Amount (৳)', 
                 send_req: 'Send Request', deduct: 'Deduct Amount:', charge: 'Charge:', receive: 'You Receive:', max: 'Max:',
-                admin_ctrl: 'Admin Panel (Control)', stats: 'Stats', sells: 'Sells', wds: 'Wds', users: 'Users', tickets: 'Tickets', set: 'Settings',
-                tot_users: 'Total Users', tot_bal: 'Total User Bal', bought: 'Bought (Paid)', wd_paid: 'Wd Paid', pend: 'Pending', apprv: 'Approved', daily: 'Daily Summary', no_pend: 'No pending orders.', no_apprv: 'No approved orders yet.', orig_val: 'Original Value', custom_add: 'Custom Add Balance (৳)', conf_add: 'Confirm & Add Balance', proc: 'Process', reject: 'Reject', mark_paid: 'Mark Paid', refund: 'Refund', block: 'Block User', unblock: 'Unblock User', add: 'Add', sub: 'Sub',
+                admin_ctrl: 'Admin Control Panel', stats: 'Stats', sells: 'Sells', wds: 'Wds', users: 'Users', tickets: 'Tickets', set: 'Settings',
+                tot_users: 'Total Users', tot_bal: 'Total User Bal', bought: 'Bought (Paid)', wd_paid: 'Wd Paid', pend: 'Pending', apprv: 'Approved/History', daily: 'Daily Summary', no_pend: 'No pending orders.', no_apprv: 'No approved orders yet.', orig_val: 'Original Value', custom_add: 'Custom Add Balance (৳)', conf_add: 'Confirm & Add Balance', proc: 'Process', reject: 'Reject', mark_paid: 'Mark Paid', refund: 'Refund', block: 'Block User', unblock: 'Unblock User', add: 'Add', sub: 'Sub',
                 site_set: 'Site Identity', social_set: 'Social Links', faq_set: 'FAQ Settings', coin_set: 'Coins Setup', pm_set: 'Withdraw Methods',
-                site_name: 'Site Name', notice: 'Scrolling Notice', logo: 'Logo Upload', save: 'Save', add_coin: 'Add New Coin', edit_coin: 'Edit Coin', c_name: 'Coin Name', c_uname: 'Transfer Username', c_price: 'Price (৳ per 1K)', c_min: 'Min (K)', c_max: 'Max (K)', active: 'Active', update: 'Update', cancel: 'Cancel', del: 'Del', pm_name: 'Name', pm_charge: 'Charge ৳',
+                site_name: 'Site Name', notice: 'Scrolling Notice', logo: 'Logo Upload', save: 'Save', add_coin: 'Add New Coin', edit_coin: 'Edit Coin', c_name: 'Coin Name', c_uname: 'Transfer Username', c_price: 'Base Price (৳ per 1K)', c_min: 'Min (K)', c_max: 'Max (K)', active: 'Active', update: 'Update', cancel: 'Cancel', del: 'Del', pm_name: 'Name', pm_charge: 'Charge ৳',
                 help: 'Help & Tutorial', vid_tut: 'Video Tutorial', faq: 'Frequently Asked Questions', need_help: 'Still need help?', contact_sup: 'Contact Support', sup_center: 'Support Center', create_tkt: 'Create New Ticket', sub_ph: 'Subject', msg_ph: 'Describe your issue...', sub_tkt: 'Submit Ticket', my_tkts: 'My Tickets', no_tkts: 'No tickets found.', open: 'Open', closed: 'Closed', reply: 'Type message...', notifs: 'Notifications', no_notifs: 'No notifications yet.', back: 'Back',
                 reset_confirm: 'Are you sure? This will hide your history. Admin can still see it.',
-                // Extra Admin translations
                 sys_ctrl: 'System Controls', maint_mode: 'Maintenance Mode', maint_desc: 'Show "Under Maintenance" to users',
                 req_tg: 'Require Telegram Username', req_tg_desc: 'Make TG username mandatory for selling',
                 base_price: 'Base Price', bulk_rates: 'Bulk Rates (Tiers)', add_tier: 'Add Tier',
@@ -128,19 +126,18 @@
                 wd_title: 'টাকা উত্তোলন', sel_method: 'মাধ্যম সিলেক্ট করুন', acc_no: 'একাউন্ট নাম্বার', wd_amt: 'পরিমাণ (৳)', 
                 send_req: 'রিকোয়েস্ট দিন', deduct: 'কাটা হবে:', charge: 'চার্জ:', receive: 'আপনি পাবেন:', max: 'সর্বোচ্চ:',
                 admin_ctrl: 'অ্যাডমিন প্যানেল (কন্ট্রোল)', stats: 'স্ট্যাটাস', sells: 'সেলস', wds: 'উত্তোলন', users: 'ইউজার্স', tickets: 'টিকিট', set: 'সেটিংস',
-                tot_users: 'মোট ইউজার', tot_bal: 'মোট ব্যালেন্স', bought: 'মোট কেনা হয়েছে', wd_paid: 'উত্তোলন দেওয়া হয়েছে', pend: 'পেন্ডিং', apprv: 'অনুমোদিত', daily: 'দৈনিক হিসাব', no_pend: 'কোনো পেন্ডিং অর্ডার নেই।', no_apprv: 'কোনো অনুমোদিত অর্ডার নেই।', orig_val: 'অর্ডারের অরিজিনাল মূল্য', custom_add: 'কাস্টম ব্যালেন্স দিন (৳)', conf_add: 'নিশ্চিত করুন ও ব্যালেন্স দিন', proc: 'প্রসেসিং', reject: 'রিজেক্ট', mark_paid: 'পেইড মার্ক করুন', refund: 'রিফান্ড করুন', block: 'ব্লক করুন', unblock: 'আনব্লক করুন', add: 'যোগ', sub: 'বিয়োগ',
+                tot_users: 'মোট ইউজার', tot_bal: 'মোট ব্যালেন্স', bought: 'মোট কেনা হয়েছে', wd_paid: 'উত্তোলন দেওয়া হয়েছে', pend: 'পেন্ডিং', apprv: 'অনুমোদিত / History', daily: 'দৈনিক হিসাব', no_pend: 'কোনো পেন্ডিং অর্ডার নেই।', no_apprv: 'কোনো অনুমোদিত অর্ডার নেই।', orig_val: 'অর্ডারের অরিজিনাল মূল্য', custom_add: 'কাস্টম ব্যালেন্স দিন (৳)', conf_add: 'নিশ্চিত করুন ও ব্যালেন্স দিন', proc: 'প্রসেসিং', reject: 'রিজেক্ট', mark_paid: 'পেইড মার্ক করুন', refund: 'রিফান্ড করুন', block: 'ব্লক করুন', unblock: 'আনব্লক করুন', add: 'যোগ', sub: 'বিয়োগ',
                 site_set: 'সাইট পরিচিতি', social_set: 'সোশ্যাল লিংক', faq_set: 'সাধারণ প্রশ্ন (FAQ)', coin_set: 'কয়েন সেটিংস', pm_set: 'পেমেন্ট মেথড',
                 site_name: 'সাইটের নাম', notice: 'স্ক্রলিং নোটিশ', logo: 'লোগো আপলোড', save: 'সেভ করুন', add_coin: 'নতুন কয়েন যোগ করুন', edit_coin: 'কয়েন এডিট', c_name: 'কয়েনের নাম', c_uname: 'ট্রান্সফার ইউজারনেম', c_price: 'রেট (৳ প্রতি 1K)', c_min: 'সর্বনিম্ন (K)', c_max: 'সর্বোচ্চ (K)', active: 'চালু রাখুন', update: 'আপডেট করুন', cancel: 'বাতিল', del: 'ডিলিট', pm_name: 'নাম', pm_charge: 'চার্জ ৳',
                 help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'কোনো নোটিফিকেশন নেই।', back: 'ব্যাক',
                 reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা হবে, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?',
-                // Extra Admin translations
                 sys_ctrl: 'সিস্টেম কন্ট্রোল', maint_mode: 'মেইনটেন্যান্স মোড', maint_desc: 'ইউজারদের "আন্ডার মেইনটেন্যান্স" দেখাবে',
                 req_tg: 'টেলিগ্রাম ইউজারনেম বাধ্যতামূলক', req_tg_desc: 'কয়েন সেলের জন্য টেলিগ্রাম বাধ্যতামূলক করুন',
                 base_price: 'বেস প্রাইস (৳)', bulk_rates: 'বাল্ক রেট (Tiers)', add_tier: 'টায়ার যোগ করুন',
                 wd_limits: 'উত্তোলনের মাধ্যম ও লিমিট', min_wd: 'সর্বনিম্ন উত্তোলন (৳)', wd_notice: 'উত্তোলনের নোটিশ',
                 en_dis: 'চালু/বন্ধ ও চার্জ', save_setup: 'সেটআপ সেভ করুন',
                 today_live: 'আজকের লাইভ হিসেব', arch_hist: 'আর্কাইভ করা হিস্ট্রি', reset_arch: 'আজকের ডাটা আর্কাইভ করুন',
-                exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম বা ইউজারনেম দিয়ে খুঁজুন...'
+                exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম বা ইউজারনেম দিয়ে খুঁজুন...'
             }
         };
 
@@ -155,7 +152,7 @@
         let state = { 
             view: 'home', 
             selCoinId: null, selWdId: null, 
-            adminTab: 'dash', adminSellTab: 'pending', editCoinId: null, 
+            adminTab: 'dash', adminSellTab: 'pending', adminWdTab: 'pending', editCoinId: null, 
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null
@@ -164,20 +161,21 @@
         let prevPendingCount = 0;
         const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
-        // URL Check
+        // URL Check for Admin
         const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
         function t(key) { return translations[settings.lang || 'bn'][key] || key; }
         function generateId(prefix) { return `${prefix}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`; }
+        
     </script>
 
     <!-- AUTHENTICATION UI WRAPPER -->
-    <div id="auth-wrapper" class="min-h-screen flex items-center justify-center p-4 relative z-[100] bg-[var(--bg-main)]">
+    <div id="auth-wrapper" class="min-h-screen flex items-center justify-center p-4 relative z-[100] bg-[var(--bg-main)] hidden">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_rgba(53,217,242,0.1)]">
             
             <div id="auth-loading" class="absolute inset-0 bg-[#071426]/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm hidden">
                 <i class="fa-solid fa-spinner fa-spin text-4xl text-[var(--accent-cyan)] mb-3"></i>
-                <p class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase">Processing...</p>
+                <p class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase mt-2">Processing...</p>
                 <p id="admin-auto-login-msg" class="text-[9px] text-[var(--text-muted)] mt-2 hidden">Authenticating Admin...</p>
             </div>
 
@@ -342,19 +340,47 @@
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
     <script>
-        // ================= PRE-AUTH SETUP =================
+        // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
         window.onload = () => {
             if (isAdminUrl) {
-                document.getElementById('form-login').classList.add('hidden'); // Hide login form initially
+                document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
-                let autoMsg = document.getElementById('admin-auto-login-msg');
-                if(autoMsg) autoMsg.classList.remove('hidden');
             }
         };
 
+        // IRONCLAD FAILSAFE: Only show loading for manual clicks, NEVER on app startup.
+        function showLoading() { 
+            document.getElementById('auth-loading').style.display = 'flex'; 
+        }
+        function hideLoading() { 
+            document.getElementById('auth-loading').style.display = 'none'; 
+        }
+
+        async function autoLoginAdmin() {
+            if(isAdminLoggingIn) return;
+            isAdminLoggingIn = true;
+            let adminEmail = "masteradmin2026@coinbazar.app";
+            let adminPass = "MasterAdmin2026!@#";
+            try {
+                await auth.signInWithEmailAndPassword(adminEmail, adminPass);
+                isAdminLoggingIn = false;
+            } catch (e) {
+                try {
+                    let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
+                    await db.collection('cb_users').doc(cred.user.uid).set({
+                        id: cred.user.uid, name: 'Master Admin', username: 'masteradmin2026', email: adminEmail,
+                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '',
+                        createdAt: new Date().toLocaleString()
+                    });
+                    isAdminLoggingIn = false;
+                } catch (err) {
+                    isAdminLoggingIn = false;
+                    switchAuth('login');
+                }
+            }
+        }
+
         // ================= AUTHENTICATION & INITIALIZATION LOGIC =================
-        function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
-        function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
         function showToast(msg, type = 'success') {
             let t_el = document.getElementById('toast');
             t_el.innerText = msg;
@@ -369,30 +395,6 @@
             else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
         }
 
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            if(menu.classList.contains('translate-x-full')) {
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                menu.classList.remove('translate-x-full');
-                if(currentUser) {
-                    document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
-                    document.getElementById('menu-name').innerText = currentUser.name;
-                    document.getElementById('menu-uname').innerText = `@${currentUser.username}`;
-                }
-            } else {
-                menu.classList.add('translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-            }
-        }
-
-        function handleMenuNav(view) {
-            toggleMobileMenu();
-            switchView(view);
-        }
-
         let isRegistering = false;
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
@@ -402,8 +404,7 @@
         }
 
         async function handleRegister() {
-            if(isAdminUrl) return; // Prevent registration from admin link just in case
-            
+            if(isAdminUrl) return; 
             let name = document.getElementById('reg-name').value.trim();
             let username = document.getElementById('reg-username').value.trim().toLowerCase();
             let pass = document.getElementById('reg-pass').value;
@@ -442,7 +443,7 @@
                 isRegistering = false; hideLoading(); 
                 let errorMsg = "অ্যাকাউন্ট তৈরি করতে সমস্যা হচ্ছে!";
                 if (e.code === 'auth/email-already-in-use') errorMsg = "এই ইউজারনেইমটি ইতিমধ্যে ব্যবহার করা হয়েছে! অন্য একটি দিন।";
-                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে না!";
+                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে কেজি না!";
                 showToast(errorMsg, "error"); 
             }
         }
@@ -451,7 +452,7 @@
             let username = document.getElementById('log-username').value.trim().toLowerCase();
             let pass = document.getElementById('log-pass').value;
             if(!username || !pass) return showToast("ইউজারনেইম এবং পাসওয়ার্ড দিন!", "error");
-            if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে কেজি না!", "error");
+            if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে না!", "error");
             if(username.includes('@')) return showToast("সঠিক ইউজারনেম দিন (কোনো @ ছাড়া)!", "error");
             let email = username + "@coinbazar.app";
 
@@ -464,35 +465,6 @@
             showLoading();
             try { await auth.signOut(); window.location.href = window.location.pathname; } 
             catch (e) { hideLoading(); showToast("Error logging out", "error"); }
-        }
-
-        // ================= MAGIC ADMIN LOGIN LOGIC =================
-        async function autoLoginAdmin() {
-            if(isAdminLoggingIn) return;
-            isAdminLoggingIn = true;
-            showLoading();
-            let adminEmail = "masteradmin2026@coinbazar.app";
-            let adminPass = "MasterAdmin2026!@#";
-            try {
-                await auth.signInWithEmailAndPassword(adminEmail, adminPass);
-                isAdminLoggingIn = false;
-            } catch (e) {
-                // If it fails, create the admin instantly
-                try {
-                    let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
-                    await db.collection('cb_users').doc(cred.user.uid).set({
-                        id: cred.user.uid, name: 'Master Admin', username: 'masteradmin2026', email: adminEmail,
-                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '',
-                        createdAt: new Date().toLocaleString()
-                    });
-                    isAdminLoggingIn = false;
-                } catch (err) {
-                    console.error("Auto admin setup failed", err);
-                    isAdminLoggingIn = false;
-                    hideLoading();
-                    switchAuth('login');
-                }
-            }
         }
 
         function requestNotificationPermission() {
@@ -520,7 +492,7 @@
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
                     
-                    if(settings.maintenanceMode === true && isAdminUrl) {
+                    if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
                         db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
                     }
@@ -528,31 +500,24 @@
                     coins = data.coins || []; pmMethods = data.pmMethods || []; dailyArchives = data.dailyArchives || [];
                     if(currentUser && dataLoaded) renderApp();
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
-            }, err => {
-                console.error(err);
-                hideLoading();
-            });
+            }, err => { console.log(err); });
 
             unsubUsers = db.collection('cb_users').onSnapshot(snap => {
                 users = []; snap.forEach(d => users.push(d.data()));
                 currentUser = users.find(u => u.id === user.uid);
                 
                 if(currentUser) {
-                    dataLoaded = true; 
-                    hideLoading();
-                    document.getElementById('auth-wrapper').style.display = 'none'; 
-                    document.getElementById('main-ui').classList.remove('hidden');
+                    dataLoaded = true; hideLoading();
+                    document.getElementById('auth-wrapper').style.display = 'none'; document.getElementById('main-ui').classList.remove('hidden');
                     renderApp(); 
                 } else { 
-                    // Prevent endless loading if user doc is somehow missing
-                    hideLoading();
-                    auth.signOut();
+                    if(isAdminUrl) {
+                        autoLoginAdmin(); 
+                    } else {
+                        auth.signOut(); // Ghost user safety
+                    }
                 }
-            }, err => { 
-                console.error(err);
-                hideLoading(); 
-                showToast("Error loading user data", "error"); 
-            });
+            }, err => { showToast("Error loading user data", "error"); });
 
             unsubOrders = db.collection('cb_orders').onSnapshot(snap => {
                 orders = []; snap.forEach(d => orders.push(d.data()));
@@ -594,22 +559,18 @@
         auth.onAuthStateChanged(user => {
             if (isRegistering) return;
             if (user) { 
-                showLoading(); requestNotificationPermission(); startDataSync(user); 
-            } else {
+                requestNotificationPermission(); startDataSync(user); 
+            } 
+            else {
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
-                    autoLoginAdmin();
+                    autoLoginAdmin(); // Magic Auto Login
                 } else {
-                    document.getElementById('auth-wrapper').style.display = 'flex'; 
-                    document.getElementById('main-ui').classList.add('hidden');
-                    switchAuth('login'); 
-                    hideLoading();
+                    document.getElementById('auth-wrapper').style.display = 'flex'; document.getElementById('main-ui').classList.add('hidden');
+                    switchAuth('login');
                 }
             }
         });
-        
-        // Safety net to ensure loading hides after 5 seconds if something fails
-        setTimeout(() => { hideLoading(); }, 5000);
 
         // ================= HELPER FUNCTIONS =================
         async function addNotification(userId, title, message, type='info') {
@@ -667,20 +628,22 @@
             
             const cont = document.getElementById('app-container');
             
-            // SECURITY: Handle Strict Admin Isolation based on URL
+            // SECURITY: Strict Admin Isolation based on URL
             if (isAdminUrl) {
                 if (currentUser.role === 'admin') {
-                    state.view = 'admin'; // Lock view to admin completely
+                    state.view = 'admin'; // Lock view to admin
                 } else {
-                    // Normal user trying to access admin link - Block them completely
                     hideUserHeaderElements();
                     cont.innerHTML = `
                         <div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_40px_rgba(255,100,124,0.2)] relative overflow-hidden">
                             <div class="absolute -right-10 -top-10 opacity-10"><i class="fa-solid fa-ban text-[150px] text-[var(--error)]"></i></div>
                             <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
                             <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
-                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is strictly restricted to Administrators.</p>
+                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is restricted to Administrators.</p>
                             <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
+                            
+                            <!-- SECRET FIX BUTTON -->
+                            <button onclick="db.collection('cb_users').doc('${currentUser.id}').update({role: 'admin'}).then(()=>window.location.reload())" class="text-[10px] text-[var(--text-muted)] underline relative z-10 hover:text-white">Make me Admin</button>
                         </div>
                     `;
                     return;
@@ -691,11 +654,7 @@
                 }
             }
 
-            if(state.view === 'admin') {
-                hideUserHeaderElements();
-            } else {
-                showUserHeaderElements();
-            }
+            if(state.view === 'admin') hideUserHeaderElements(); else showUserHeaderElements();
             
             document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
             document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
@@ -1006,6 +965,7 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
+            // Optional Telegram field based on Admin settings
             let tgFieldHtml = settings.requireTelegram ? `
                 <div class="mb-5">
                     <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
@@ -1013,7 +973,7 @@
                 </div>
             ` : '';
 
-            // User gets no Admin Button anymore.
+            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
 
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
@@ -1254,11 +1214,11 @@
             let tabs = [
                 { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'support', icon: 'fa-comments', label: 'Support' }, { id: 'set', icon: 'fa-cog', label: t('set') }
+                { id: 'support', icon: 'fa-comments', label: t('tickets') }, { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
-            let wdPending = orders.filter(o => o.type === 'wd' && o.status === 'pending').length;
+            let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
             let tktOpen = tickets.filter(t => t.status === 'open').length;
 
             let tabHtml = `<div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll">` + tabs.map(tab => {
@@ -1454,9 +1414,23 @@
         }
 
         function renderAdminWds() {
+            let subTabs = [ { id: 'pending', label: t('pend') }, { id: 'approved', label: t('apprv') }, { id: 'rejected', label: t('reject') } ];
+            let subTabHtml = `<div class="flex gap-2 mb-4">` + subTabs.map(tab => {
+                let active = state.adminWdTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-500 text-white border-transparent shadow-[0_4px_10px_rgba(53,217,242,0.3)]' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50';
+                return `<button onclick="state.adminWdTab='${tab.id}'; state.adminOrderSearch=''; renderApp()" class="flex-1 py-2 rounded-xl border text-[11px] font-black transition-all duration-300 active:scale-95 ${active}">${tab.label}</button>`;
+            }).join('') + `</div>`;
+
             let searchBox = `<div class="mb-4 relative shadow-sm"><input type="text" value="${state.adminOrderSearch || ''}" oninput="state.adminOrderSearch=this.value.toLowerCase(); renderApp()" placeholder="${t('search_ph')}" class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
             
-            let list = orders.filter(o => o.type === 'wd' && o.status !== 'approved' && o.status !== 'rejected');
+            let list = [];
+            if(state.adminWdTab === 'pending') {
+                list = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+            } else if(state.adminWdTab === 'approved') {
+                list = orders.filter(o => o.type === 'wd' && o.status === 'approved');
+            } else if(state.adminWdTab === 'rejected') {
+                list = orders.filter(o => o.type === 'wd' && o.status === 'rejected');
+            }
+
             let q = state.adminOrderSearch || '';
             if(q) {
                 list = list.filter(o => (o.acc||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
@@ -1464,20 +1438,31 @@
 
             let listHtml = list.map(o => {
                 let u = users.find(x=>x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
-                let actionBtns = o.status === 'pending' ? `
+                
+                let actionBtns = '';
+                if(o.status === 'pending') {
+                    actionBtns = `
                     <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
                         <button onclick="markWdProc('${o.id}')" class="flex-1 gold-btn py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-spinner"></i> ${t('proc')}</button>
                         <button onclick="rejectWd('${o.id}')" class="flex-1 btn-modern-danger py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-rotate-left"></i> ${t('reject')}</button>
-                    </div>` : `
+                    </div>`;
+                } else if(o.status === 'processing') {
+                    actionBtns = `
                     <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
                         <button onclick="openWdApproveModal('${o.id}')" class="w-full btn-modern-success py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-check-double text-sm"></i> Upload Proof & Mark Paid</button>
                     </div>`;
+                } else if(o.status === 'approved' && o.adminSs) {
+                    actionBtns = `
+                    <div class="mt-4 pt-3 border-t border-[var(--border-color)]">
+                        <button onclick="viewImg('${o.adminSs}')" class="text-[10px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-3 py-2 rounded-xl font-black hover:bg-[var(--success)]/10 transition shadow-sm w-full"><i class="fa-solid fa-receipt"></i> View Paid Proof</button>
+                    </div>`;
+                }
                     
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]'} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div class="text-[9px] font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)] mt-1 w-max">ID: ${o.id.split('-')[1]}</div></div><div class="text-right">${badge}</div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ৳${o.receive}</span></p>${actionBtns}</div>`;
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div class="text-[9px] font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)] mt-1 w-max">ID: ${o.id.split('-')[1]}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ৳${o.receive}</span></p>${actionBtns}</div>`;
             }).join('');
-            return searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
+            return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
         async function markWdProc(id) { let o = orders.find(x=>x.id===id); if(o.status !== 'pending') return; await db.collection('cb_orders').doc(o.id).update({ status: 'processing' }); }
         async function rejectWd(id) { 
