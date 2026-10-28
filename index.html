@@ -81,20 +81,51 @@
 
     <!-- INSTANT ROUTING LOGIC TO PREVENT WHITE SCREEN OR LOADING FLASH -->
     <style id="instant-routing">
-        #auth-wrapper { display: none !important; }
+        #auth-wrapper { display: flex !important; }
         #main-ui { display: none !important; }
     </style>
-    <script>
-        let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
-        let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
-        if (_isLog && !_isAdm) {
-            document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
-        } else {
-            document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
-        }
-    </script>
 
     <script>
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        
+        // GLOBAL DATA VARIABLES
+        let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
+        let currentUser = null;
+        let dataLoaded = false;
+        let isAdminLoggingIn = false;
+
+        // INSTANT CACHE LOADER - ELIMINATES LOADING SCREEN
+        try {
+            if (localStorage.getItem('cb_loggedIn') === 'true') {
+                let cUser = localStorage.getItem('cb_cache_user');
+                if (cUser) {
+                    currentUser = JSON.parse(cUser);
+                    dataLoaded = true;
+
+                    // Load other cached data to render instantly
+                    let cSettings = localStorage.getItem('cb_cache_settings');
+                    let cCoins = localStorage.getItem('cb_cache_coins');
+                    let cOrders = localStorage.getItem('cb_cache_orders');
+                    let cPm = localStorage.getItem('cb_cache_pmMethods');
+                    let cUsers = localStorage.getItem('cb_cache_all_users');
+                    
+                    if (cSettings) settings = JSON.parse(cSettings);
+                    if (cCoins) coins = JSON.parse(cCoins);
+                    if (cOrders) orders = JSON.parse(cOrders);
+                    if (cPm) pmMethods = JSON.parse(cPm);
+                    
+                    if (cUsers && currentUser.role === 'admin') {
+                        users = JSON.parse(cUsers); // Admins need user list
+                    } else {
+                        users = [currentUser]; // Users only need their own data initially
+                    }
+
+                    // Apply instant routing CSS if cache is loaded
+                    document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
+                }
+            }
+        } catch(e) { console.error("Cache load failed", e); }
+        
         const firebaseConfig = {
             apiKey: "AIzaSyATYpTioZRY612OywkjbNbaccKRhxDYaAg",
             authDomain: "nscoinshop.firebaseapp.com",
@@ -158,13 +189,6 @@
                 wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট কত টাকা অবশিষ্ট থাকবে'
             }
         };
-
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
-        
-        let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
-        let currentUser = null;
-        let dataLoaded = false;
-        let isAdminLoggingIn = false;
         
         // Navigation States
         let state = { 
@@ -359,15 +383,29 @@
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
     <script>
-        // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
-        window.onload = () => {
+        // ================= INSTANT UI RENDERING ON LOAD =================
+        document.addEventListener('DOMContentLoaded', () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
             }
-        };
+            // If cache successfully loaded data, render the app IMMEDIATELY before Firebase connects
+            if (dataLoaded && currentUser) {
+                document.getElementById('auth-wrapper').style.display = 'none'; 
+                document.getElementById('main-ui').style.display = 'flex';
+                updateMobileMenuProfile();
+                renderApp();
+            } else if (localStorage.getItem('cb_loggedIn') !== 'true' && !isAdminUrl) {
+                // Ensure auth wrapper is shown if not logged in
+                document.getElementById('auth-wrapper').style.display = 'flex'; 
+                document.getElementById('main-ui').style.display = 'none';
+            }
+        });
 
-        function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
+        // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
+        function showLoading() { 
+            if(!dataLoaded) document.getElementById('auth-loading').style.display = 'flex'; 
+        }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
 
         async function autoLoginAdmin() {
@@ -481,7 +519,7 @@
         async function handleLogout() {
             showLoading();
             try { 
-                localStorage.removeItem('cb_loggedIn');
+                localStorage.clear(); // Clear all cache on logout
                 await auth.signOut(); 
                 window.location.href = window.location.pathname; 
             } 
@@ -512,6 +550,7 @@
                 if (doc.exists) {
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
+                    localStorage.setItem('cb_cache_settings', JSON.stringify(settings)); // Cache settings
                     
                     if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
@@ -519,8 +558,9 @@
                     }
 
                     coins = data.coins || []; 
+                    localStorage.setItem('cb_cache_coins', JSON.stringify(coins)); // Cache coins
+                    
                     pmMethods = data.pmMethods || [];
-                    // Ensure the 5 default payment methods exist if pmMethods is empty
                     if(pmMethods.length === 0) {
                         pmMethods = [
                             { id: 1, name: 'bKash', logo: '', charge: 0, active: true },
@@ -530,6 +570,8 @@
                             { id: 5, name: 'Binance', logo: '', charge: 0, active: true }
                         ];
                     }
+                    localStorage.setItem('cb_cache_pmMethods', JSON.stringify(pmMethods)); // Cache PMs
+                    
                     dailyArchives = data.dailyArchives || [];
                     if(currentUser && dataLoaded) renderApp();
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
@@ -540,10 +582,15 @@
                 currentUser = users.find(u => u.id === user.uid);
                 
                 if(currentUser) {
+                    localStorage.setItem('cb_cache_user', JSON.stringify(currentUser)); // Cache User
+                    if(currentUser.role === 'admin') {
+                        localStorage.setItem('cb_cache_all_users', JSON.stringify(users)); // Cache users list for admin speed
+                    }
+                    
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
                     
-                    // Clear instant routing override and display correctly
+                    // Display correctly
                     document.getElementById('instant-routing').innerHTML = '';
                     document.getElementById('auth-wrapper').style.display = 'none'; 
                     document.getElementById('main-ui').style.display = 'flex';
@@ -552,7 +599,7 @@
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
-                        localStorage.removeItem('cb_loggedIn');
+                        localStorage.clear();
                         auth.signOut(); 
                     }
                 }
@@ -562,9 +609,19 @@
                 orders = []; snap.forEach(d => orders.push(d.data()));
                 orders.sort((a,b) => new Date(b.time) - new Date(a.time));
                 
+                // Cache orders based on role (limit count to prevent localstorage overload)
+                if (currentUser) {
+                    if (currentUser.role === 'admin') {
+                        localStorage.setItem('cb_cache_orders', JSON.stringify(orders.slice(0, 150))); 
+                    } else {
+                        let myOrders = orders.filter(o => o.userId === currentUser.id).slice(0, 50);
+                        localStorage.setItem('cb_cache_orders', JSON.stringify(myOrders));
+                    }
+                }
+
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
-                    if(curPending > prevPendingCount) { 
+                    if(curPending > prevPendingCount && dataLoaded) { 
                         playNotifSound(); 
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
