@@ -734,6 +734,25 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast(t('copied') + " (Exported)");
         }
 
+        function trackOrderGlobal() {
+            let q = document.getElementById('admin-track-id').value.trim();
+            if(!q) return showToast("Enter an Order ID", "error");
+            let o = orders.find(x => x.id.toLowerCase() === q.toLowerCase() || x.id.toLowerCase().includes(q.toLowerCase()));
+            if(!o) return showToast("Order not found!", "error");
+            
+            if(o.type === 'sell') {
+                state.adminTab = 'sells';
+                state.adminSellTab = o.status === 'pending' ? 'pending' : (o.status === 'approved' ? 'approved' : 'daily');
+                if(o.status === 'rejected') state.adminSellTab = 'approved'; 
+            } else {
+                state.adminTab = 'wds';
+                state.adminWdTab = (o.status === 'pending' || o.status === 'processing') ? 'pending' : (o.status === 'approved' ? 'approved' : 'rejected');
+            }
+            state.adminOrderSearch = q.toLowerCase();
+            renderApp();
+            showToast("Order Found & Selected!");
+        }
+
         // ================= MAIN UI RENDERER =================
         function renderApp() {
             if(!currentUser) return; 
@@ -1088,7 +1107,7 @@
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <span class="text-[9px] font-mono text-[var(--text-muted)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--border-color)]">ID: ${o.id.split('-')[1]}</span>
+                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-white transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
@@ -1505,8 +1524,17 @@
                 </div>
                 <div class="bg-[var(--error)]/10 text-[var(--error)] text-xl font-black px-4 py-2 rounded-xl border border-[var(--error)]/30 drop-shadow-md">${totalPending}</div>
             </div>`;
+            
+            let trackBoxHtml = `
+            <div class="glass-panel p-4 rounded-2xl mb-5 shadow-sm border-t-2 border-[var(--accent-cyan)]">
+                <h3 class="text-xs font-black text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-[var(--accent-cyan)]"></i> Track Order by ID</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="admin-track-id" placeholder="Paste ID (e.g., ORD-XXXXXX or WD-XXXXXX)" class="w-full input-premium p-3 rounded-xl text-xs font-bold focus:border-[var(--accent-cyan)]">
+                    <button onclick="trackOrderGlobal()" class="cyan-btn px-4 py-3 rounded-xl text-xs font-black shadow-sm flex items-center justify-center gap-2"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </div>`;
 
-            return pendingBoardHtml + `
+            return pendingBoardHtml + trackBoxHtml + `
                 <div class="grid grid-cols-2 gap-3 mb-5">
                     <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
                     <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
@@ -1571,7 +1599,7 @@
                         <div>
                             <h4 class="text-[11px] font-black text-white">${u ? u.name : 'Unknown'}</h4>
                             <p class="text-[9px] text-[var(--text-muted)] mt-0.5">${title}</p>
-                            <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block mt-1">ID: ${o.id}</p>
+                            <p onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[8px] text-[var(--accent-gold)] font-mono bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block mt-1"><i class="fa-solid fa-copy"></i> ${o.id}</p>
                         </div>
                         <div class="text-right flex flex-col items-end">
                             <span class="font-black text-xs ${color}">৳${amt}</span>
@@ -1608,7 +1636,7 @@
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--accent-cyan)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-3 flex flex-col gap-2 relative overflow-hidden shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start border-b border-[var(--border-color)] pb-2 mb-1">
                             <div class="flex flex-col"><span class="text-xs font-black text-white">${u?u.name:'Unknown User'}</span><span class="text-[9px] text-[var(--text-muted)] font-mono">@${u?u.username:''}</span></div>
-                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 rounded border border-[var(--accent-gold)]/30 mt-1">${o.id}</div></div>
+                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><br><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div></div>
                         </div>
                         <div class="flex flex-col gap-1 mb-1">
                             <div class="text-[10px] text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)] inline-block w-max flex items-center"><span class="text-[var(--text-muted)] mr-1">Telegram:</span> <span class="font-black text-[var(--accent-gold)]">${o.tgUsername||'N/A'}</span> ${tgCopyBtn}</div>
@@ -1637,7 +1665,7 @@
                             <span class="text-[11px] font-black text-white">${u?u.name:'Unknown'}</span> <span class="text-[8px] text-[var(--text-muted)] ml-1">${o.time}</span>
                             <div class="text-[9px] text-[var(--text-muted)] mt-1">Telegram: <span class="text-[var(--accent-gold)] font-bold">${o.tgUsername||'N/A'}</span></div>
                             <div class="text-xs text-[var(--accent-cyan)] font-bold mt-1">${o.k}K ${o.coinName}</div>
-                            <div class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">${o.id}</div>
+                            <div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div>
                         </div>
                         <div class="text-right"><div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div><div class="text-sm text-[var(--success)] font-black">Paid: ৳${o.paidAmount}</div></div>
                     </div>`;
@@ -1654,7 +1682,7 @@
                 <div class="glass-panel p-4 rounded-xl mb-5 border-t-2 border-[var(--accent-gold)] shadow-lg">
                     <h3 class="text-xs font-black gold-text mb-3 border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> ${t('today_live')}</h3>
                     ${sumHtml || '<p class="text-[10px] text-[var(--text-muted)] mb-2 italic">No buys today.</p>'}
-                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}K</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
+                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
@@ -1742,7 +1770,7 @@
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
                 let payAmtHtml = o.receiveUsd ? `<span class="text-[var(--success)]">$${o.receiveUsd.toFixed(2)} USD</span> <span class="text-[10px] text-[var(--text-muted)]">(৳${o.receive})</span>` : `৳${o.receive}`;
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max">${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><br><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
             }).join('');
             return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
@@ -1870,7 +1898,7 @@
                     let title = o.type === 'sell' ? `${o.k}K ${o.coinName}` : `${o.methodName}`;
                     let val = o.type === 'sell' ? `+ ৳${o.paidAmount||o.receive}` : `- ৳${o.total}`;
                     let col = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
-                    return `<div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-2.5 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div class="flex flex-col"><span class="text-[11px] font-black text-white">${title}</span><span class="text-[8px] text-[var(--text-muted)] mt-0.5 bg-[var(--bg-main)] px-1 rounded">${o.time}</span><span class="text-[7px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="font-black text-xs ${col}">${val}</span><span class="text-[8px] font-black uppercase mt-1 tracking-wider bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)]"><i class="fa-solid ${sIcon}"></i> ${o.status}</span></div></div>`;
+                    return `<div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-2.5 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div class="flex flex-col"><span class="text-[11px] font-black text-white">${title}</span><span class="text-[8px] text-[var(--text-muted)] mt-0.5 bg-[var(--bg-main)] px-1 rounded">${o.time}</span><span onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[8px] font-mono text-[var(--accent-gold)] mt-1 bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition inline-block w-max"><i class="fa-solid fa-copy"></i> ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="font-black text-xs ${col}">${val}</span><span class="text-[8px] font-black uppercase mt-1 tracking-wider bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)]"><i class="fa-solid ${sIcon}"></i> ${o.status}</span></div></div>`;
                 }).join('')) + `</div>`;
             }
 
