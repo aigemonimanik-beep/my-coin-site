@@ -183,6 +183,43 @@
         // URL Check for Admin
         const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
+        // ================= INSTANT LOAD (CACHE SYSTEM) =================
+        let cacheData = localStorage.getItem('cb_cache');
+        if (cacheData && localStorage.getItem('cb_loggedIn') === 'true' && !isAdminUrl) {
+            try {
+                let parsed = JSON.parse(cacheData);
+                settings = parsed.settings || DEFAULT_SETTINGS;
+                coins = parsed.coins || [];
+                pmMethods = parsed.pmMethods || [];
+                currentUser = parsed.currentUser || null;
+                orders = parsed.orders || [];
+                dailyArchives = parsed.dailyArchives || [];
+                notifications = parsed.notifications || [];
+                tickets = parsed.tickets || [];
+                dataLoaded = !!currentUser;
+                
+                // If we have cached user, render immediately without waiting for network
+                if(dataLoaded) {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        document.getElementById('instant-routing').innerHTML = '';
+                        document.getElementById('auth-wrapper').style.display = 'none'; 
+                        document.getElementById('main-ui').style.display = 'flex';
+                        updateMobileMenuProfile();
+                        renderApp();
+                    });
+                }
+            } catch(e) { console.error("Cache parsing error", e); }
+        }
+
+        function saveToLocalCache() {
+            if(!currentUser) return;
+            // Only cache active data to keep localStorage fast and light
+            let activeOrders = orders.slice(0, 100); 
+            let activeNotifs = notifications.slice(0, 50);
+            let cache = { settings, coins, pmMethods, currentUser, orders: activeOrders, dailyArchives, notifications: activeNotifs, tickets };
+            localStorage.setItem('cb_cache', JSON.stringify(cache));
+        }
+
         function t(key) { return translations[settings.lang || 'bn'][key] || key; }
         function generateId(prefix) { return `${prefix}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`; }
         
@@ -482,6 +519,7 @@
             showLoading();
             try { 
                 localStorage.removeItem('cb_loggedIn');
+                localStorage.removeItem('cb_cache'); // clear cache on logout
                 await auth.signOut(); 
                 window.location.href = window.location.pathname; 
             } 
@@ -531,7 +569,7 @@
                         ];
                     }
                     dailyArchives = data.dailyArchives || [];
-                    if(currentUser && dataLoaded) renderApp();
+                    if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
             }, err => { console.log(err); });
 
@@ -548,11 +586,13 @@
                     document.getElementById('auth-wrapper').style.display = 'none'; 
                     document.getElementById('main-ui').style.display = 'flex';
                     renderApp(); 
+                    saveToLocalCache();
                 } else { 
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
                         localStorage.removeItem('cb_loggedIn');
+                        localStorage.removeItem('cb_cache');
                         auth.signOut(); 
                     }
                 }
@@ -570,12 +610,12 @@
                     }
                     prevPendingCount = curPending;
                 }
-                if(currentUser && dataLoaded) renderApp();
+                if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
 
             unsubTickets = db.collection('cb_tickets').onSnapshot(snap => {
                 tickets = []; snap.forEach(d => tickets.push(d.data()));
-                if(currentUser && dataLoaded) renderApp();
+                if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
 
             unsubNotifications = db.collection('cb_notifications').onSnapshot(snap => {
@@ -589,7 +629,7 @@
                         if(latestNotif && notifications.length > lastNotifCount) showPushNotification(latestNotif.title, latestNotif.message);
                     }
                     lastNotifCount = notifications.length; initialNotifLoad = false;
-                    updateNotifBadge(); renderApp(); 
+                    updateNotifBadge(); renderApp(); saveToLocalCache();
                 }
             }, err => console.log(err));
         }
@@ -607,6 +647,7 @@
             } 
             else {
                 localStorage.removeItem('cb_loggedIn');
+                localStorage.removeItem('cb_cache');
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
                     autoLoginAdmin(); // Magic Auto Login
@@ -983,7 +1024,7 @@
                 
                 let tiersHtml = '';
                 if(c.tiers && c.tiers.length > 0) {
-                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK); // Display from lowest to highest
+                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK); // display smaller tier first
                     tiersHtml = sortedTiers.map(t => {
                         let tierText = settings.lang === 'bn' ? `🔥 ${t.minK}K+ রেট = ৳${t.price}` : `🔥 ${t.minK}K+ Rate = ৳${t.price}`;
                         return `<div class="text-[9px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-1 px-1.5 rounded shadow-sm text-center mt-1.5 w-full">${tierText}</div>`;
@@ -1168,14 +1209,14 @@
             let matchedTierK = 0;
             // Exact calculation logic based on Highest matched Tier where user input K >= Tier K
             if(c.tiers && c.tiers.length > 0) {
-                // Descending sort to match highest tier first
+                // Descending sort to match highest tier first (e.g. 50K matching before 10K if user enters 60)
                 let sortedTiers = [...c.tiers].sort((a,b) => b.minK - a.minK); 
                 let matched = sortedTiers.find(t => k >= t.minK);
                 if(matched) { activePrice = matched.price; tierMatched = true; matchedTierK = matched.minK; }
             }
             
             let total = k * activePrice;
-            let rateText = tierMatched ? `৳${activePrice} <span class="text-[8px] bg-[var(--accent-gold)] text-[var(--bg-main)] px-1 rounded ml-1">BULK RATE (${matchedTierK}K+)</span>` : `৳${c.price}`;
+            let rateText = tierMatched ? `৳${activePrice} <span class="text-[8px] bg-[var(--accent-gold)] text-[var(--bg-main)] px-1 rounded ml-1 font-black">BULK (${matchedTierK}K+ RATE)</span>` : `৳${c.price}`;
             
             box.innerHTML = `<div class="flex items-center justify-center gap-2">${k}K × ${rateText}</div><div class="text-lg font-black text-[var(--accent-gold)] drop-shadow-md border-t border-[var(--border-color)] mt-1 pt-1">= ৳${total.toFixed(2)}</div>`; 
             box.classList.remove('hidden'); btn.disabled = false;
@@ -1231,7 +1272,7 @@
                 let topBadge = '';
                 if(isBinance) {
                     let rate = settings.binanceRate || 127;
-                    topBadge = `<span class="text-[9px] text-[var(--bg-main)] bg-[var(--accent-cyan)] font-black block mb-2 px-2 py-1 rounded shadow-sm border border-[var(--accent-cyan)]/20 w-full text-center tracking-wider">ডলার রেট ৳${rate}</span>`;
+                    topBadge = `<span class="text-[10px] text-[var(--bg-main)] bg-[var(--accent-cyan)] font-black block mb-2 px-2 py-1 rounded shadow-sm border border-[var(--accent-cyan)]/20 w-full text-center tracking-wider">ডলার রেট ৳${rate}</span>`;
                 } else if(m.charge > 0) {
                     chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
                 }
