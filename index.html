@@ -81,51 +81,20 @@
 
     <!-- INSTANT ROUTING LOGIC TO PREVENT WHITE SCREEN OR LOADING FLASH -->
     <style id="instant-routing">
-        #auth-wrapper { display: flex !important; }
+        #auth-wrapper { display: none !important; }
         #main-ui { display: none !important; }
     </style>
+    <script>
+        let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
+        let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
+        if (_isLog && !_isAdm) {
+            document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
+        } else {
+            document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
+        }
+    </script>
 
     <script>
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
-        
-        // GLOBAL DATA VARIABLES
-        let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
-        let currentUser = null;
-        let dataLoaded = false;
-        let isAdminLoggingIn = false;
-
-        // INSTANT CACHE LOADER - ELIMINATES LOADING SCREEN
-        try {
-            if (localStorage.getItem('cb_loggedIn') === 'true') {
-                let cUser = localStorage.getItem('cb_cache_user');
-                if (cUser) {
-                    currentUser = JSON.parse(cUser);
-                    dataLoaded = true;
-
-                    // Load other cached data to render instantly
-                    let cSettings = localStorage.getItem('cb_cache_settings');
-                    let cCoins = localStorage.getItem('cb_cache_coins');
-                    let cOrders = localStorage.getItem('cb_cache_orders');
-                    let cPm = localStorage.getItem('cb_cache_pmMethods');
-                    let cUsers = localStorage.getItem('cb_cache_all_users');
-                    
-                    if (cSettings) settings = JSON.parse(cSettings);
-                    if (cCoins) coins = JSON.parse(cCoins);
-                    if (cOrders) orders = JSON.parse(cOrders);
-                    if (cPm) pmMethods = JSON.parse(cPm);
-                    
-                    if (cUsers && currentUser.role === 'admin') {
-                        users = JSON.parse(cUsers); // Admins need user list
-                    } else {
-                        users = [currentUser]; // Users only need their own data initially
-                    }
-
-                    // Apply instant routing CSS if cache is loaded
-                    document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
-                }
-            }
-        } catch(e) { console.error("Cache load failed", e); }
-        
         const firebaseConfig = {
             apiKey: "AIzaSyATYpTioZRY612OywkjbNbaccKRhxDYaAg",
             authDomain: "nscoinshop.firebaseapp.com",
@@ -189,6 +158,13 @@
                 wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট কত টাকা অবশিষ্ট থাকবে'
             }
         };
+
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        
+        let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
+        let currentUser = null;
+        let dataLoaded = false;
+        let isAdminLoggingIn = false;
         
         // Navigation States
         let state = { 
@@ -383,29 +359,15 @@
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
     <script>
-        // ================= INSTANT UI RENDERING ON LOAD =================
-        document.addEventListener('DOMContentLoaded', () => {
+        // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
+        window.onload = () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
             }
-            // If cache successfully loaded data, render the app IMMEDIATELY before Firebase connects
-            if (dataLoaded && currentUser) {
-                document.getElementById('auth-wrapper').style.display = 'none'; 
-                document.getElementById('main-ui').style.display = 'flex';
-                updateMobileMenuProfile();
-                renderApp();
-            } else if (localStorage.getItem('cb_loggedIn') !== 'true' && !isAdminUrl) {
-                // Ensure auth wrapper is shown if not logged in
-                document.getElementById('auth-wrapper').style.display = 'flex'; 
-                document.getElementById('main-ui').style.display = 'none';
-            }
-        });
+        };
 
-        // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
-        function showLoading() { 
-            if(!dataLoaded) document.getElementById('auth-loading').style.display = 'flex'; 
-        }
+        function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
 
         async function autoLoginAdmin() {
@@ -519,7 +481,7 @@
         async function handleLogout() {
             showLoading();
             try { 
-                localStorage.clear(); // Clear all cache on logout
+                localStorage.removeItem('cb_loggedIn');
                 await auth.signOut(); 
                 window.location.href = window.location.pathname; 
             } 
@@ -550,7 +512,6 @@
                 if (doc.exists) {
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
-                    localStorage.setItem('cb_cache_settings', JSON.stringify(settings)); // Cache settings
                     
                     if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
@@ -558,9 +519,8 @@
                     }
 
                     coins = data.coins || []; 
-                    localStorage.setItem('cb_cache_coins', JSON.stringify(coins)); // Cache coins
-                    
                     pmMethods = data.pmMethods || [];
+                    // Ensure the 5 default payment methods exist if pmMethods is empty
                     if(pmMethods.length === 0) {
                         pmMethods = [
                             { id: 1, name: 'bKash', logo: '', charge: 0, active: true },
@@ -570,8 +530,6 @@
                             { id: 5, name: 'Binance', logo: '', charge: 0, active: true }
                         ];
                     }
-                    localStorage.setItem('cb_cache_pmMethods', JSON.stringify(pmMethods)); // Cache PMs
-                    
                     dailyArchives = data.dailyArchives || [];
                     if(currentUser && dataLoaded) renderApp();
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
@@ -582,15 +540,10 @@
                 currentUser = users.find(u => u.id === user.uid);
                 
                 if(currentUser) {
-                    localStorage.setItem('cb_cache_user', JSON.stringify(currentUser)); // Cache User
-                    if(currentUser.role === 'admin') {
-                        localStorage.setItem('cb_cache_all_users', JSON.stringify(users)); // Cache users list for admin speed
-                    }
-                    
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
                     
-                    // Display correctly
+                    // Clear instant routing override and display correctly
                     document.getElementById('instant-routing').innerHTML = '';
                     document.getElementById('auth-wrapper').style.display = 'none'; 
                     document.getElementById('main-ui').style.display = 'flex';
@@ -599,7 +552,7 @@
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
-                        localStorage.clear();
+                        localStorage.removeItem('cb_loggedIn');
                         auth.signOut(); 
                     }
                 }
@@ -609,19 +562,9 @@
                 orders = []; snap.forEach(d => orders.push(d.data()));
                 orders.sort((a,b) => new Date(b.time) - new Date(a.time));
                 
-                // Cache orders based on role (limit count to prevent localstorage overload)
-                if (currentUser) {
-                    if (currentUser.role === 'admin') {
-                        localStorage.setItem('cb_cache_orders', JSON.stringify(orders.slice(0, 150))); 
-                    } else {
-                        let myOrders = orders.filter(o => o.userId === currentUser.id).slice(0, 50);
-                        localStorage.setItem('cb_cache_orders', JSON.stringify(myOrders));
-                    }
-                }
-
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
-                    if(curPending > prevPendingCount && dataLoaded) { 
+                    if(curPending > prevPendingCount) { 
                         playNotifSound(); 
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
@@ -1040,8 +983,11 @@
                 
                 let tiersHtml = '';
                 if(c.tiers && c.tiers.length > 0) {
-                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK);
-                    tiersHtml = sortedTiers.map(t => `<div class="text-[9px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-1 px-1.5 rounded shadow-sm text-center mt-1.5 w-full">🔥 ${t.minK}K+ Rate = ৳${t.price}</div>`).join('');
+                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK); // Display from lowest to highest
+                    tiersHtml = sortedTiers.map(t => {
+                        let tierText = settings.lang === 'bn' ? `🔥 ${t.minK}K+ রেট = ৳${t.price}` : `🔥 ${t.minK}K+ Rate = ৳${t.price}`;
+                        return `<div class="text-[9px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-1 px-1.5 rounded shadow-sm text-center mt-1.5 w-full">${tierText}</div>`;
+                    }).join('');
                 }
 
                 return `<div ${clickAction} class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300 ${activeClass} group relative overflow-hidden">${overlayHtml}<div class="${filterClass} flex flex-col items-center w-full"><div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/5 to-transparent opacity-0 group-hover:opacity-100 transition"></div><img src="${logoSrc}" class="w-12 h-12 rounded-full object-cover shadow-[0_4px_10px_rgba(0,0,0,0.3)] mb-3 border-2 border-[var(--border-color)] z-10"><span class="text-xs font-black text-white text-center uppercase tracking-wider z-10">${c.name}</span>
@@ -1145,7 +1091,7 @@
                     <div class="mb-5">
                         <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="amt">${t('amt')}</label>
                         <div class="relative"><input type="number" id="sell-k" oninput="calcSell()" class="w-full input-premium rounded-xl p-3.5 pr-12 font-black text-lg text-[var(--accent-cyan)] focus:ring-2 focus:ring-[var(--accent-cyan)]/20" placeholder="${t('e_g')} 5"><span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[var(--text-muted)] bg-[var(--bg-main)] w-8 h-8 rounded-lg flex items-center justify-center text-sm border border-[var(--border-color)]">K</span></div>
-                        <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner"></div>
+                        <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner flex flex-col gap-1"></div>
                     </div>
                     
                     ${tgFieldHtml}
@@ -1219,16 +1165,20 @@
             
             let activePrice = c.price;
             let tierMatched = false;
+            let matchedTierK = 0;
+            // Exact calculation logic based on Highest matched Tier where user input K >= Tier K
             if(c.tiers && c.tiers.length > 0) {
-                let sortedTiers = [...c.tiers].sort((a,b) => b.minK - a.minK);
+                // Descending sort to match highest tier first
+                let sortedTiers = [...c.tiers].sort((a,b) => b.minK - a.minK); 
                 let matched = sortedTiers.find(t => k >= t.minK);
-                if(matched) { activePrice = matched.price; tierMatched = true; }
+                if(matched) { activePrice = matched.price; tierMatched = true; matchedTierK = matched.minK; }
             }
             
             let total = k * activePrice;
-            let rateText = tierMatched ? `৳${activePrice} <span class="text-[8px] bg-[var(--accent-gold)] text-[var(--bg-main)] px-1 rounded ml-1">BULK RATE</span>` : `৳${c.price}`;
+            let rateText = tierMatched ? `৳${activePrice} <span class="text-[8px] bg-[var(--accent-gold)] text-[var(--bg-main)] px-1 rounded ml-1">BULK RATE (${matchedTierK}K+)</span>` : `৳${c.price}`;
             
-            box.innerHTML = `${k}K × ${rateText} = <span class="text-lg font-black ml-2 text-[var(--accent-gold)] drop-shadow-md">৳${total.toFixed(2)}</span>`; box.classList.remove('hidden'); btn.disabled = false;
+            box.innerHTML = `<div class="flex items-center justify-center gap-2">${k}K × ${rateText}</div><div class="text-lg font-black text-[var(--accent-gold)] drop-shadow-md border-t border-[var(--border-color)] mt-1 pt-1">= ৳${total.toFixed(2)}</div>`; 
+            box.classList.remove('hidden'); btn.disabled = false;
         }
 
         async function submitSell() {
@@ -1336,8 +1286,8 @@
             let rateRow = isBinance ? `<div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--accent-cyan)]">ডলার রেট</span> <span class="text-white font-bold text-xs">৳${rate}</span></div>` : '';
             let chargeRow = isBinance ? '' : `<div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_chg">${t('wd_chg')}</span> <span class="text-[var(--error)] font-bold text-xs">- ৳${charge.toFixed(2)}</span></div>`;
             
-            let rcvLabel = isBinance ? (settings.lang === 'en' ? 'Total USDT Receive' : 'মোট কত ডলার (USDT) পাবেন') : t('wd_rcv');
-            let rcvHtml = isBinance ? `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">${(receive / rate).toFixed(2)} USDT</span>` : `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span>`;
+            let rcvLabel = isBinance ? (settings.lang === 'en' ? 'Total Receive (USDT)' : 'মোট কত ডলার (USDT) পাবেন') : t('wd_rcv');
+            let rcvHtml = isBinance ? `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">$${(receive / rate).toFixed(2)} USDT</span>` : `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span>`;
             
             box.innerHTML = `
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_cur_bal">${t('wd_cur_bal')}</span> <span class="text-white font-black text-xs">৳${currentUser.balance.toFixed(2)}</span></div>
