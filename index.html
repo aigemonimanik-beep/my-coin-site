@@ -1203,8 +1203,17 @@
             let activeMethods = pmMethods.filter(m => m.active !== false);
             
             grid.innerHTML = activeMethods.map(m => {
+                let isBinance = m.name.toLowerCase().includes('binance');
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-8 h-8 object-contain mb-2">` : `<div class="w-8 h-8 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-2 border border-[var(--border-color)]"><i class="fa-solid fa-bank"></i></div>`;
-                let chargeHtml = m.charge > 0 ? `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>` : ``;
+                
+                let chargeHtml = '';
+                if(isBinance) {
+                    let rate = settings.binanceRate || 127;
+                    chargeHtml = `<span class="text-[9px] text-[var(--accent-cyan)] font-bold block mt-1 bg-[var(--accent-cyan)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--accent-cyan)]/20">রেট ৳${rate}/$</span>`;
+                } else if(m.charge > 0) {
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
+                }
+
                 return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-3 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${logoHtml}<span class="text-xs font-black text-white tracking-wide">${m.name}</span>${chargeHtml}</div>`;
             }).join('');
             
@@ -1243,23 +1252,30 @@
         function calcWd() {
             let box = document.getElementById('wd-calc-res'); if(!state.selWdId) return box.classList.add('hidden');
             let amt = parseFloat(document.getElementById('wd-amt').value); if(isNaN(amt) || amt <= 0) return box.classList.add('hidden');
-            let m = pmMethods.find(x=>x.id===state.selWdId); let charge = m.charge || 0; let receive = amt - charge; if(receive < 0) receive = 0;
-            let isError = amt > currentUser.balance; let color = isError ? 'text-[var(--error)]' : 'text-white';
-            let remaining = currentUser.balance - amt;
+            let m = pmMethods.find(x=>x.id===state.selWdId); 
             
             let isBinance = m.name.toLowerCase().includes('binance');
             let rate = settings.binanceRate || 127;
-            let rcvHtml = isBinance ? `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">$${(receive / rate).toFixed(2)} USD</span> <span class="text-[9px] text-[var(--text-muted)] ml-1">(@ ৳${rate}/$)</span>` : `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span>`;
+            let charge = isBinance ? 0 : (m.charge || 0); // No charge for Binance
+            let receive = amt - charge; if(receive < 0) receive = 0;
+            let isError = amt > currentUser.balance; let color = isError ? 'text-[var(--error)]' : 'text-white';
+            let remaining = currentUser.balance - amt;
+            
+            let rateRow = isBinance ? `<div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--accent-cyan)]">ডলার রেট</span> <span class="text-white font-bold text-xs">৳${rate}</span></div>` : '';
+            let chargeRow = isBinance ? '' : `<div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_chg">${t('wd_chg')}</span> <span class="text-[var(--error)] font-bold text-xs">- ৳${charge.toFixed(2)}</span></div>`;
+            let rcvHtml = isBinance ? `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">$${(receive / rate).toFixed(2)} USD</span>` : `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span>`;
             
             box.innerHTML = `
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_cur_bal">${t('wd_cur_bal')}</span> <span class="text-white font-black text-xs">৳${currentUser.balance.toFixed(2)}</span></div>
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_req_amt">${t('wd_req_amt')}</span> <span class="${color} font-black text-xs">৳${amt.toFixed(2)}</span></div>
-                <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_chg">${t('wd_chg')}</span> <span class="text-[var(--error)] font-bold text-xs">- ৳${charge.toFixed(2)}</span></div>
+                ${rateRow}
+                ${chargeRow}
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--success)] font-black" data-i18n="wd_rcv">${t('wd_rcv')}</span> ${rcvHtml}</div>
                 <div class="flex justify-between pt-2"><span class="text-[10px] text-[var(--text-muted)] uppercase" data-i18n="wd_rem">${t('wd_rem')}</span> <span class="text-white font-black text-xs ${remaining < 0 ? 'text-[var(--error)]' : ''}">৳${remaining.toFixed(2)}</span></div>
             `;
             box.classList.remove('hidden');
         }
+        
         async function submitWd() {
             if(!state.selWdId) return showToast("Select a payment method!", "error");
             let acc = document.getElementById('wd-acc').value.trim(); 
@@ -1271,17 +1287,19 @@
             if(amt > currentUser.balance) return showToast("Insufficient Balance!", "error");
             
             let m = pmMethods.find(x=>x.id===state.selWdId); 
-            if(!m.name.toLowerCase().includes('binance')) {
+            let isBinance = m.name.toLowerCase().includes('binance');
+            
+            if(!isBinance) {
                 let isOnlyDigits = /^\d+$/.test(acc);
                 if((acc.length !== 11 && acc.length !== 12) || !isOnlyDigits) return showToast("অবশ্যই ১১ বা ১২ সংখ্যার সঠিক নাম্বার দিতে হবে!", "error");
             }
 
-            let receive = amt - (m.charge || 0); 
-            let isBinance = m.name.toLowerCase().includes('binance');
+            let charge = isBinance ? 0 : (m.charge || 0);
+            let receive = amt - charge; 
             let receiveUsd = isBinance ? receive / (settings.binanceRate || 127) : null;
             
             await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
-            let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: m.charge, status: 'pending', time: new Date().toLocaleString() };
+            let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
             await db.collection('cb_orders').doc(newWd.id).set(newWd);
             closeWdModal(); showToast("Withdrawal requested!"); switchView('home');
         }
@@ -1449,12 +1467,10 @@
             renderAdminHistoryList();
             document.getElementById('admin-history-modal').classList.remove('hidden');
         }
-
         function closeAdminHistory() {
             state.adminHistoryType = null;
             document.getElementById('admin-history-modal').classList.add('hidden');
         }
-
         function renderAdminHistoryList() {
             let q = document.getElementById('ahm-search').value.toLowerCase().trim();
             let html = '';
