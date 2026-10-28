@@ -503,7 +503,6 @@
 
                     coins = data.coins || []; 
                     pmMethods = data.pmMethods || [];
-                    // Ensure the 5 default payment methods exist if pmMethods is empty
                     if(pmMethods.length === 0) {
                         pmMethods = [
                             { id: 1, name: 'bKash', logo: '', charge: 0, active: true },
@@ -531,7 +530,7 @@
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
-                        auth.signOut(); // Ghost user safety
+                        auth.signOut();
                     }
                 }
             }, err => { showToast("Error loading user data", "error"); });
@@ -584,7 +583,7 @@
             else {
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
-                    autoLoginAdmin(); // Magic Auto Login
+                    autoLoginAdmin();
                 } else {
                     document.getElementById('auth-wrapper').style.display = 'flex'; document.getElementById('main-ui').classList.add('hidden');
                     switchAuth('login');
@@ -691,16 +690,13 @@
                             <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
                             <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is restricted to Administrators.</p>
                             <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
-                            
-                            <!-- SECRET FIX BUTTON -->
-                            <button onclick="db.collection('cb_users').doc('${currentUser.id}').update({role: 'admin'}).then(()=>window.location.reload())" class="text-[10px] text-[var(--text-muted)] underline relative z-10 hover:text-white">Make me Admin</button>
                         </div>
                     `;
                     return;
                 }
             } else {
                 if (state.view === 'admin') {
-                    state.view = 'home'; // Normal URL cannot see admin view
+                    state.view = 'home';
                 }
             }
 
@@ -1031,7 +1027,6 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
-            // Optional Telegram field based on Admin settings
             let tgFieldHtml = settings.requireTelegram ? `
                 <div class="mb-5">
                     <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
@@ -1275,11 +1270,19 @@
 
 
         // ================= ADMIN VIEW =================
+        function toggleAdminMenu() {
+            let menu = document.getElementById('admin-tab-menu');
+            if(menu) menu.classList.toggle('hidden');
+        }
+
         function renderAdmin() {
             let tabs = [
-                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, { id: 'sells', icon: 'fa-coins', label: t('sells') },
-                { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'support', icon: 'fa-comments', label: t('tickets') }, { id: 'set', icon: 'fa-cog', label: t('set') }
+                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
+                { id: 'sells', icon: 'fa-coins', label: t('sells') },
+                { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
+                { id: 'manual', icon: 'fa-users', label: t('users') },
+                { id: 'support', icon: 'fa-comments', label: t('tickets') }, 
+                { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
@@ -1287,26 +1290,27 @@
             let tktOpen = tickets.filter(t => t.status === 'open').length;
 
             let activeTabObj = tabs.find(t => t.id === state.adminTab);
+            
             let tabHtml = `
             <div class="relative mb-6 z-[60]">
-                <button onclick="toggleAdminMenu()" class="w-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3.5 rounded-xl flex justify-between items-center shadow-sm transition hover:border-[var(--accent-cyan)]/50">
-                    <div class="flex items-center gap-2 text-white font-black text-sm">
-                        <i class="fa-solid fa-bars text-[var(--accent-cyan)] text-lg"></i>
-                        <span class="ml-1 tracking-wide uppercase text-[11px] text-[var(--text-muted)]">Menu:</span>
+                <button onclick="toggleAdminMenu()" class="w-full bg-[var(--bg-sidebar)] border-2 border-[var(--border-color)] p-4 rounded-2xl flex justify-between items-center shadow-lg transition hover:border-[var(--accent-cyan)]/50">
+                    <div class="flex items-center gap-3 text-white font-black text-lg">
+                        <i class="fa-solid fa-bars text-[var(--accent-cyan)] text-2xl"></i>
+                        <span class="ml-1 tracking-wide uppercase text-sm text-[var(--text-muted)]">Menu:</span>
                         <span class="text-[var(--accent-cyan)]">${activeTabObj ? activeTabObj.label : 'Select'}</span>
                     </div>
-                    <div class="text-[var(--text-muted)] text-[10px] uppercase tracking-wider font-bold bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] shadow-inner flex items-center gap-1"><i class="fa-solid fa-caret-down"></i></div>
+                    <div class="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold bg-[var(--bg-main)] px-3 py-1.5 rounded-xl border-2 border-[var(--border-color)] shadow-inner flex items-center gap-1"><i class="fa-solid fa-caret-down text-lg"></i></div>
                 </button>
-                <div id="admin-tab-menu" class="hidden absolute top-full left-0 mt-2 w-full bg-[#091B30] border border-[var(--accent-cyan)]/30 rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.7)] flex-col gap-1.5 p-2 z-[70]">` + 
+                <div id="admin-tab-menu" class="hidden absolute top-full left-0 mt-3 w-full bg-[#091B30] border-2 border-[var(--accent-cyan)]/40 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] flex-col gap-2 p-3 z-[70]">` + 
                 tabs.map(tab => {
-                    let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-main)] hover:text-white';
+                    let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent scale-[1.02]' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-main)] hover:text-white';
                     let extra = '';
-                    if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${sellPending}</span>`;
-                    if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${wdPending}</span>`;
-                    if(tab.id === 'support' && tktOpen > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${tktOpen}</span>`;
+                    if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${sellPending}</span>`;
+                    if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${wdPending}</span>`;
+                    if(tab.id === 'support' && tktOpen > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${tktOpen}</span>`;
                     
-                    return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-4 py-3 rounded-lg text-sm font-black border transition-all duration-300 flex items-center justify-between ${active}">
-                        <span><i class="fa-solid ${tab.icon} w-6 text-center"></i> ${tab.label}</span>
+                    return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-5 py-4 rounded-xl text-base font-black border transition-all duration-300 flex items-center justify-between ${active}">
+                        <span class="flex items-center gap-3"><i class="fa-solid ${tab.icon} w-7 text-center text-xl"></i> ${tab.label}</span>
                         ${extra}
                     </button>`;
                 }).join('') + `</div></div>`;
@@ -1425,10 +1429,12 @@
             renderAdminHistoryList();
             document.getElementById('admin-history-modal').classList.remove('hidden');
         }
+
         function closeAdminHistory() {
             state.adminHistoryType = null;
             document.getElementById('admin-history-modal').classList.add('hidden');
         }
+
         function renderAdminHistoryList() {
             let q = document.getElementById('ahm-search').value.toLowerCase().trim();
             let html = '';
