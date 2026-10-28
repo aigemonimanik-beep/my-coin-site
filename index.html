@@ -606,6 +606,12 @@
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
+
+        function toggleAdminMenu() {
+            let menu = document.getElementById('admin-tab-menu');
+            if(menu) menu.classList.toggle('hidden');
+        }
+
         function handleMenuNav(view) {
             toggleMobileMenu();
             switchView(view);
@@ -1033,8 +1039,6 @@
                 </div>
             ` : '';
 
-            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
-
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
                     <div class="absolute -right-8 -bottom-8 opacity-5"><i class="fa-brands fa-ethereum text-9xl text-white"></i></div>
@@ -1282,14 +1286,30 @@
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
             let tktOpen = tickets.filter(t => t.status === 'open').length;
 
-            let tabHtml = `<div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll">` + tabs.map(tab => {
-                let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:text-[var(--accent-cyan)]';
-                let extra = '';
-                if(tab.id === 'sells' && sellPending > 0) extra = `<span class="absolute -top-1 -right-1 bg-[var(--error)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow">${sellPending}</span>`;
-                if(tab.id === 'wds' && wdPending > 0) extra = `<span class="absolute -top-1 -right-1 bg-[var(--error)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow">${wdPending}</span>`;
-                if(tab.id === 'support' && tktOpen > 0) extra = `<span class="absolute -top-1 -right-1 bg-[var(--error)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow">${tktOpen}</span>`;
-                return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="relative whitespace-nowrap px-4 py-2.5 rounded-xl text-[11px] font-black border transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 shadow-sm ${active}"><i class="fa-solid ${tab.icon}"></i> ${tab.label} ${extra}</button>`;
-            }).join('') + `</div>`;
+            let activeTabObj = tabs.find(t => t.id === state.adminTab);
+            let tabHtml = `
+            <div class="relative mb-6 z-[60]">
+                <button onclick="toggleAdminMenu()" class="w-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3.5 rounded-xl flex justify-between items-center shadow-sm transition hover:border-[var(--accent-cyan)]/50">
+                    <div class="flex items-center gap-2 text-white font-black text-sm">
+                        <i class="fa-solid fa-bars text-[var(--accent-cyan)] text-lg"></i>
+                        <span class="ml-1 tracking-wide uppercase text-[11px] text-[var(--text-muted)]">Menu:</span>
+                        <span class="text-[var(--accent-cyan)]">${activeTabObj ? activeTabObj.label : 'Select'}</span>
+                    </div>
+                    <div class="text-[var(--text-muted)] text-[10px] uppercase tracking-wider font-bold bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] shadow-inner flex items-center gap-1"><i class="fa-solid fa-caret-down"></i></div>
+                </button>
+                <div id="admin-tab-menu" class="hidden absolute top-full left-0 mt-2 w-full bg-[#091B30] border border-[var(--accent-cyan)]/30 rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.7)] flex-col gap-1.5 p-2 z-[70]">` + 
+                tabs.map(tab => {
+                    let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-main)] hover:text-white';
+                    let extra = '';
+                    if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${sellPending}</span>`;
+                    if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${wdPending}</span>`;
+                    if(tab.id === 'support' && tktOpen > 0) extra = `<span class="bg-[var(--error)] text-white text-[10px] px-2 py-0.5 rounded-full flex items-center justify-center shadow font-black">${tktOpen}</span>`;
+                    
+                    return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-4 py-3 rounded-lg text-sm font-black border transition-all duration-300 flex items-center justify-between ${active}">
+                        <span><i class="fa-solid ${tab.icon} w-6 text-center"></i> ${tab.label}</span>
+                        ${extra}
+                    </button>`;
+                }).join('') + `</div></div>`;
 
             let contentHtml = '';
             if(state.adminTab === 'dash') contentHtml = renderAdminDash(); else if(state.adminTab === 'sells') contentHtml = renderAdminSells();
