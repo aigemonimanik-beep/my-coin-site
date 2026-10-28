@@ -85,8 +85,8 @@
         #main-ui { display: none !important; }
     </style>
     <script>
+        let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
-        // Admin also gets instant access if cached
         if (_isLog) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
@@ -1563,17 +1563,21 @@
         // --- Admin History Modal Functions ---
         function openAdminHistory(type) {
             state.adminHistoryType = type;
-            state.adminHistorySearch = '';
-            renderApp();
+            let title = type === 'users' ? 'All-Time Users History' : (type === 'sells' ? 'All-Time Sells History' : 'All-Time Withdraws History');
+            document.getElementById('ahm-title').innerText = title;
+            document.getElementById('ahm-search').value = '';
+            document.getElementById('ahm-dl-btn').onclick = () => exportCSV(type);
+            renderAdminHistoryList();
+            document.getElementById('admin-history-modal').classList.remove('hidden');
         }
         function closeAdminHistory() {
             state.adminHistoryType = null;
-            state.adminHistorySearch = '';
-            renderApp();
+            document.getElementById('admin-history-modal').classList.add('hidden');
         }
-        
+
         async function deleteHistoryItem(id, type) {
-            let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি ডিলিট করতে চান?";
+            let msg = type === 'users' ? "Are you sure you want to delete this user?" : "Are you sure you want to delete this history record?";
+            if(settings.lang === 'bn') msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি ডিলিট করতে চান?";
             if(!confirm(msg)) return;
             
             showLoading();
@@ -1583,16 +1587,17 @@
                 } else {
                     await db.collection('cb_orders').doc(id).delete();
                 }
-                showToast("সফলভাবে ডিলিট করা হয়েছে!");
+                showToast(settings.lang === 'bn' ? "সফলভাবে ডিলিট করা হয়েছে!" : "Deleted successfully!");
+                renderAdminHistoryList();
             } catch(e) {
                 console.error(e);
-                showToast("ডিলিট করতে সমস্যা হয়েছে!", "error");
+                showToast("Error deleting data!", "error");
             }
             hideLoading();
         }
 
-        function renderAdminHistoryList(returnHtml = false) {
-            let q = state.adminHistorySearch || '';
+        function renderAdminHistoryList() {
+            let q = document.getElementById('ahm-search').value.toLowerCase().trim();
             let html = '';
             
             if (state.adminHistoryType === 'users') {
@@ -1627,7 +1632,7 @@
                         <div>
                             <h4 class="text-[11px] font-black text-white">${u ? u.name : 'Unknown'}</h4>
                             <p class="text-[9px] text-[var(--text-muted)] mt-0.5">${title}</p>
-                            <p onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[8px] text-[var(--accent-gold)] font-mono bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block mt-1"><i class="fa-solid fa-copy"></i> ${o.id}</p>
+                            <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block mt-1">ID: ${o.id}</p>
                         </div>
                         <div class="text-right flex flex-col items-end gap-1">
                             <span class="font-black text-xs ${color}">৳${amt}</span>
@@ -1639,11 +1644,7 @@
                 }).join('');
             }
             if(!html) html = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No records found.</p>`;
-            
-            if(returnHtml === true) return html;
-            
-            let listEl = document.getElementById('ahm-list');
-            if(listEl) listEl.innerHTML = html;
+            document.getElementById('ahm-list').innerHTML = html;
         }
 
         function renderAdminSells() {
