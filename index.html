@@ -85,9 +85,9 @@
         #main-ui { display: none !important; }
     </style>
     <script>
-        let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
-        if (_isLog && !_isAdm) {
+        // Admin also gets instant access if cached
+        if (_isLog) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
             document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
@@ -185,7 +185,7 @@
 
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
         let cacheData = localStorage.getItem('cb_cache');
-        if (cacheData && localStorage.getItem('cb_loggedIn') === 'true' && !isAdminUrl) {
+        if (cacheData && localStorage.getItem('cb_loggedIn') === 'true') {
             try {
                 let parsed = JSON.parse(cacheData);
                 settings = parsed.settings || DEFAULT_SETTINGS;
@@ -204,6 +204,9 @@
                         document.getElementById('instant-routing').innerHTML = '';
                         document.getElementById('auth-wrapper').style.display = 'none'; 
                         document.getElementById('main-ui').style.display = 'flex';
+                        if (isAdminUrl && currentUser.role === 'admin') {
+                            state.view = 'admin'; // Route directly to admin view
+                        }
                         updateMobileMenuProfile();
                         renderApp();
                     });
@@ -401,6 +404,11 @@
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
+                
+                // Show clear loading message if they are waiting for authentication
+                if(document.getElementById('auth-wrapper').style.display !== 'none') {
+                    document.getElementById('auth-subtitle').innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)] mr-1"></i> Securing Admin Portal...';
+                }
             }
         };
 
@@ -1107,7 +1115,7 @@
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-white transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</span>
+                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-white transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id.split('-')[1]}</span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
