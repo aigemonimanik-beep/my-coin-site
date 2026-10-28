@@ -23,7 +23,7 @@
             --accent-cyan: #35D9F2; --success: #16C784; --error: #FF647C;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
         
         .glass-panel { background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
         .gold-text { background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -78,6 +78,15 @@
     </style>
 </head>
 <body class="antialiased pb-20 relative">
+
+    <!-- FAST SPLASH SCREEN -->
+    <div id="fast-splash" class="fixed inset-0 bg-[#071426] z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="w-20 h-20 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center mb-6 bg-[#091B30] shadow-[0_0_30px_rgba(232,199,121,0.3)] animate-pulse">
+            <i class="fa-solid fa-gem text-4xl gold-text"></i>
+        </div>
+        <h1 class="text-3xl font-black text-white tracking-tight animate-pulse">Coin Bazar</h1>
+        <p class="text-xs text-[var(--accent-cyan)] font-bold mt-3 tracking-[0.3em] uppercase animate-pulse">Loading...</p>
+    </div>
 
     <script>
         const firebaseConfig = {
@@ -144,7 +153,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।', binanceRate: 127 };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -345,6 +354,14 @@
 
     <script>
         // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
+        function hideFastSplash() {
+            let splash = document.getElementById('fast-splash');
+            if(splash) {
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 300);
+            }
+        }
+
         window.onload = () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
@@ -353,12 +370,8 @@
         };
 
         // IRONCLAD FAILSAFE: Only show loading for manual clicks, NEVER on app startup.
-        function showLoading() { 
-            document.getElementById('auth-loading').style.display = 'flex'; 
-        }
-        function hideLoading() { 
-            document.getElementById('auth-loading').style.display = 'none'; 
-        }
+        function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
 
         async function autoLoginAdmin() {
             if(isAdminLoggingIn) return;
@@ -380,6 +393,7 @@
                 } catch (err) {
                     isAdminLoggingIn = false;
                     switchAuth('login');
+                    hideFastSplash(); // Fail safe
                 }
             }
         }
@@ -503,6 +517,7 @@
 
                     coins = data.coins || []; 
                     pmMethods = data.pmMethods || [];
+                    // Ensure the 5 default payment methods exist if pmMethods is empty
                     if(pmMethods.length === 0) {
                         pmMethods = [
                             { id: 1, name: 'bKash', logo: '', charge: 0, active: true },
@@ -525,15 +540,16 @@
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
                     document.getElementById('auth-wrapper').style.display = 'none'; document.getElementById('main-ui').classList.remove('hidden');
+                    hideFastSplash(); // USER LOADED: HIDE SPLASH
                     renderApp(); 
                 } else { 
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
-                        auth.signOut();
+                        auth.signOut(); // Ghost user safety
                     }
                 }
-            }, err => { showToast("Error loading user data", "error"); });
+            }, err => { showToast("Error loading user data", "error"); hideFastSplash(); });
 
             unsubOrders = db.collection('cb_orders').onSnapshot(snap => {
                 orders = []; snap.forEach(d => orders.push(d.data()));
@@ -583,10 +599,11 @@
             else {
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
-                    autoLoginAdmin();
+                    autoLoginAdmin(); // Magic Auto Login
                 } else {
                     document.getElementById('auth-wrapper').style.display = 'flex'; document.getElementById('main-ui').classList.add('hidden');
                     switchAuth('login');
+                    hideFastSplash(); // NO USER FOUND: SHOW LOGIN, HIDE SPLASH
                 }
             }
         });
@@ -605,12 +622,6 @@
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
-
-        function toggleAdminMenu() {
-            let menu = document.getElementById('admin-tab-menu');
-            if(menu) menu.classList.toggle('hidden');
-        }
-
         function handleMenuNav(view) {
             toggleMobileMenu();
             switchView(view);
@@ -696,7 +707,7 @@
                 }
             } else {
                 if (state.view === 'admin') {
-                    state.view = 'home';
+                    state.view = 'home'; // Normal URL cannot see admin view
                 }
             }
 
@@ -1027,12 +1038,15 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
+            // Optional Telegram field based on Admin settings
             let tgFieldHtml = settings.requireTelegram ? `
                 <div class="mb-5">
                     <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
                     <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
                 </div>
             ` : '';
+
+            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
 
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
@@ -1979,7 +1993,7 @@
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> ${t('wd_limits')}</h3>
                     <div class="glass-panel p-4 rounded-xl shadow-sm mb-4">
-                        <div class="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-[var(--border-color)]">
+                        <div class="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-[var(--border-color)]">
                             <div>
                                 <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('min_wd')}</label>
                                 <input type="number" id="set-min-wd" value="${settings.minWd || 50}" class="w-full input-premium p-2.5 rounded-lg text-xs font-black text-center focus:border-[var(--accent-gold)]">
@@ -1988,7 +2002,7 @@
                                 <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">Binance Rate</label>
                                 <input type="number" id="set-binance-rate" value="${settings.binanceRate || 127}" placeholder="127" class="w-full input-premium p-2.5 rounded-lg text-xs font-black text-center focus:border-[var(--success)]">
                             </div>
-                            <div>
+                            <div class="col-span-2">
                                 <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('wd_notice')}</label>
                                 <input type="text" id="set-wd-notice" value="${settings.wdNotice || 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।'}" placeholder="Important notice..." class="w-full input-premium p-2.5 rounded-lg text-xs font-bold focus:border-[var(--accent-cyan)]">
                             </div>
