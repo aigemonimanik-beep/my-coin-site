@@ -77,16 +77,22 @@
         .profile-img-wrap:hover .overlay { opacity: 1; }
     </style>
 </head>
-<body class="antialiased pb-20 relative">
+<body class="antialiased pb-20 relative" style="background-color: #071426;">
 
-    <!-- FAST SPLASH SCREEN -->
-    <div id="fast-splash" class="fixed inset-0 bg-[#071426] z-[9999] flex flex-col items-center justify-center transition-opacity duration-300">
-        <div class="w-20 h-20 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center mb-6 bg-[#091B30] shadow-[0_0_30px_rgba(232,199,121,0.3)] animate-pulse">
-            <i class="fa-solid fa-gem text-4xl gold-text"></i>
-        </div>
-        <h1 class="text-3xl font-black text-white tracking-tight animate-pulse">Coin Bazar</h1>
-        <p class="text-xs text-[var(--accent-cyan)] font-bold mt-3 tracking-[0.3em] uppercase animate-pulse">Loading...</p>
-    </div>
+    <!-- INSTANT ROUTING LOGIC TO PREVENT WHITE SCREEN OR LOADING FLASH -->
+    <style id="instant-routing">
+        #auth-wrapper { display: none !important; }
+        #main-ui { display: none !important; }
+    </style>
+    <script>
+        let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
+        let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
+        if (_isLog && !_isAdm) {
+            document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
+        } else {
+            document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
+        }
+    </script>
 
     <script>
         const firebaseConfig = {
@@ -183,7 +189,7 @@
     </script>
 
     <!-- AUTHENTICATION UI WRAPPER -->
-    <div id="auth-wrapper" class="min-h-screen flex items-center justify-center p-4 relative z-[100] bg-[var(--bg-main)] hidden">
+    <div id="auth-wrapper" class="min-h-screen items-center justify-center p-4 relative z-[100] bg-[var(--bg-main)] hidden">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_rgba(53,217,242,0.1)]">
             
             <div id="auth-loading" class="absolute inset-0 bg-[#071426]/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm hidden">
@@ -250,7 +256,7 @@
     </div>
 
     <!-- MAIN APP UI -->
-    <div id="main-ui" class="hidden min-h-screen flex flex-col">
+    <div id="main-ui" class="hidden min-h-screen flex-col">
         <!-- Header -->
         <header id="main-header" class="sticky top-0 z-50 glass-panel px-3 py-3 flex justify-between items-center border-b border-b-gray-800 bg-[var(--bg-main)]">
             <div class="flex items-center gap-3 cursor-pointer flex-shrink-0" onclick="switchView('home')">
@@ -354,14 +360,6 @@
 
     <script>
         // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
-        function hideFastSplash() {
-            let splash = document.getElementById('fast-splash');
-            if(splash) {
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 300);
-            }
-        }
-
         window.onload = () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
@@ -369,7 +367,6 @@
             }
         };
 
-        // IRONCLAD FAILSAFE: Only show loading for manual clicks, NEVER on app startup.
         function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
 
@@ -393,7 +390,6 @@
                 } catch (err) {
                     isAdminLoggingIn = false;
                     switchAuth('login');
-                    hideFastSplash(); // Fail safe
                 }
             }
         }
@@ -475,13 +471,20 @@
             let email = username + "@coinbazar.app";
 
             showLoading();
-            try { await auth.signInWithEmailAndPassword(email, pass); } 
+            try { 
+                await auth.signInWithEmailAndPassword(email, pass); 
+                localStorage.setItem('cb_loggedIn', 'true');
+            } 
             catch (e) { hideLoading(); showToast("ইউজারনেইম বা পাসওয়ার্ড ভুল হয়েছে!", "error"); }
         }
 
         async function handleLogout() {
             showLoading();
-            try { await auth.signOut(); window.location.href = window.location.pathname; } 
+            try { 
+                localStorage.removeItem('cb_loggedIn');
+                await auth.signOut(); 
+                window.location.href = window.location.pathname; 
+            } 
             catch (e) { hideLoading(); showToast("Error logging out", "error"); }
         }
 
@@ -539,17 +542,21 @@
                 if(currentUser) {
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
-                    document.getElementById('auth-wrapper').style.display = 'none'; document.getElementById('main-ui').classList.remove('hidden');
-                    hideFastSplash(); // USER LOADED: HIDE SPLASH
+                    
+                    // Clear instant routing override and display correctly
+                    document.getElementById('instant-routing').innerHTML = '';
+                    document.getElementById('auth-wrapper').style.display = 'none'; 
+                    document.getElementById('main-ui').style.display = 'flex';
                     renderApp(); 
                 } else { 
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
                     } else {
-                        auth.signOut(); // Ghost user safety
+                        localStorage.removeItem('cb_loggedIn');
+                        auth.signOut(); 
                     }
                 }
-            }, err => { showToast("Error loading user data", "error"); hideFastSplash(); });
+            }, err => { showToast("Error loading user data", "error"); });
 
             unsubOrders = db.collection('cb_orders').onSnapshot(snap => {
                 orders = []; snap.forEach(d => orders.push(d.data()));
@@ -594,16 +601,20 @@
         auth.onAuthStateChanged(user => {
             if (isRegistering) return;
             if (user) { 
-                requestNotificationPermission(); startDataSync(user); 
+                localStorage.setItem('cb_loggedIn', 'true');
+                requestNotificationPermission(); 
+                startDataSync(user); 
             } 
             else {
+                localStorage.removeItem('cb_loggedIn');
                 currentUser = null; dataLoaded = false; stopDataSync();
                 if (isAdminUrl) {
                     autoLoginAdmin(); // Magic Auto Login
                 } else {
-                    document.getElementById('auth-wrapper').style.display = 'flex'; document.getElementById('main-ui').classList.add('hidden');
+                    document.getElementById('instant-routing').innerHTML = '';
+                    document.getElementById('auth-wrapper').style.display = 'flex'; 
+                    document.getElementById('main-ui').style.display = 'none';
                     switchAuth('login');
-                    hideFastSplash(); // NO USER FOUND: SHOW LOGIN, HIDE SPLASH
                 }
             }
         });
@@ -1021,7 +1032,12 @@
                 let sClass = `status-badge ${o.status}`; let sIcon = o.status === 'pending' ? 'fa-clock' : 'fa-spinner fa-spin';
                 let sText = t(o.status==='processing' ? 'proc' : 'pend').toUpperCase();
                 let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName}`;
+                
                 let amtText = o.type === 'sell' ? `+ ৳${o.paidAmount || o.receive}` : `- ৳${o.total}`;
+                if (o.type === 'wd' && o.methodName.toLowerCase().includes('binance') && o.receiveUsd) {
+                    amtText = `- $${o.receiveUsd.toFixed(2)}`;
+                }
+                
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
                 let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
@@ -1045,8 +1061,6 @@
                     <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
                 </div>
             ` : '';
-
-            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
 
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
