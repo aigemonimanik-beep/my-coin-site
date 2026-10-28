@@ -144,7 +144,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।', binanceRate: 127 };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -1233,11 +1233,15 @@
             let isError = amt > currentUser.balance; let color = isError ? 'text-[var(--error)]' : 'text-white';
             let remaining = currentUser.balance - amt;
             
+            let isBinance = m.name.toLowerCase().includes('binance');
+            let rate = settings.binanceRate || 127;
+            let rcvHtml = isBinance ? `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">$${(receive / rate).toFixed(2)} USD</span> <span class="text-[9px] text-[var(--text-muted)] ml-1">(@ ৳${rate}/$)</span>` : `<span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span>`;
+            
             box.innerHTML = `
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_cur_bal">${t('wd_cur_bal')}</span> <span class="text-white font-black text-xs">৳${currentUser.balance.toFixed(2)}</span></div>
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_req_amt">${t('wd_req_amt')}</span> <span class="${color} font-black text-xs">৳${amt.toFixed(2)}</span></div>
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_chg">${t('wd_chg')}</span> <span class="text-[var(--error)] font-bold text-xs">- ৳${charge.toFixed(2)}</span></div>
-                <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--success)] font-black" data-i18n="wd_rcv">${t('wd_rcv')}</span> <span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span></div>
+                <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--success)] font-black" data-i18n="wd_rcv">${t('wd_rcv')}</span> ${rcvHtml}</div>
                 <div class="flex justify-between pt-2"><span class="text-[10px] text-[var(--text-muted)] uppercase" data-i18n="wd_rem">${t('wd_rem')}</span> <span class="text-white font-black text-xs ${remaining < 0 ? 'text-[var(--error)]' : ''}">৳${remaining.toFixed(2)}</span></div>
             `;
             box.classList.remove('hidden');
@@ -1259,9 +1263,11 @@
             }
 
             let receive = amt - (m.charge || 0); 
+            let isBinance = m.name.toLowerCase().includes('binance');
+            let receiveUsd = isBinance ? receive / (settings.binanceRate || 127) : null;
             
             await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
-            let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, charge: m.charge, status: 'pending', time: new Date().toLocaleString() };
+            let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: m.charge, status: 'pending', time: new Date().toLocaleString() };
             await db.collection('cb_orders').doc(newWd.id).set(newWd);
             closeWdModal(); showToast("Withdrawal requested!"); switchView('home');
         }
@@ -1639,8 +1645,9 @@
                 }
                     
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
+                let payAmtHtml = o.receiveUsd ? `<span class="text-[var(--success)]">$${o.receiveUsd.toFixed(2)} USD</span> <span class="text-[10px] text-[var(--text-muted)]">(৳${o.receive})</span>` : `৳${o.receive}`;
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max">${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ৳${o.receive}</span></p>${actionBtns}</div>`;
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max">${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
             }).join('');
             return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
@@ -1972,10 +1979,14 @@
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer"></i> ${t('wd_limits')}</h3>
                     <div class="glass-panel p-4 rounded-xl shadow-sm mb-4">
-                        <div class="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-[var(--border-color)]">
+                        <div class="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-[var(--border-color)]">
                             <div>
                                 <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('min_wd')}</label>
                                 <input type="number" id="set-min-wd" value="${settings.minWd || 50}" class="w-full input-premium p-2.5 rounded-lg text-xs font-black text-center focus:border-[var(--accent-gold)]">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">Binance Rate</label>
+                                <input type="number" id="set-binance-rate" value="${settings.binanceRate || 127}" placeholder="127" class="w-full input-premium p-2.5 rounded-lg text-xs font-black text-center focus:border-[var(--success)]">
                             </div>
                             <div>
                                 <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">${t('wd_notice')}</label>
@@ -2061,6 +2072,7 @@
 
         async function savePmSettings() {
             let minWd = parseFloat(document.getElementById('set-min-wd').value) || 0;
+            let binanceRate = parseFloat(document.getElementById('set-binance-rate').value) || 127;
             let wdNotice = document.getElementById('set-wd-notice').value;
             
             let newPm = pmMethods.map(m => {
@@ -2074,6 +2086,7 @@
             });
             
             settings.minWd = minWd;
+            settings.binanceRate = binanceRate;
             settings.wdNotice = wdNotice;
             
             await db.collection('cb_data').doc('global_state').update({ 
