@@ -87,6 +87,8 @@
     <script>
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
+        
+        // Fix: Always show main-ui instantly if logged in, regardless of admin URL or not
         if (_isLog) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
@@ -185,6 +187,8 @@
 
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
         let cacheData = localStorage.getItem('cb_cache');
+        
+        // Fix: Allow admin to also load from cache instantly by removing !isAdminUrl
         if (cacheData && localStorage.getItem('cb_loggedIn') === 'true') {
             try {
                 let parsed = JSON.parse(cacheData);
@@ -205,7 +209,7 @@
                         document.getElementById('auth-wrapper').style.display = 'none'; 
                         document.getElementById('main-ui').style.display = 'flex';
                         if (isAdminUrl && currentUser.role === 'admin') {
-                            state.view = 'admin';
+                            state.view = 'admin'; // Set view to admin instantly if authorized
                         }
                         updateMobileMenuProfile();
                         renderApp();
@@ -1115,7 +1119,7 @@
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-white transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id.split('-')[1]}</span>
+                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id.split('-')[1]}</span>
                     </div>
                     <div class="flex justify-between items-end">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
@@ -1498,20 +1502,18 @@
                 </div>
 
                 <!-- Admin All-Time History Modal -->
-                <div id="admin-history-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] ${state.adminHistoryType ? 'flex' : 'hidden'} flex-col p-4 pt-10 backdrop-blur-sm">
+                <div id="admin-history-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] hidden flex flex-col p-4 pt-10 backdrop-blur-sm">
                     <div class="glass-panel w-full max-w-lg mx-auto rounded-2xl p-4 flex flex-col h-[85vh] relative shadow-2xl border-t border-[var(--accent-cyan)]">
                         <button onclick="closeAdminHistory()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--error)] bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
                         <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 pr-10">
-                            <h3 class="font-black text-white text-base flex items-center gap-2" id="ahm-title">${state.adminHistoryType === 'users' ? 'All-Time Users History' : (state.adminHistoryType === 'sells' ? 'All-Time Sells History' : 'All-Time Withdraws History')}</h3>
-                            <button id="ahm-dl-btn" onclick="exportCSV('${state.adminHistoryType}')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] px-3 py-1.5 rounded-lg text-[10px] font-black shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition-all active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-file-export"></i> Download CSV</button>
+                            <h3 class="font-black text-white text-base flex items-center gap-2" id="ahm-title">History</h3>
+                            <button id="ahm-dl-btn" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] px-3 py-1.5 rounded-lg text-[10px] font-black shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition-all active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-file-export"></i> Download CSV</button>
                         </div>
                         <div class="mb-3 relative shadow-sm">
-                            <input type="text" id="ahm-search" value="${state.adminHistorySearch || ''}" oninput="state.adminHistorySearch=this.value.toLowerCase(); renderAdminHistoryList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-cyan)]">
+                            <input type="text" id="ahm-search" oninput="renderAdminHistoryList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3 rounded-xl text-[11px] font-bold pl-10 border focus:border-[var(--accent-cyan)]">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i>
                         </div>
-                        <div id="ahm-list" class="flex-1 overflow-y-auto hide-scroll space-y-2 pr-1">
-                            ${state.adminHistoryType ? renderAdminHistoryList(true) : ''}
-                        </div>
+                        <div id="ahm-list" class="flex-1 overflow-y-auto hide-scroll space-y-2 pr-1"></div>
                     </div>
                 </div>
             `;
@@ -1570,24 +1572,27 @@
             renderAdminHistoryList();
             document.getElementById('admin-history-modal').classList.remove('hidden');
         }
+        
         function closeAdminHistory() {
             state.adminHistoryType = null;
             document.getElementById('admin-history-modal').classList.add('hidden');
         }
 
         async function deleteHistoryItem(id, type) {
-            let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি ডিলিট করতে চান?";
+            let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে চিরতরে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি চিরতরে ডিলিট করতে চান?";
             if(!confirm(msg)) return;
             
             showLoading();
             try {
                 if(type === 'users') {
                     await db.collection('cb_users').doc(id).delete();
+                    users = users.filter(u => u.id !== id); // update local instantly
                 } else {
                     await db.collection('cb_orders').doc(id).delete();
+                    orders = orders.filter(o => o.id !== id); // update local instantly
                 }
                 showToast("সফলভাবে ডিলিট করা হয়েছে!");
-                setTimeout(() => renderAdminHistoryList(), 500); 
+                renderAdminHistoryList();
             } catch(e) {
                 console.error(e);
                 showToast("Error deleting data!", "error");
@@ -1596,7 +1601,9 @@
         }
 
         function renderAdminHistoryList() {
-            let q = document.getElementById('ahm-search').value.toLowerCase().trim();
+            let searchInput = document.getElementById('ahm-search');
+            if(!searchInput) return;
+            let q = searchInput.value.toLowerCase().trim();
             let html = '';
             
             if (state.adminHistoryType === 'users') {
@@ -1669,7 +1676,7 @@
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--accent-cyan)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-3 flex flex-col gap-2 relative overflow-hidden shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start border-b border-[var(--border-color)] pb-2 mb-1">
                             <div class="flex flex-col"><span class="text-xs font-black text-white">${u?u.name:'Unknown User'}</span><span class="text-[9px] text-[var(--text-muted)] font-mono">@${u?u.username:''}</span></div>
-                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><br><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div></div>
+                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 rounded border border-[var(--accent-gold)]/30 mt-1">${o.id}</div></div>
                         </div>
                         <div class="flex flex-col gap-1 mb-1">
                             <div class="text-[10px] text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)] inline-block w-max flex items-center"><span class="text-[var(--text-muted)] mr-1">Telegram:</span> <span class="font-black text-[var(--accent-gold)]">${o.tgUsername||'N/A'}</span> ${tgCopyBtn}</div>
@@ -1698,7 +1705,7 @@
                             <span class="text-[11px] font-black text-white">${u?u.name:'Unknown'}</span> <span class="text-[8px] text-[var(--text-muted)] ml-1">${o.time}</span>
                             <div class="text-[9px] text-[var(--text-muted)] mt-1">Telegram: <span class="text-[var(--accent-gold)] font-bold">${o.tgUsername||'N/A'}</span></div>
                             <div class="text-xs text-[var(--accent-cyan)] font-bold mt-1">${o.k}K ${o.coinName}</div>
-                            <div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div>
+                            <div class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">${o.id}</div>
                         </div>
                         <div class="text-right"><div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div><div class="text-sm text-[var(--success)] font-black">Paid: ৳${o.paidAmount}</div></div>
                     </div>`;
@@ -1715,7 +1722,7 @@
                 <div class="glass-panel p-4 rounded-xl mb-5 border-t-2 border-[var(--accent-gold)] shadow-lg">
                     <h3 class="text-xs font-black gold-text mb-3 border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> ${t('today_live')}</h3>
                     ${sumHtml || '<p class="text-[10px] text-[var(--text-muted)] mb-2 italic">No buys today.</p>'}
-                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
+                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}K</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
@@ -1931,7 +1938,7 @@
                     let title = o.type === 'sell' ? `${o.k}K ${o.coinName}` : `${o.methodName}`;
                     let val = o.type === 'sell' ? `+ ৳${o.paidAmount||o.receive}` : `- ৳${o.total}`;
                     let col = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
-                    return `<div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-2.5 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div class="flex flex-col"><span class="text-[11px] font-black text-white">${title}</span><span class="text-[8px] text-[var(--text-muted)] mt-0.5 bg-[var(--bg-main)] px-1 rounded">${o.time}</span><span onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[8px] font-mono text-[var(--accent-gold)] mt-1 bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition inline-block w-max"><i class="fa-solid fa-copy"></i> ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="font-black text-xs ${col}">${val}</span><span class="text-[8px] font-black uppercase mt-1 tracking-wider bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)]"><i class="fa-solid ${sIcon}"></i> ${o.status}</span></div></div>`;
+                    return `<div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-2.5 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div class="flex flex-col"><span class="text-[11px] font-black text-white">${title}</span><span class="text-[8px] text-[var(--text-muted)] mt-0.5 bg-[var(--bg-main)] px-1 rounded">${o.time}</span><span class="text-[7px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="font-black text-xs ${col}">${val}</span><span class="text-[8px] font-black uppercase mt-1 tracking-wider bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--border-color)]"><i class="fa-solid ${sIcon}"></i> ${o.status}</span></div></div>`;
                 }).join('')) + `</div>`;
             }
 
