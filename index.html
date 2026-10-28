@@ -117,7 +117,7 @@
                 en_dis: 'Enable/Disable & Charges', save_setup: 'Save Setup',
                 today_live: 'Today\'s Live Summary', arch_hist: 'Archived History', reset_arch: 'RESET & ARCHIVE TODAY\'S DATA',
                 exp_data: 'Export Data to CSV (Excel)', active_on: 'ON', active_off: 'OFF', cancel_btn: 'Cancel', search_ph: 'Search by name, username, ID...',
-                wd_cur_bal: 'Current Balance', wd_req_amt: 'Withdraw Amount', wd_chg: 'Service Charge', wd_rcv: 'You Will Receive', wd_deduct: 'Total Deduction', wd_rem: 'Remaining Balance'
+                wd_cur_bal: 'Original Balance', wd_req_amt: 'Withdraw Amount', wd_chg: 'Send Money Charge', wd_rcv: 'Total Amount Receive', wd_rem: 'Remaining Balance'
             },
             'bn': { 
                 home: 'হোম', admin: 'এডমিন', balance: 'অ্যাভেইলেবল ব্যালেন্স', sell_coin: 'কয়েন বিক্রি', wd: 'উত্তোলন করুন', 
@@ -140,7 +140,7 @@
                 en_dis: 'চালু/বন্ধ ও চার্জ', save_setup: 'সেটআপ সেভ করুন',
                 today_live: 'আজকের লাইভ হিসেব', arch_hist: 'আর্কাইভ করা হিস্ট্রি', reset_arch: 'আজকের ডাটা আর্কাইভ করুন',
                 exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম, ইউজারনেম বা ID দিয়ে খুঁজুন...',
-                wd_cur_bal: 'মূল ব্যালেন্স', wd_req_amt: 'উত্তোলনের পরিমাণ', wd_chg: 'সার্ভিস চার্জ', wd_rcv: 'ইউজার মোট কত টাকা পাবেন', wd_deduct: 'চার্জসহ মোট কত টাকা কাটা হবে', wd_rem: 'অবশিষ্ট ব্যালেন্স'
+                wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট কত টাকা অবশিষ্ট থাকবে'
             }
         };
 
@@ -1033,6 +1033,8 @@
                 </div>
             ` : '';
 
+            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
+
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
                     <div class="absolute -right-8 -bottom-8 opacity-5"><i class="fa-brands fa-ethereum text-9xl text-white"></i></div>
@@ -1237,12 +1239,10 @@
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_req_amt">${t('wd_req_amt')}</span> <span class="${color} font-black text-xs">৳${amt.toFixed(2)}</span></div>
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--text-muted)]" data-i18n="wd_chg">${t('wd_chg')}</span> <span class="text-[var(--error)] font-bold text-xs">- ৳${charge.toFixed(2)}</span></div>
                 <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--success)] font-black" data-i18n="wd_rcv">${t('wd_rcv')}</span> <span class="text-[var(--success)] font-black text-sm drop-shadow-sm">৳${receive.toFixed(2)}</span></div>
-                <div class="flex justify-between border-b border-[var(--border-color)] pb-1.5 pt-1.5"><span class="text-[10px] text-[var(--error)] font-black" data-i18n="wd_deduct">${t('wd_deduct')}</span> <span class="text-[var(--error)] font-black text-sm drop-shadow-sm">৳${amt.toFixed(2)}</span></div>
                 <div class="flex justify-between pt-2"><span class="text-[10px] text-[var(--text-muted)] uppercase" data-i18n="wd_rem">${t('wd_rem')}</span> <span class="text-white font-black text-xs ${remaining < 0 ? 'text-[var(--error)]' : ''}">৳${remaining.toFixed(2)}</span></div>
             `;
             box.classList.remove('hidden');
         }
-
         async function submitWd() {
             if(!state.selWdId) return showToast("Select a payment method!", "error");
             let acc = document.getElementById('wd-acc').value.trim(); 
@@ -1381,10 +1381,10 @@
 
             return pendingBoardHtml + `
                 <div class="grid grid-cols-2 gap-3 mb-5">
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
                 </div>
                 <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-1"><i class="fa-solid fa-file-csv text-[var(--accent-gold)]"></i> ${t('exp_data')}</h3>
                 <div class="grid grid-cols-3 gap-2">
