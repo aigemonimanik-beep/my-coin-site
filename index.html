@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -141,7 +142,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -354,6 +355,30 @@
         }
         function hideLoading() { 
             document.getElementById('auth-loading').style.display = 'none'; 
+        }
+
+        // ================= MENU FUNCTIONS =================
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('translate-x-full')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                menu.classList.remove('translate-x-full');
+                if(currentUser) {
+                    document.getElementById('menu-name').innerText = currentUser.name;
+                    document.getElementById('menu-uname').innerText = '@' + currentUser.username;
+                    document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
+                }
+            } else {
+                overlay.classList.add('opacity-0');
+                menu.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+        function handleMenuNav(view) {
+            toggleMobileMenu();
+            switchView(view);
         }
 
         async function autoLoginAdmin() {
@@ -937,10 +962,24 @@
             let unameBtn = selC ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">${t('copy')}</span></button>` : '';
 
             let socials = '';
-            if(settings.wa) socials += `<a href="${settings.wa}" target="_blank" class="w-10 h-10 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-full flex items-center justify-center shadow hover:bg-[#25D366] hover:text-white transition"><i class="fa-brands fa-whatsapp text-xl"></i></a>`;
-            if(settings.tg) socials += `<a href="${settings.tg}" target="_blank" class="w-10 h-10 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 rounded-full flex items-center justify-center shadow hover:bg-[#0088cc] hover:text-white transition"><i class="fa-brands fa-telegram text-xl"></i></a>`;
-            if(settings.fb) socials += `<a href="${settings.fb}" target="_blank" class="w-10 h-10 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/30 rounded-full flex items-center justify-center shadow hover:bg-[#1877F2] hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>`;
-            if(settings.yt) socials += `<a href="${settings.yt}" target="_blank" class="w-10 h-10 bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/30 rounded-full flex items-center justify-center shadow hover:bg-[#FF0000] hover:text-white transition"><i class="fa-brands fa-youtube text-xl"></i></a>`;
+            
+            // Format links based on Admin inputs
+            let waLink = settings.wa ? (settings.wa.startsWith('http') ? settings.wa : `https://wa.me/${settings.wa.replace(/[^0-9]/g, '')}`) : '';
+            let tgLink = settings.tg ? (settings.tg.startsWith('http') ? settings.tg : `https://t.me/${settings.tg.replace('@', '')}`) : '';
+            let fbLink = settings.fb;
+            let ytLink = settings.yt;
+
+            // Handle custom logos
+            let waIcon = settings.waLogo ? `<img src="${settings.waLogo}" class="w-full h-full object-contain">` : `<i class="fa-brands fa-whatsapp text-xl"></i>`;
+            let tgIcon = settings.tgLogo ? `<img src="${settings.tgLogo}" class="w-full h-full object-contain">` : `<i class="fa-brands fa-telegram text-xl"></i>`;
+            let fbIcon = settings.fbLogo ? `<img src="${settings.fbLogo}" class="w-full h-full object-contain">` : `<i class="fa-brands fa-facebook text-xl"></i>`;
+            let ytIcon = settings.ytLogo ? `<img src="${settings.ytLogo}" class="w-full h-full object-contain">` : `<i class="fa-brands fa-youtube text-xl"></i>`;
+
+            if(settings.wa) socials += `<a href="${waLink}" target="_blank" class="w-10 h-10 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-full flex items-center justify-center shadow hover:bg-[#25D366] hover:text-white transition overflow-hidden p-1.5">${waIcon}</a>`;
+            if(settings.tg) socials += `<a href="${tgLink}" target="_blank" class="w-10 h-10 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 rounded-full flex items-center justify-center shadow hover:bg-[#0088cc] hover:text-white transition overflow-hidden p-1.5">${tgIcon}</a>`;
+            if(settings.fb) socials += `<a href="${fbLink}" target="_blank" class="w-10 h-10 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/30 rounded-full flex items-center justify-center shadow hover:bg-[#1877F2] hover:text-white transition overflow-hidden p-1.5">${fbIcon}</a>`;
+            if(settings.yt) socials += `<a href="${ytLink}" target="_blank" class="w-10 h-10 bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/30 rounded-full flex items-center justify-center shadow hover:bg-[#FF0000] hover:text-white transition overflow-hidden p-1.5">${ytIcon}</a>`;
+            
             let socialDiv = socials ? `<div class="mt-8 flex justify-center gap-4 border-t border-[var(--border-color)] pt-6 pb-4">${socials}</div>` : '';
 
             let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
@@ -952,7 +991,7 @@
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
                 let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
+                return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)]':'border-l-[var(--error)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
                         <span class="text-[9px] font-mono text-[var(--text-muted)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--border-color)]">ID: ${o.id.split('-')[1]}</span>
@@ -972,8 +1011,6 @@
                     <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
                 </div>
             ` : '';
-
-            // Strictly No Admin button on the user UI. Admin must strictly use ?admin link.
 
             return `
                 <div class="glass-panel rounded-3xl p-6 mb-6 mt-2 relative overflow-hidden border-t-4 border-t-[var(--accent-gold)] shadow-xl">
@@ -1237,7 +1274,6 @@
 
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
-                    <button onclick="handleLogout()" class="absolute top-4 right-4 text-[var(--error)] bg-red-500/10 px-3 py-1.5 rounded-lg text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white transition active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-power-off"></i> Logout</button>
                     <h2 class="text-xl font-black text-white mb-5 flex items-center gap-3"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">${t('admin_ctrl')}</span></h2>
                     ${tabHtml}
                     ${contentHtml}
@@ -1760,7 +1796,31 @@
                 <!-- Social Links -->
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="social_set"><i class="fa-solid fa-share-nodes"></i> ${t('social_set')}</h3>
-                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><div class="grid grid-cols-2 gap-3"><input type="text" id="set-wa" value="${settings.wa}" placeholder="WhatsApp" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#25D366]"><input type="text" id="set-tg" value="${settings.tg}" placeholder="Telegram" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#0088cc]"><input type="text" id="set-fb" value="${settings.fb}" placeholder="Facebook" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#1877F2]"><input type="text" id="set-yt" value="${settings.yt}" placeholder="YouTube" class="input-premium p-3 rounded-xl text-[10px] focus:border-[#FF0000]"></div><button onclick="saveSocialLinks()" class="w-full gold-btn py-3.5 rounded-xl mt-1 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button></div>
+                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
+                        <div class="space-y-3">
+                            <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)]">
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] mb-1 block">WhatsApp (Phone Number)</label>
+                                <input type="text" id="set-wa" value="${settings.wa || ''}" placeholder="017..." class="w-full input-premium p-2 rounded-lg text-xs mb-2 focus:border-[#25D366]">
+                                <label class="text-[9px] font-bold text-[var(--accent-cyan)] flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-image"></i> Custom Logo <input type="file" id="set-wa-logo" accept="image/*" class="w-[120px] text-[8px] text-[var(--text-muted)]"></label>
+                            </div>
+                            <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)]">
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] mb-1 block">Telegram (Username)</label>
+                                <input type="text" id="set-tg" value="${settings.tg || ''}" placeholder="@username" class="w-full input-premium p-2 rounded-lg text-xs mb-2 focus:border-[#0088cc]">
+                                <label class="text-[9px] font-bold text-[var(--accent-cyan)] flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-image"></i> Custom Logo <input type="file" id="set-tg-logo" accept="image/*" class="w-[120px] text-[8px] text-[var(--text-muted)]"></label>
+                            </div>
+                            <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)]">
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] mb-1 block">Facebook (Link)</label>
+                                <input type="text" id="set-fb" value="${settings.fb || ''}" placeholder="https://facebook.com/..." class="w-full input-premium p-2 rounded-lg text-xs mb-2 focus:border-[#1877F2]">
+                                <label class="text-[9px] font-bold text-[var(--accent-cyan)] flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-image"></i> Custom Logo <input type="file" id="set-fb-logo" accept="image/*" class="w-[120px] text-[8px] text-[var(--text-muted)]"></label>
+                            </div>
+                            <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)]">
+                                <label class="text-[9px] font-bold text-[var(--text-muted)] mb-1 block">YouTube (Link)</label>
+                                <input type="text" id="set-yt" value="${settings.yt || ''}" placeholder="https://youtube.com/..." class="w-full input-premium p-2 rounded-lg text-xs mb-2 focus:border-[#FF0000]">
+                                <label class="text-[9px] font-bold text-[var(--accent-cyan)] flex items-center gap-2 cursor-pointer"><i class="fa-solid fa-image"></i> Custom Logo <input type="file" id="set-yt-logo" accept="image/*" class="w-[120px] text-[8px] text-[var(--text-muted)]"></label>
+                            </div>
+                        </div>
+                        <button onclick="saveSocialLinks()" class="w-full gold-btn py-3.5 rounded-xl mt-1 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button>
+                    </div>
                 </div>
                 <!-- Coins Setup -->
                 <div><h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="coin_set"><i class="fa-brands fa-bitcoin"></i> ${t('coin_set')}</h3>${cForm}${cList}</div>
@@ -1799,7 +1859,33 @@
         async function toggleReqTg(val) { settings.requireTelegram = val; await db.collection('cb_data').doc('global_state').update({ 'settings.requireTelegram': val }); showToast(val ? "Telegram Required: ON" : "Telegram Required: OFF"); }
 
         async function saveSiteIdentity() { settings.name = document.getElementById('set-name').value; settings.notice = document.getElementById('set-notice').value; let logoInput = document.getElementById('set-logo'); if(logoInput.files.length > 0) settings.logo = await getBase64(logoInput.files[0]); await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); showToast("Site Identity Saved!"); }
-        async function saveSocialLinks() { settings.wa = document.getElementById('set-wa').value; settings.tg = document.getElementById('set-tg').value; settings.fb = document.getElementById('set-fb').value; settings.yt = document.getElementById('set-yt').value; await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); showToast("Social Links Saved!"); }
+        
+        async function saveSocialLinks() { 
+            showLoading();
+            settings.wa = document.getElementById('set-wa').value; 
+            settings.tg = document.getElementById('set-tg').value; 
+            settings.fb = document.getElementById('set-fb').value; 
+            settings.yt = document.getElementById('set-yt').value; 
+            
+            let waLogoInput = document.getElementById('set-wa-logo');
+            let tgLogoInput = document.getElementById('set-tg-logo');
+            let fbLogoInput = document.getElementById('set-fb-logo');
+            let ytLogoInput = document.getElementById('set-yt-logo');
+            
+            try {
+                if(waLogoInput && waLogoInput.files.length > 0) settings.waLogo = await getBase64(waLogoInput.files[0]);
+                if(tgLogoInput && tgLogoInput.files.length > 0) settings.tgLogo = await getBase64(tgLogoInput.files[0]);
+                if(fbLogoInput && fbLogoInput.files.length > 0) settings.fbLogo = await getBase64(fbLogoInput.files[0]);
+                if(ytLogoInput && ytLogoInput.files.length > 0) settings.ytLogo = await getBase64(ytLogoInput.files[0]);
+                
+                await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); 
+                showToast("Social Links Saved!"); 
+            } catch (e) {
+                showToast("Failed to save logos", "error");
+            }
+            hideLoading();
+        }
+
         async function saveFaqSettings() {
             settings.videoUrl = document.getElementById('set-vid').value;
             settings.faq1_q = document.getElementById('set-fq1').value; settings.faq1_a = document.getElementById('set-fa1').value;
