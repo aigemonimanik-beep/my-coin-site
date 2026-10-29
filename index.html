@@ -1284,7 +1284,7 @@
                         <div id="wd-notice-box" class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-gold)]/30 mb-4 text-[10px] font-bold text-[var(--accent-gold)] shadow-inner hidden"></div>
                         
                         <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-3 ml-1" data-i18n="sel_method">${t('sel_method')}</label>
-                        <div class="grid grid-cols-2 gap-3 mb-5" id="wd-methods-grid"></div>
+                        <div class="grid grid-cols-2 gap-2 mb-3" id="wd-methods-grid"></div>
                         
                         <div class="mb-4">
                             <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
@@ -1381,17 +1381,17 @@
             
             grid.innerHTML = activeMethods.map(m => {
                 let isBinance = m.name.toLowerCase().includes('binance');
-                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-1.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-1.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
+                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-0.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-0.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
                 
                 let chargeHtml = '';
                 if(isBinance) {
                     let rate = settings.binanceRate || 127;
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">ডলার রেট ৳${rate}</span>`;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-0.5 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">ডলার রেট ৳${rate}</span>`;
                 } else if(m.charge > 0) {
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-0.5 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
                 }
 
-                return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-2.5 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${logoHtml}<span class="text-[11px] font-black text-white tracking-wide">${m.name}</span>${chargeHtml}</div>`;
+                return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl py-1.5 px-2 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${logoHtml}<span class="text-[11px] font-black text-white tracking-wide leading-tight">${m.name}</span>${chargeHtml}</div>`;
             }).join('');
             
             let noticeBox = document.getElementById('wd-notice-box');
