@@ -151,7 +151,7 @@
                 site_set: 'সাইট পরিচিতি', social_set: 'সোশ্যাল লিংক', faq_set: 'সাধারণ প্রশ্ন (FAQ)', coin_set: 'কয়েন সেটিংস', pm_set: 'পেমেন্ট মেথড',
                 site_name: 'সাইটের নাম', notice: 'স্ক্রলিং নোটিশ', logo: 'লোগো আপলোড', save: 'সেভ করুন', add_coin: 'নতুন কয়েন যোগ করুন', edit_coin: 'কয়েন এডিট', c_name: 'কয়েনের নাম', c_uname: 'ট্রান্সফার ইউজারনেম', c_price: 'রেট (৳ প্রতি 1K)', c_min: 'সর্বনিম্ন (K)', c_max: 'সর্বোচ্চ (K)', active: 'চালু রাখুন', update: 'আপডেট করুন', cancel: 'বাতিল', del: 'ডিলিট', pm_name: 'নাম', pm_charge: 'চার্জ ৳',
                 help: 'সাহায্য ও টিউটোরিয়াল', vid_tut: 'ভিডিও টিউটোরিয়াল', faq: 'সাধারণ প্রশ্নসমূহ', need_help: 'আরও সাহায্য প্রয়োজন?', contact_sup: 'সাপোর্টে কথা বলুন', sup_center: 'সাপোর্ট সেন্টার', create_tkt: 'নতুন টিকেট খুলুন', sub_ph: 'বিষয়', msg_ph: 'আপনার সমস্যা বিস্তারিত লিখুন...', sub_tkt: 'টিকেট সাবমিট করুন', my_tkts: 'আমার টিকেটসমূহ', no_tkts: 'কোনো টিকেট পাওয়া যায়নি।', open: 'ওপেন', closed: 'ক্লোজড', reply: 'মেসেজ লিখুন...', notifs: 'নোটিফিকেশন', no_notifs: 'কোনো নোটিফিকেশন নেই।', back: 'ব্যাক',
-                reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা হবে, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?',
+                reset_confirm: 'আপনার হিস্ট্রি মুছে ফেলা, কিন্তু এডমিনের কাছে রেকর্ড থাকবে। আপনি কি নিশ্চিত?',
                 sys_ctrl: 'সিস্টেম কন্ট্রোল', maint_mode: 'মেইনটেন্যান্স মোড', maint_desc: 'ইউজারদের "আন্ডার মেইনটেন্যান্স" দেখাবে',
                 req_tg: 'টেলিগ্রাম ইউজারনেম বাধ্যতামূলক', req_tg_desc: 'কয়েন সেলের জন্য টেলিগ্রাম বাধ্যতামূলক করুন',
                 base_price: 'বেস প্রাইস (৳)', bulk_rates: 'বাল্ক রেট (Tiers)', add_tier: 'টায়ার যোগ করুন',
@@ -1381,18 +1381,17 @@
             
             grid.innerHTML = activeMethods.map(m => {
                 let isBinance = m.name.toLowerCase().includes('binance');
-                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-8 h-8 object-contain mb-2">` : `<div class="w-8 h-8 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-2 border border-[var(--border-color)]"><i class="fa-solid fa-bank"></i></div>`;
+                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-1.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-1.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
                 
                 let chargeHtml = '';
-                let topBadge = '';
                 if(isBinance) {
                     let rate = settings.binanceRate || 127;
-                    topBadge = `<span class="text-[10px] text-[var(--bg-main)] bg-[var(--accent-cyan)] font-black block mb-2 px-2 py-1 rounded shadow-sm border border-[var(--accent-cyan)]/20 w-full text-center tracking-wider">ডলার রেট ৳${rate}</span>`;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">ডলার রেট ৳${rate}</span>`;
                 } else if(m.charge > 0) {
                     chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-1 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
                 }
 
-                return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-3 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${topBadge}${logoHtml}<span class="text-xs font-black text-white tracking-wide">${m.name}</span>${chargeHtml}</div>`;
+                return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-2.5 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${logoHtml}<span class="text-[11px] font-black text-white tracking-wide">${m.name}</span>${chargeHtml}</div>`;
             }).join('');
             
             let noticeBox = document.getElementById('wd-notice-box');
