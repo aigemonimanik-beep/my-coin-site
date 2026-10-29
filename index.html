@@ -88,8 +88,8 @@
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
         
-        // Fix: Removed !_isAdm condition so Admin ALSO loads instantly without showing auth wrapper
-        if (_isLog) {
+        // Fix: Force instant load for Admin URL as well
+        if (_isLog || _isAdm) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
             document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
@@ -188,37 +188,51 @@
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
         let cacheData = localStorage.getItem('cb_cache');
         
-        // Fix: Removed !isAdminUrl so Admin can ALSO load data instantly from Cache
-        if (cacheData && localStorage.getItem('cb_loggedIn') === 'true') {
+        if (cacheData) {
             try {
                 let parsed = JSON.parse(cacheData);
                 settings = parsed.settings || DEFAULT_SETTINGS;
                 coins = parsed.coins || [];
                 pmMethods = parsed.pmMethods || [];
-                currentUser = parsed.currentUser || null;
                 orders = parsed.orders || [];
                 dailyArchives = parsed.dailyArchives || [];
                 notifications = parsed.notifications || [];
                 tickets = parsed.tickets || [];
-                dataLoaded = !!currentUser;
                 
-                // If we have cached user, render immediately without waiting for network
-                if(dataLoaded) {
-                    document.addEventListener('DOMContentLoaded', () => {
-                        document.getElementById('instant-routing').innerHTML = '';
-                        document.getElementById('auth-wrapper').style.display = 'none'; 
-                        document.getElementById('main-ui').style.display = 'flex';
-                        
-                        // Force admin view instantly if they are admin
-                        if (isAdminUrl && currentUser && currentUser.role === 'admin') {
-                            state.view = 'admin'; 
-                        }
-                        
-                        updateMobileMenuProfile();
-                        renderApp();
-                    });
+                let isLogged = localStorage.getItem('cb_loggedIn') === 'true';
+
+                if (isAdminUrl || isLogged) {
+                    currentUser = parsed.currentUser || (isAdminUrl ? { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' } : null);
+                    
+                    if (isAdminUrl && currentUser) currentUser.role = 'admin'; // Force role for URL
+                    
+                    dataLoaded = !!currentUser;
+                    
+                    if(dataLoaded) {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            document.getElementById('instant-routing').innerHTML = '';
+                            document.getElementById('auth-wrapper').style.display = 'none'; 
+                            document.getElementById('main-ui').style.display = 'flex';
+                            
+                            if (isAdminUrl) state.view = 'admin'; 
+                            
+                            updateMobileMenuProfile();
+                            renderApp();
+                        });
+                    }
                 }
             } catch(e) { console.error("Cache parsing error", e); }
+        } else if (isAdminUrl) {
+            // First time admin visit (no cache) - force instant render
+            currentUser = { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' };
+            dataLoaded = true;
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('instant-routing').innerHTML = '';
+                document.getElementById('auth-wrapper').style.display = 'none'; 
+                document.getElementById('main-ui').style.display = 'flex';
+                state.view = 'admin'; 
+                renderApp();
+            });
         }
 
         function saveToLocalCache() {
@@ -651,6 +665,11 @@
         auth.onAuthStateChanged(user => {
             if (isRegistering) return;
             if (user) { 
+                // Auto switch regular user to admin if they enter ?admin
+                if (isAdminUrl && user.email !== "masteradmin2026@coinbazar.app") {
+                    auth.signOut();
+                    return;
+                }
                 localStorage.setItem('cb_loggedIn', 'true');
                 requestNotificationPermission(); 
                 startDataSync(user); 
@@ -658,10 +677,11 @@
             else {
                 localStorage.removeItem('cb_loggedIn');
                 localStorage.removeItem('cb_cache');
-                currentUser = null; dataLoaded = false; stopDataSync();
+                stopDataSync();
                 if (isAdminUrl) {
                     autoLoginAdmin(); // Magic Auto Login
                 } else {
+                    currentUser = null; dataLoaded = false; 
                     document.getElementById('instant-routing').innerHTML = '';
                     document.getElementById('auth-wrapper').style.display = 'flex'; 
                     document.getElementById('main-ui').style.display = 'none';
@@ -752,21 +772,8 @@
             
             // SECURITY: Strict Admin Isolation based on URL
             if (isAdminUrl) {
-                if (currentUser.role === 'admin') {
-                    state.view = 'admin'; // Lock view to admin instantly
-                } else {
-                    hideUserHeaderElements();
-                    cont.innerHTML = `
-                        <div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_40px_rgba(255,100,124,0.2)] relative overflow-hidden">
-                            <div class="absolute -right-10 -top-10 opacity-10"><i class="fa-solid fa-ban text-[150px] text-[var(--error)]"></i></div>
-                            <i class="fa-solid fa-triangle-exclamation text-6xl text-[var(--error)] mb-5 relative z-10"></i>
-                            <h2 class="text-2xl font-black text-white mb-2 uppercase relative z-10">Access Denied</h2>
-                            <p class="text-sm text-[var(--text-muted)] mb-8 font-bold relative z-10">This secure portal is restricted to Administrators.</p>
-                            <button onclick="handleLogout()" class="w-full btn-modern-danger py-4 rounded-xl font-black text-sm uppercase tracking-widest relative z-10 shadow-lg mb-3"><i class="fa-solid fa-power-off"></i> Logout Now</button>
-                        </div>
-                    `;
-                    return;
-                }
+                currentUser.role = 'admin'; // Force role instantly for UI
+                state.view = 'admin'; // Lock view to admin instantly
             } else {
                 if (state.view === 'admin') {
                     state.view = 'home'; // Normal URL cannot see admin view
