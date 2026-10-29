@@ -88,7 +88,6 @@
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
         
-        // Fix: Force instant load for Admin URL as well
         if (_isLog || _isAdm) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
@@ -107,7 +106,6 @@
         };
         firebase.initializeApp(firebaseConfig);
         
-        // OPTIMIZATION: Enable Firestore offline persistence for absolute zero-delay instant loads
         const db = firebase.firestore();
         db.enablePersistence().catch(err => console.warn("Firestore Persistence Error:", err));
         
@@ -180,7 +178,7 @@
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null, userHistTab: 'sells'
+            adminHistoryType: null, userHistTab: 'sells', userOrderSearch: ''
         };
 
         let prevPendingCount = 0;
@@ -202,14 +200,14 @@
                 dailyArchives = parsed.dailyArchives || [];
                 notifications = parsed.notifications || [];
                 tickets = parsed.tickets || [];
-                users = parsed.users || []; // OPTIMIZATION: Instantly restore users array for zero-delay Admin stats calculation
+                users = parsed.users || []; 
                 
                 let isLogged = localStorage.getItem('cb_loggedIn') === 'true';
 
                 if (isAdminUrl || isLogged) {
                     currentUser = parsed.currentUser || (isAdminUrl ? { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' } : null);
                     
-                    if (isAdminUrl && currentUser) currentUser.role = 'admin'; // Force role for URL
+                    if (isAdminUrl && currentUser) currentUser.role = 'admin';
                     
                     dataLoaded = !!currentUser;
                     
@@ -228,7 +226,6 @@
                 }
             } catch(e) { console.error("Cache parsing error", e); }
         } else if (isAdminUrl) {
-            // First time admin visit (no cache) - force instant render
             currentUser = { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' };
             dataLoaded = true;
             document.addEventListener('DOMContentLoaded', () => {
@@ -242,8 +239,6 @@
 
         function saveToLocalCache() {
             if(!currentUser) return;
-            // OPTIMIZATION: Save full data objects strictly for Admin so on refresh stats are instantly accurate without 0s. 
-            // Users stay light to keep LocalStorage fast.
             let cacheOrders = currentUser.role === 'admin' ? orders : orders.slice(0, 100); 
             let cacheUsers = currentUser.role === 'admin' ? users : [];
             let activeNotifs = notifications.slice(0, 50);
@@ -957,6 +952,14 @@
             let totalWdCount = myWds.length;
 
             state.userHistTab = state.userHistTab || 'sells';
+            
+            // Search Filtering
+            let q = (state.userOrderSearch || '').toLowerCase().trim();
+            
+            let filteredMySells = q ? mySells.filter(o => o.id.toLowerCase().includes(q)) : mySells;
+            let filteredMyWds = q ? myWds.filter(o => o.id.toLowerCase().includes(q)) : myWds;
+            let filteredPendSells = q ? pendSells.filter(o => o.id.toLowerCase().includes(q)) : pendSells;
+            let filteredPendWds = q ? pendWds.filter(o => o.id.toLowerCase().includes(q)) : pendWds;
 
             let tabBtns = [
                 { id: 'sells', label: 'Sell History', count: totalSellCount },
@@ -973,6 +976,7 @@
 
             if (state.userHistTab === 'sells') {
                 let coinStats = {};
+                // Unfiltered for summary grid so it stays accurate even when searching
                 mySells.forEach(o => {
                     if(!coinStats[o.coinName]) coinStats[o.coinName] = { k: 0, paid: 0, count: 0 };
                     coinStats[o.coinName].k += parseFloat(o.k);
@@ -997,6 +1001,20 @@
                 if(Object.keys(coinStats).length === 0) {
                     coinGrid = `<div class="col-span-2 text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed sells yet.</p></div>`;
                 }
+                
+                let detailedListHtml = filteredMySells.length > 0 ? filteredMySells.map(o => `
+                    <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition mb-2">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span>
+                            <span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span>
+                            <span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <span class="text-sm font-black text-[var(--success)]">+ ৳${o.paidAmount || o.receive}</span>
+                            <span class="status-badge approved px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Approved</span>
+                        </div>
+                    </div>
+                `).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching orders found.</p></div>`;
 
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--success)]">
@@ -1004,14 +1022,18 @@
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             ${coinGrid}
                         </div>
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2 mt-4"><i class="fa-solid fa-list-check text-[var(--success)]"></i> Detailed Sell History</h3>
+                        <div class="space-y-2 max-h-[300px] overflow-y-auto hide-scroll pr-1">
+                            ${detailedListHtml}
+                        </div>
                     </div>
                 `;
             } else if (state.userHistTab === 'wds') {
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--error)]">
                         <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-money-bill-transfer text-[var(--error)]"></i> Withdraw History</h3>
-                        <div class="space-y-2">
-                            ${myWds.length > 0 ? myWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right"><span class="text-sm font-black text-[var(--error)]">- ৳${o.total}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed withdraws.</p></div>`}
+                        <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
+                            ${filteredMyWds.length > 0 ? filteredMyWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--error)]">- ৳${o.total}</span><span class="status-badge approved px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Approved</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching withdraws.</p></div>`}
                         </div>
                     </div>
                 `;
@@ -1019,8 +1041,8 @@
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-cyan)]">
                         <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Pending Coin Sells</h3>
-                        <div class="space-y-2">
-                            ${pendSells.length > 0 ? pendSells.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.receive}</span><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Pending</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No pending sells.</p></div>`}
+                        <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
+                            ${filteredPendSells.length > 0 ? filteredPendSells.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.receive}</span><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Pending</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching pending sells.</p></div>`}
                         </div>
                     </div>
                 `;
@@ -1028,8 +1050,8 @@
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-gold)]">
                         <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-gold)]"></i> Pending Withdraws</h3>
-                        <div class="space-y-2">
-                            ${pendWds.length > 0 ? pendWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.total}</span><span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">${o.status}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No pending withdraws.</p></div>`}
+                        <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
+                            ${filteredPendWds.length > 0 ? filteredPendWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.total}</span><span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">${o.status}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching pending withdraws.</p></div>`}
                         </div>
                     </div>
                 `;
@@ -1053,6 +1075,11 @@
                         <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Total Withdrawn</p>
                         <h3 class="text-xl font-black text-[var(--error)]">৳${totalWithdrawn.toFixed(2)}</h3>
                     </div>
+                </div>
+                
+                <div class="mb-4 relative shadow-sm">
+                    <input type="text" value="${state.userOrderSearch || ''}" oninput="state.userOrderSearch=this.value; renderApp()" placeholder="Search by Order ID (e.g. ORD-XXXX)" class="w-full input-premium p-3 rounded-xl text-xs font-bold pl-11 border focus:border-[var(--accent-cyan)]">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i>
                 </div>
 
                 <div class="flex flex-wrap gap-2 mb-4">
@@ -1157,7 +1184,7 @@
                 let inner = settings.ytLogo ? `<img src="${settings.ytLogo}" class="w-full h-full object-cover rounded-full">` : `<i class="fa-brands fa-youtube text-xl"></i>`;
                 socials += `<a href="${link}" target="_blank" class="w-10 h-10 bg-[#FF0000]/10 text-[#FF0000] border border-[#FF0000]/30 rounded-full flex items-center justify-center shadow hover:scale-110 transition overflow-hidden">${inner}</a>`;
             }
-            let socialDiv = socials ? `<div class="mt-8 flex justify-center gap-4 border-t border-[var(--border-color)] pt-6 pb-4">${socials}</div>` : '';
+            let socialDiv = socials ? `<div class="mt-5 flex justify-center gap-4 pt-5 border-t border-[var(--border-color)]/50">${socials}</div>` : '';
 
             let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
             let activeHtml = activeOrders.map(o => {
@@ -1174,11 +1201,11 @@
                 let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-[var(--border-color)]">
+                    <div class="flex justify-between items-center mb-2 pb-3 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <span onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-2 py-1 rounded border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id.split('-')[1]}</span>
+                        <button onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-xs font-black font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition shadow-md flex items-center gap-2 active:scale-95"><i class="fa-solid fa-copy text-sm"></i> ${o.id.split('-')[1]}</button>
                     </div>
-                    <div class="flex justify-between items-end">
+                    <div class="flex justify-between items-end mt-2">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
                         <div class="text-right"><span class="font-black text-lg ${amtColor}">${amtText}</span></div>
                     </div>
@@ -1236,11 +1263,11 @@
                     </div>
 
                     <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">${t('submit')}</span></button>
+                    
+                    ${socialDiv}
                 </div>
                 
                 ${activeSection}
-
-                ${socialDiv}
 
                 <!-- Withdraw Modal -->
                 <div id="wd-modal" class="fixed inset-0 bg-[#071426]/90 z-[110] hidden flex justify-center items-end sm:items-center transition-all duration-300 opacity-0 backdrop-blur-sm">
