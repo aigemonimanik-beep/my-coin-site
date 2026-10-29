@@ -88,7 +88,7 @@
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
         
-        // Fix: Always show main-ui instantly if logged in, regardless of admin URL or not
+        // Fix: Removed !_isAdm condition so Admin ALSO loads instantly without showing auth wrapper
         if (_isLog) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
@@ -176,7 +176,7 @@
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null, adminHistorySearch: ''
+            adminHistoryType: null
         };
 
         let prevPendingCount = 0;
@@ -188,7 +188,7 @@
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
         let cacheData = localStorage.getItem('cb_cache');
         
-        // Fix: Allow admin to also load from cache instantly by removing !isAdminUrl
+        // Fix: Removed !isAdminUrl so Admin can ALSO load data instantly from Cache
         if (cacheData && localStorage.getItem('cb_loggedIn') === 'true') {
             try {
                 let parsed = JSON.parse(cacheData);
@@ -208,9 +208,12 @@
                         document.getElementById('instant-routing').innerHTML = '';
                         document.getElementById('auth-wrapper').style.display = 'none'; 
                         document.getElementById('main-ui').style.display = 'flex';
-                        if (isAdminUrl && currentUser.role === 'admin') {
-                            state.view = 'admin'; // Set view to admin instantly if authorized
+                        
+                        // Force admin view instantly if they are admin
+                        if (isAdminUrl && currentUser && currentUser.role === 'admin') {
+                            state.view = 'admin'; 
                         }
+                        
                         updateMobileMenuProfile();
                         renderApp();
                     });
@@ -408,11 +411,6 @@
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
-                
-                // Show clear loading message if they are waiting for authentication
-                if(document.getElementById('auth-wrapper').style.display !== 'none') {
-                    document.getElementById('auth-subtitle').innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)] mr-1"></i> Securing Admin Portal...';
-                }
             }
         };
 
@@ -746,25 +744,6 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast(t('copied') + " (Exported)");
         }
 
-        function trackOrderGlobal() {
-            let q = document.getElementById('admin-track-id').value.trim();
-            if(!q) return showToast("Enter an Order ID", "error");
-            let o = orders.find(x => x.id.toLowerCase() === q.toLowerCase() || x.id.toLowerCase().includes(q.toLowerCase()));
-            if(!o) return showToast("Order not found!", "error");
-            
-            if(o.type === 'sell') {
-                state.adminTab = 'sells';
-                state.adminSellTab = o.status === 'pending' ? 'pending' : (o.status === 'approved' ? 'approved' : 'daily');
-                if(o.status === 'rejected') state.adminSellTab = 'approved'; 
-            } else {
-                state.adminTab = 'wds';
-                state.adminWdTab = (o.status === 'pending' || o.status === 'processing') ? 'pending' : (o.status === 'approved' ? 'approved' : 'rejected');
-            }
-            state.adminOrderSearch = q.toLowerCase();
-            renderApp();
-            showToast("Order Found & Selected!");
-        }
-
         // ================= MAIN UI RENDERER =================
         function renderApp() {
             if(!currentUser) return; 
@@ -774,7 +753,7 @@
             // SECURITY: Strict Admin Isolation based on URL
             if (isAdminUrl) {
                 if (currentUser.role === 'admin') {
-                    state.view = 'admin'; // Lock view to admin
+                    state.view = 'admin'; // Lock view to admin instantly
                 } else {
                     hideUserHeaderElements();
                     cont.innerHTML = `
@@ -1562,7 +1541,7 @@
             `;
         }
 
-        // --- Admin History Modal Functions ---
+        // --- Admin History Modal & Delete Functions ---
         function openAdminHistory(type) {
             state.adminHistoryType = type;
             let title = type === 'users' ? 'All-Time Users History' : (type === 'sells' ? 'All-Time Sells History' : 'All-Time Withdraws History');
@@ -1579,10 +1558,9 @@
         }
 
         async function deleteHistoryItem(id, type) {
-            let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে চিরতরে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি চিরতরে ডিলিট করতে চান?";
+            let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডাটাবেস থেকে চিরতরে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি চিরতরে ডিলিট করতে চান?";
             if(!confirm(msg)) return;
             
-            showLoading();
             try {
                 if(type === 'users') {
                     await db.collection('cb_users').doc(id).delete();
@@ -1592,12 +1570,12 @@
                     orders = orders.filter(o => o.id !== id); // update local instantly
                 }
                 showToast("সফলভাবে ডিলিট করা হয়েছে!");
-                renderAdminHistoryList();
+                renderAdminHistoryList(); // Update the list UI
+                renderApp(); // Update dashboard counts
             } catch(e) {
                 console.error(e);
                 showToast("Error deleting data!", "error");
             }
-            hideLoading();
         }
 
         function renderAdminHistoryList() {
@@ -1610,7 +1588,7 @@
                 let list = users;
                 if(q) list = list.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
                 html = list.map(u => `
-                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center">
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
                         <div>
                             <h4 class="text-xs font-black text-white">${u.name} <span class="text-[8px] bg-[var(--bg-main)] px-1 py-0.5 rounded border border-[var(--border-color)] text-[var(--text-muted)] ml-1">${u.role}</span></h4>
                             <p class="text-[9px] text-[var(--accent-cyan)] font-mono mb-1">@${u.username}</p>
@@ -1619,7 +1597,7 @@
                         <div class="text-right flex flex-col items-end gap-1">
                             <div class="text-xs font-black gold-text">৳${Number(u.balance||0).toFixed(2)}</div>
                             <div class="text-[8px] text-[var(--text-muted)]">${(u.createdAt||'N/A').split(',')[0]}</div>
-                            <button onclick="deleteHistoryItem('${u.id}', 'users')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1 shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+                            <button onclick="deleteHistoryItem('${u.id}', 'users')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
                         </div>
                     </div>`).join('');
             } else {
@@ -1634,7 +1612,7 @@
                     let color = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
                     let sClass = `status-badge ${o.status}`;
                     return `
-                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center">
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
                         <div>
                             <h4 class="text-[11px] font-black text-white">${u ? u.name : 'Unknown'}</h4>
                             <p class="text-[9px] text-[var(--text-muted)] mt-0.5">${title}</p>
@@ -1644,13 +1622,32 @@
                             <span class="font-black text-xs ${color}">৳${amt}</span>
                             <span class="${sClass} px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block">${o.status}</span>
                             <span class="text-[7px] text-[var(--text-muted)]">${o.time}</span>
-                            <button onclick="deleteHistoryItem('${o.id}', '${state.adminHistoryType}')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1 shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+                            <button onclick="deleteHistoryItem('${o.id}', '${state.adminHistoryType}')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
                         </div>
                     </div>`;
                 }).join('');
             }
             if(!html) html = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No records found.</p>`;
             document.getElementById('ahm-list').innerHTML = html;
+        }
+
+        function trackOrderGlobal() {
+            let q = document.getElementById('admin-track-id').value.trim();
+            if(!q) return showToast("Enter an Order ID", "error");
+            let o = orders.find(x => x.id.toLowerCase() === q.toLowerCase() || x.id.toLowerCase().includes(q.toLowerCase()));
+            if(!o) return showToast("Order not found!", "error");
+            
+            if(o.type === 'sell') {
+                state.adminTab = 'sells';
+                state.adminSellTab = o.status === 'pending' ? 'pending' : (o.status === 'approved' ? 'approved' : 'daily');
+                if(o.status === 'rejected') state.adminSellTab = 'approved'; 
+            } else {
+                state.adminTab = 'wds';
+                state.adminWdTab = (o.status === 'pending' || o.status === 'processing') ? 'pending' : (o.status === 'approved' ? 'approved' : 'rejected');
+            }
+            state.adminOrderSearch = q.toLowerCase();
+            renderApp();
+            showToast("Order Found & Selected!");
         }
 
         function renderAdminSells() {
@@ -1676,7 +1673,7 @@
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--accent-cyan)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-3 flex flex-col gap-2 relative overflow-hidden shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start border-b border-[var(--border-color)] pb-2 mb-1">
                             <div class="flex flex-col"><span class="text-xs font-black text-white">${u?u.name:'Unknown User'}</span><span class="text-[9px] text-[var(--text-muted)] font-mono">@${u?u.username:''}</span></div>
-                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><div class="text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 rounded border border-[var(--accent-gold)]/30 mt-1">${o.id}</div></div>
+                            <div class="text-right"><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block mb-1 shadow-sm">Pending</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 rounded border border-[var(--accent-gold)]/30 mt-1 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition"><i class="fa-solid fa-copy"></i> ${o.id}</div></div>
                         </div>
                         <div class="flex flex-col gap-1 mb-1">
                             <div class="text-[10px] text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)] inline-block w-max flex items-center"><span class="text-[var(--text-muted)] mr-1">Telegram:</span> <span class="font-black text-[var(--accent-gold)]">${o.tgUsername||'N/A'}</span> ${tgCopyBtn}</div>
@@ -1705,7 +1702,7 @@
                             <span class="text-[11px] font-black text-white">${u?u.name:'Unknown'}</span> <span class="text-[8px] text-[var(--text-muted)] ml-1">${o.time}</span>
                             <div class="text-[9px] text-[var(--text-muted)] mt-1">Telegram: <span class="text-[var(--accent-gold)] font-bold">${o.tgUsername||'N/A'}</span></div>
                             <div class="text-xs text-[var(--accent-cyan)] font-bold mt-1">${o.k}K ${o.coinName}</div>
-                            <div class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">${o.id}</div>
+                            <div onclick="copyText('${o.id}')" class="cursor-pointer text-[8px] font-mono text-[var(--accent-gold)] mt-1 bg-[var(--bg-main)] px-1 rounded border border-[var(--border-color)] inline-block hover:bg-[var(--accent-gold)] hover:text-black transition"><i class="fa-solid fa-copy"></i> ${o.id}</div>
                         </div>
                         <div class="text-right"><div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div><div class="text-sm text-[var(--success)] font-black">Paid: ৳${o.paidAmount}</div></div>
                     </div>`;
@@ -1810,7 +1807,7 @@
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
                 let payAmtHtml = o.receiveUsd ? `<span class="text-[var(--success)]">$${o.receiveUsd.toFixed(2)} USD</span> <span class="text-[10px] text-[var(--text-muted)]">(৳${o.receive})</span>` : `৳${o.receive}`;
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><br><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-block"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
             }).join('');
             return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
