@@ -180,7 +180,7 @@
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null
+            adminHistoryType: null, userHistTab: 'sells'
         };
 
         let prevPendingCount = 0;
@@ -946,34 +946,93 @@
             let visibleOrders = allMyOrders.filter(o => new Date(o.time) >= resetTime);
 
             let mySells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'approved');
-            let pendingCount = visibleOrders.filter(o => o.status === 'pending').length;
+            let myWds = visibleOrders.filter(o => o.type === 'wd' && o.status === 'approved');
+            let pendSells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'pending');
+            let pendWds = visibleOrders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+
             let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive)), 0);
             let totalSellCount = mySells.length;
 
-            let coinStats = {};
-            mySells.forEach(o => {
-                if(!coinStats[o.coinName]) coinStats[o.coinName] = { k: 0, paid: 0, count: 0 };
-                coinStats[o.coinName].k += parseFloat(o.k);
-                coinStats[o.coinName].paid += (parseFloat(o.paidAmount) || parseFloat(o.receive));
-                coinStats[o.coinName].count += 1;
-            });
+            let totalWithdrawn = myWds.reduce((sum, o) => sum + parseFloat(o.total), 0);
+            let totalWdCount = myWds.length;
 
-            let coinGrid = Object.keys(coinStats).map(c => `
-                <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl shadow-inner transition hover:border-[var(--accent-cyan)]/50">
-                    <div class="flex justify-between items-center mb-2 border-b border-[var(--border-color)] pb-1">
-                        <h4 class="text-xs font-black text-[var(--accent-cyan)]">${c}</h4>
-                        <span class="text-[8px] bg-[var(--bg-main)] px-1.5 py-0.5 rounded font-bold text-[var(--text-muted)] border border-[var(--border-color)]">${coinStats[c].count} Sells</span>
-                    </div>
-                    <div class="flex justify-between text-[10px] font-bold text-[var(--text-muted)] mb-1"><span>Total Paid</span><span>Received</span></div>
-                    <div class="flex justify-between text-sm font-black">
-                        <span class="text-[var(--success)] drop-shadow-sm">৳${coinStats[c].paid.toFixed(2)}</span>
-                        <span class="text-[var(--accent-gold)]">${coinStats[c].k}K</span>
-                    </div>
-                </div>
-            `).join('');
+            state.userHistTab = state.userHistTab || 'sells';
 
-            if(Object.keys(coinStats).length === 0) {
-                coinGrid = `<div class="col-span-2 text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed sells yet.</p></div>`;
+            let tabBtns = [
+                { id: 'sells', label: 'Sell History', count: totalSellCount },
+                { id: 'wds', label: 'Withdraw History', count: totalWdCount },
+                { id: 'pend_sells', label: 'Pending Sells', count: pendSells.length },
+                { id: 'pend_wds', label: 'Pending Wds', count: pendWds.length }
+            ].map(t => {
+                let active = state.userHistTab === t.id ? 'bg-[var(--accent-cyan)] text-[var(--bg-main)] shadow-md' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border border-[var(--border-color)]';
+                let countBg = state.userHistTab === t.id ? 'bg-[var(--bg-main)] text-[var(--accent-cyan)]' : 'bg-[var(--bg-main)] text-[var(--text-muted)] border border-[var(--border-color)]';
+                return `<button onclick="state.userHistTab='${t.id}'; renderApp()" class="flex-1 basis-[45%] py-2.5 rounded-xl text-[11px] font-black transition-all duration-300 ${active}">${t.label} <span class="${countBg} px-1.5 py-0.5 rounded text-[9px] ml-1 shadow-inner">${t.count}</span></button>`;
+            }).join('');
+
+            let contentHtml = '';
+
+            if (state.userHistTab === 'sells') {
+                let coinStats = {};
+                mySells.forEach(o => {
+                    if(!coinStats[o.coinName]) coinStats[o.coinName] = { k: 0, paid: 0, count: 0 };
+                    coinStats[o.coinName].k += parseFloat(o.k);
+                    coinStats[o.coinName].paid += (parseFloat(o.paidAmount) || parseFloat(o.receive));
+                    coinStats[o.coinName].count += 1;
+                });
+
+                let coinGrid = Object.keys(coinStats).map(c => `
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl shadow-inner transition hover:border-[var(--accent-cyan)]/50">
+                        <div class="flex justify-between items-center mb-2 border-b border-[var(--border-color)] pb-1">
+                            <h4 class="text-xs font-black text-[var(--accent-cyan)]">${c}</h4>
+                            <span class="text-[8px] bg-[var(--bg-main)] px-1.5 py-0.5 rounded font-bold text-[var(--text-muted)] border border-[var(--border-color)]">${coinStats[c].count} Sells</span>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold text-[var(--text-muted)] mb-1"><span>Total Paid</span><span>Received</span></div>
+                        <div class="flex justify-between text-sm font-black">
+                            <span class="text-[var(--success)] drop-shadow-sm">৳${coinStats[c].paid.toFixed(2)}</span>
+                            <span class="text-[var(--accent-gold)]">${coinStats[c].k}K</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                if(Object.keys(coinStats).length === 0) {
+                    coinGrid = `<div class="col-span-2 text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed sells yet.</p></div>`;
+                }
+
+                contentHtml = `
+                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--success)]">
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3"><i class="fa-solid fa-layer-group text-[var(--accent-gold)]"></i> Coin-wise Stats (Paid)</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            ${coinGrid}
+                        </div>
+                    </div>
+                `;
+            } else if (state.userHistTab === 'wds') {
+                contentHtml = `
+                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--error)]">
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-money-bill-transfer text-[var(--error)]"></i> Withdraw History</h3>
+                        <div class="space-y-2">
+                            ${myWds.length > 0 ? myWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right"><span class="text-sm font-black text-[var(--error)]">- ৳${o.total}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed withdraws.</p></div>`}
+                        </div>
+                    </div>
+                `;
+            } else if (state.userHistTab === 'pend_sells') {
+                contentHtml = `
+                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-cyan)]">
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Pending Coin Sells</h3>
+                        <div class="space-y-2">
+                            ${pendSells.length > 0 ? pendSells.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.receive}</span><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Pending</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No pending sells.</p></div>`}
+                        </div>
+                    </div>
+                `;
+            } else if (state.userHistTab === 'pend_wds') {
+                contentHtml = `
+                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-gold)]">
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-gold)]"></i> Pending Withdraws</h3>
+                        <div class="space-y-2">
+                            ${pendWds.length > 0 ? pendWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.total}</span><span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">${o.status}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No pending withdraws.</p></div>`}
+                        </div>
+                    </div>
+                `;
             }
 
             return `
@@ -985,22 +1044,22 @@
                     </div>
                 </div>
 
-                <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--success)]">
-                    <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-4">
-                        <div>
-                            <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1 flex items-center gap-1">Total Payment Received <span class="bg-[var(--bg-sidebar)] text-[var(--text-muted)] px-1.5 py-0.5 rounded text-[8px] border border-[var(--border-color)]">${totalSellCount} Sells</span></p>
-                            <h3 class="text-3xl font-black text-[var(--success)] drop-shadow-md">৳${totalEarned.toFixed(2)}</h3>
-                        </div>
-                        <div class="bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 p-2.5 rounded-xl text-center min-w-[75px] shadow-inner">
-                            <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Pending</p>
-                            <span class="text-xl font-black gold-text">${pendingCount}</span>
-                        </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="glass-panel p-3 rounded-2xl text-center shadow-sm border-t-2 border-[var(--success)] flex flex-col justify-center">
+                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Total Payment Received</p>
+                        <h3 class="text-xl font-black text-[var(--success)]">৳${totalEarned.toFixed(2)}</h3>
                     </div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3"><i class="fa-solid fa-layer-group text-[var(--accent-gold)]"></i> Coin-wise Stats (Paid)</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        ${coinGrid}
+                    <div class="glass-panel p-3 rounded-2xl text-center shadow-sm border-t-2 border-[var(--error)] flex flex-col justify-center">
+                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Total Withdrawn</p>
+                        <h3 class="text-xl font-black text-[var(--error)]">৳${totalWithdrawn.toFixed(2)}</h3>
                     </div>
                 </div>
+
+                <div class="flex flex-wrap gap-2 mb-4">
+                    ${tabBtns}
+                </div>
+
+                ${contentHtml}
             `;
         }
 
