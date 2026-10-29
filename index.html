@@ -106,7 +106,11 @@
             appId: "1:497930950808:web:74ebbe981dd1b1797cd8ed"
         };
         firebase.initializeApp(firebaseConfig);
+        
+        // OPTIMIZATION: Enable Firestore offline persistence for absolute zero-delay instant loads
         const db = firebase.firestore();
+        db.enablePersistence().catch(err => console.warn("Firestore Persistence Error:", err));
+        
         const auth = firebase.auth();
 
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -198,6 +202,7 @@
                 dailyArchives = parsed.dailyArchives || [];
                 notifications = parsed.notifications || [];
                 tickets = parsed.tickets || [];
+                users = parsed.users || []; // OPTIMIZATION: Instantly restore users array for zero-delay Admin stats calculation
                 
                 let isLogged = localStorage.getItem('cb_loggedIn') === 'true';
 
@@ -237,11 +242,18 @@
 
         function saveToLocalCache() {
             if(!currentUser) return;
-            // Only cache active data to keep localStorage fast and light
-            let activeOrders = orders.slice(0, 100); 
+            // OPTIMIZATION: Save full data objects strictly for Admin so on refresh stats are instantly accurate without 0s. 
+            // Users stay light to keep LocalStorage fast.
+            let cacheOrders = currentUser.role === 'admin' ? orders : orders.slice(0, 100); 
+            let cacheUsers = currentUser.role === 'admin' ? users : [];
             let activeNotifs = notifications.slice(0, 50);
-            let cache = { settings, coins, pmMethods, currentUser, orders: activeOrders, dailyArchives, notifications: activeNotifs, tickets };
-            localStorage.setItem('cb_cache', JSON.stringify(cache));
+            
+            let cache = { settings, coins, pmMethods, currentUser, orders: cacheOrders, dailyArchives, notifications: activeNotifs, tickets, users: cacheUsers };
+            try {
+                localStorage.setItem('cb_cache', JSON.stringify(cache));
+            } catch(e) {
+                console.warn("Storage cap reached for caching", e);
+            }
         }
 
         function t(key) { return translations[settings.lang || 'bn'][key] || key; }
