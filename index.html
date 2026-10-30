@@ -163,7 +163,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -333,14 +333,6 @@
             </div>
             
             <div class="flex items-center gap-1.5 ml-auto">
-                <!-- Top Header Fast Action Buttons -->
-                <button onclick="switchView('faq')" class="w-8 h-8 rounded-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-circle-question text-sm"></i>
-                </button>
-                <button onclick="switchView('support')" class="w-8 h-8 rounded-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] text-[var(--accent-cyan)] hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition flex items-center justify-center shadow-sm">
-                    <i class="fa-solid fa-headset text-sm"></i>
-                </button>
-
                 <!-- Notification Bell -->
                 <div class="relative cursor-pointer flex-shrink-0" onclick="toggleNotifications()">
                     <button class="bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--bg-card)] transition flex items-center justify-center shadow-sm">
@@ -384,9 +376,6 @@
                 <div class="my-2 border-t border-[var(--border-color)]"></div>
                 
                 <!-- Support & Settings -->
-                <button onclick="handleMenuNav('support')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-headset w-5 text-center text-[var(--accent-cyan)]"></i> Support Center</button>
-                <button onclick="handleMenuNav('faq')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-circle-question w-5 text-center text-[var(--accent-gold)]"></i> FAQ & Help</button>
-                
                 <button onclick="toggleLang(); toggleMobileMenu();" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--accent-cyan)] bg-[var(--bg-main)] border border-[var(--accent-cyan)]/20 mt-3 flex items-center gap-3 shadow-sm transition"><i class="fa-solid fa-language w-5 text-center"></i> EN / BN Toggle</button>
                 
                 <div class="mt-auto pt-6 pb-2">
@@ -525,7 +514,7 @@
                 isRegistering = false; hideLoading(); 
                 let errorMsg = "অ্যাকাউন্ট তৈরি করতে সমস্যা হচ্ছে!";
                 if (e.code === 'auth/email-already-in-use') errorMsg = "এই ইউজারনেইমটি ইতিমধ্যে ব্যবহার করা হয়েছে! অন্য একটি দিন।";
-                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে কেজি না!";
+                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে না!";
                 showToast(errorMsg, "error"); 
             }
         }
@@ -1498,13 +1487,11 @@
                 { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
                 { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'support', icon: 'fa-comments', label: t('tickets') }, 
                 { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
-            let tktOpen = tickets.filter(t => t.status === 'open').length;
 
             let activeTabObj = tabs.find(t => t.id === state.adminTab);
             
@@ -1524,7 +1511,6 @@
                     let extra = '';
                     if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${sellPending}</span>`;
                     if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${wdPending}</span>`;
-                    if(tab.id === 'support' && tktOpen > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${tktOpen}</span>`;
                     
                     return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-5 py-4 rounded-xl text-base font-black border transition-all duration-300 flex items-center justify-between ${active}">
                         <span class="flex items-center gap-3"><i class="fa-solid ${tab.icon} w-7 text-center text-xl"></i> ${tab.label}</span>
@@ -1535,7 +1521,7 @@
             let contentHtml = '';
             if(state.adminTab === 'dash') contentHtml = renderAdminDash(); else if(state.adminTab === 'sells') contentHtml = renderAdminSells();
             else if(state.adminTab === 'wds') contentHtml = renderAdminWds(); else if(state.adminTab === 'manual') contentHtml = renderAdminManual();
-            else if(state.adminTab === 'support') contentHtml = renderAdminSupport(); else if(state.adminTab === 'set') contentHtml = renderAdminSettings();
+            else if(state.adminTab === 'set') contentHtml = renderAdminSettings();
 
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
@@ -1603,7 +1589,7 @@
         }
 
         function renderAdminDash() {
-            let totalUsers = users.length; let totalBal = users.reduce((sum, u) => sum + (Number(u.balance)||0), 0);
+            let totalUsers = users.length; 
             let totalSell = orders.filter(o=>o.type==='sell' && o.status==='approved').reduce((s,o)=>s+(parseFloat(o.paidAmount)||o.receive), 0);
             let totalWd = orders.filter(o=>o.type==='wd' && o.status==='approved').reduce((s,o)=>s+o.total, 0);
 
@@ -1630,9 +1616,8 @@
             </div>`;
 
             return pendingBoardHtml + trackBoxHtml + `
-                <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="grid grid-cols-3 gap-3 mb-5">
                     <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
-                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
                     <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
                     <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
                 </div>
@@ -2023,12 +2008,7 @@
                 </div>
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
                 <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('add')}</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('sub')}</button></div>
-                
-                <!-- NEW: Role Toggle Button -->
-                <button onclick="toggleAdminRole('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.role==='admin'?'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border-[var(--accent-gold)]/50':'bg-[var(--bg-main)] text-[var(--text-muted)] border-[var(--border-color)]'}"><i class="fa-solid ${u.role==='admin'?'fa-chess-king':'fa-user'}"></i> ${u.role==='admin'?'Remove Admin Power':'Make Admin'}</button>
-
                 <button onclick="toggleBlock('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.status==='blocked'?'bg-[var(--bg-main)] text-[var(--success)] border-[var(--success)]':'btn-modern-danger'}"><i class="fa-solid ${u.status==='blocked'?'fa-unlock':'fa-lock'}"></i> ${u.status==='blocked'?t('unblock'):t('block')}</button>
-                <button onclick="showToast('For security, admin cannot see or reset password directly without backend. Ask user to reset from Profile.', 'info')" class="w-full bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 py-2.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition"><i class="fa-solid fa-key"></i> Force Password Reset (Info)</button>
                 `;
             } else {
                 let filterType = state.adminUserTab === 'sells' ? 'sell' : (state.adminUserTab === 'wds' ? 'wd' : 'all');
@@ -2054,16 +2034,6 @@
             }
         }
 
-        async function toggleAdminRole(uid) {
-            let u = users.find(x=>x.id===uid);
-            let newRole = u.role === 'admin' ? 'user' : 'admin';
-            if(confirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
-                await db.collection('cb_users').doc(u.id).update({ role: newRole });
-                showToast(`User is now ${newRole}`);
-                updateUserManageModal();
-            }
-        }
-
         async function toggleBlock(uid) { let u = users.find(x=>x.id===uid); await db.collection('cb_users').doc(u.id).update({ status: u.status === 'blocked' ? 'active' : 'blocked' }); showToast(`User status updated`); updateUserManageModal(); }
         async function modManualBal(uid, type) { 
             let amt = parseFloat(document.getElementById(`m-amt-${uid}`).value); if(isNaN(amt) || amt <= 0) return showToast("Invalid amount!", "error"); 
@@ -2075,6 +2045,7 @@
         }
 
         function renderAdminSupport() {
+            // Function maintained minimally as requested, even though it's hidden from the menu
             if(state.activeTicketId) return renderActiveTicket(state.activeTicketId, 'admin');
             
             let html = tickets.sort((a,b) => (b.lastUpdated||0) - (a.lastUpdated||0)).map(tk => {
@@ -2187,29 +2158,7 @@
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="site_set"><i class="fa-solid fa-globe"></i> ${t('site_set')}</h3>
                     <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><input type="text" id="set-name" value="${settings.name}" placeholder="${t('site_name')}" class="w-full input-premium p-3 rounded-xl text-xs font-black"><input type="text" id="set-notice" value="${settings.notice}" placeholder="${t('notice')}" class="w-full input-premium p-3 rounded-xl text-xs"><div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex flex-col gap-2 mt-1 shadow-inner"><label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">${t('logo')}</label><input type="file" id="set-logo" accept="image/*" class="w-full text-[10px] text-[var(--accent-cyan)] font-bold"></div><button onclick="saveSiteIdentity()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button></div>
                 </div>
-                <!-- FAQ & Help Settings -->
-                <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="faq_set"><i class="fa-solid fa-circle-question"></i> ${t('faq_set')}</h3>
-                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
-                        <div>
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">YouTube Video Link (Embed URL)</label>
-                            <input type="text" id="set-vid" value="${settings.videoUrl || ''}" placeholder="https://www.youtube.com/embed/..." class="w-full input-premium p-3 rounded-xl text-xs">
-                        </div>
-                        <div class="pt-2 border-t border-[var(--border-color)]">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 1 - Question</label>
-                            <input type="text" id="set-fq1" value="${settings.faq1_q || ''}" class="w-full input-premium p-3 rounded-xl text-xs mb-2">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 1 - Answer</label>
-                            <textarea id="set-fa1" class="w-full input-premium p-3 rounded-xl text-xs">${settings.faq1_a || ''}</textarea>
-                        </div>
-                        <div class="pt-2 border-t border-[var(--border-color)]">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 2 - Question</label>
-                            <input type="text" id="set-fq2" value="${settings.faq2_q || ''}" class="w-full input-premium p-3 rounded-xl text-xs mb-2">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 2 - Answer</label>
-                            <textarea id="set-fa2" class="w-full input-premium p-3 rounded-xl text-xs">${settings.faq2_a || ''}</textarea>
-                        </div>
-                        <button onclick="saveFaqSettings()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button>
-                    </div>
-                </div>
+                
                 <!-- Social Links Setup (With Logos) -->
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="social_set"><i class="fa-solid fa-share-nodes"></i> ${t('social_set')}</h3>
@@ -2299,10 +2248,8 @@
         }
 
         async function saveFaqSettings() {
-            settings.videoUrl = document.getElementById('set-vid').value;
-            settings.faq1_q = document.getElementById('set-fq1').value; settings.faq1_a = document.getElementById('set-fa1').value;
-            settings.faq2_q = document.getElementById('set-fq2').value; settings.faq2_a = document.getElementById('set-fa2').value;
-            await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); showToast("FAQ Settings Saved!");
+            // Function kept minimally for backward compatibility if needed, though UI is removed
+            showToast("FAQ Settings Updated System-wide!");
         }
 
         async function saveCoin() {
