@@ -334,23 +334,23 @@
     <!-- MAIN APP UI -->
     <div id="main-ui" class="hidden min-h-screen flex-col">
         <!-- Header -->
-        <header id="main-header" class="sticky top-0 z-50 glass-panel px-3 py-3 flex justify-between items-center border-b border-b-gray-800 bg-[var(--bg-main)]">
+        <header id="main-header" class="sticky top-0 z-50 glass-panel px-4 py-3 flex justify-between items-center border-b border-[var(--border-color)] bg-[var(--bg-main)] shadow-md">
             <div class="flex items-center gap-3 cursor-pointer flex-shrink-0" onclick="switchView('home')">
                 <img id="nav-logo" src="https://placehold.co/100x100/122B45/E8C779?text=CB" class="w-10 h-10 rounded-full object-contain border-2 border-[var(--accent-gold)] shadow-[0_0_12px_rgba(232,199,121,0.4)] bg-white">
                 <h1 id="nav-title" class="text-lg sm:text-xl font-black tracking-tight gold-text whitespace-nowrap drop-shadow-md">Coin Bazar</h1>
             </div>
             
-            <div class="flex items-center gap-1.5 ml-auto">
+            <div class="flex items-center gap-2 ml-auto">
                 <!-- Notification Bell -->
                 <div class="relative cursor-pointer flex-shrink-0" onclick="toggleNotifications()">
-                    <button class="bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--bg-card)] transition flex items-center justify-center shadow-sm">
-                        <i class="fa-solid fa-bell text-[11px]"></i>
+                    <button class="bg-[var(--bg-sidebar)] w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center shadow-sm active:scale-95">
+                        <i class="fa-solid fa-bell text-sm"></i>
                     </button>
-                    <span id="notif-badge" class="hidden absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--error)] rounded-full text-[8px] font-black text-white flex items-center justify-center border border-[var(--bg-main)] shadow-sm"></span>
+                    <span id="notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-[var(--error)] rounded-full text-[9px] font-black text-white flex items-center justify-center border-2 border-[var(--bg-main)] shadow-sm"></span>
                 </div>
                 <!-- Menu Button -->
-                <button onclick="toggleMobileMenu()" class="bg-gradient-to-tr from-[var(--accent-cyan)] to-[#1a9bb0] w-8 h-8 rounded-full text-[var(--bg-main)] border border-transparent shadow-[0_2px_10px_rgba(53,217,242,0.3)] hover:shadow-[0_4px_15px_rgba(53,217,242,0.5)] hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center flex-shrink-0 ml-1">
-                    <i class="fa-solid fa-bars text-sm"></i>
+                <button onclick="toggleMobileMenu()" class="bg-gradient-to-r from-[var(--accent-cyan)] to-[#1a9bb0] h-10 px-4 rounded-xl text-[var(--bg-main)] border border-transparent shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0 ml-1">
+                    <i class="fa-solid fa-bars-staggered text-sm"></i> <span class="font-black text-[11px] uppercase tracking-widest mt-0.5">Menu</span>
                 </button>
             </div>
         </header>
