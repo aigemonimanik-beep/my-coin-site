@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -85,8 +86,7 @@
     </style>
     <script>
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
-        let _isLog = false;
-        try { _isLog = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
+        let _isLog = localStorage.getItem('cb_loggedIn') === 'true';
         
         if (_isLog || _isAdm) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
@@ -136,8 +136,7 @@
                 en_dis: 'Enable/Disable & Charges', save_setup: 'Save Setup',
                 today_live: 'Today\'s Live Summary', arch_hist: 'Archived History', reset_arch: 'RESET & ARCHIVE TODAY\'S DATA',
                 exp_data: 'Export Data to CSV (Excel)', active_on: 'ON', active_off: 'OFF', cancel_btn: 'Cancel', search_ph: 'Search by name, username, ID...',
-                wd_cur_bal: 'Original Balance', wd_req_amt: 'Withdraw Amount', wd_chg: 'Send Money Charge', wd_rcv: 'Total Amount Receive', wd_rem: 'Remaining Balance',
-                active_pend: 'Active Pending Orders', view_proof: 'View Proof', edit_prof: 'Edit Profile Info', full_name: 'Full Name', uname_login: 'Username (For Login)', save_prof: 'Save Profile', acc_sec: 'Account Security', curr_pass: 'Current Password', new_pass: 'New Password', conf_new_pass: 'Confirm New Password', update_pass: 'Update Password', my_dash: 'My Dashboard', download: 'Download', reset: 'Reset', tot_recv: 'Total Received', tot_wd: 'Total Withdrawn', search_ord: 'Search by Order ID...', sell_hist: 'Sell History', wd_hist: 'Withdraw History', pend_sells: 'Pending Sells', pend_wds: 'Pending Wds', coin_stats: 'Coin-wise Stats (Paid)', tot_paid: 'Total Paid', received: 'Received', det_sell_hist: 'Detailed Sell History'
+                wd_cur_bal: 'Original Balance', wd_req_amt: 'Withdraw Amount', wd_chg: 'Send Money Charge', wd_rcv: 'Total Amount Receive', wd_rem: 'Remaining Balance'
             },
             'bn': { 
                 home: 'হোম', admin: 'এডমিন', balance: 'অ্যাভেইলেবল ব্যালেন্স', sell_coin: 'কয়েন বিক্রি', wd: 'উত্তোলন করুন', 
@@ -160,37 +159,26 @@
                 en_dis: 'চালু/বন্ধ ও চার্জ', save_setup: 'সেটআপ সেভ করুন',
                 today_live: 'আজকের লাইভ হিসেব', arch_hist: 'আর্কাইভ করা হিস্ট্রি', reset_arch: 'আজকের ডাটা আর্কাইভ করুন',
                 exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম, ইউজারনেম বা ID দিয়ে খুঁজুন...',
-                wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট টাকা অবশিষ্ট থাকবে',
-                active_pend: 'চলমান পেন্ডিং অর্ডার', view_proof: 'প্রুফ দেখুন', edit_prof: 'প্রোফাইল এডিট করুন', full_name: 'আপনার পুরো নাম', uname_login: 'লগইন ইউজারনেম', save_prof: 'প্রোফাইল সেভ করুন', acc_sec: 'অ্যাকাউন্ট সিকিউরিটি', curr_pass: 'বর্তমান পাসওয়ার্ড', new_pass: 'নতুন পাসওয়ার্ড', conf_new_pass: 'নতুন পাসওয়ার্ড কনফার্ম করুন', update_pass: 'পাসওয়ার্ড আপডেট করুন', my_dash: 'আমার ড্যাশবোর্ড', download: 'ডাউনলোড', reset: 'রিসেট', tot_recv: 'মোট পেমেন্ট পেয়েছেন', tot_wd: 'মোট উত্তোলন করেছেন', search_ord: 'অর্ডার ID দিয়ে খুঁজুন...', sell_hist: 'সেল হিস্ট্রি', wd_hist: 'উত্তোলন হিস্ট্রি', pend_sells: 'পেন্ডিং সেলস', pend_wds: 'পেন্ডিং উত্তোলন', coin_stats: 'কয়েন বিক্রির হিসেব (পেইড)', tot_paid: 'মোট পেইড', received: 'রিসিভড', det_sell_hist: 'বিস্তারিত সেল হিস্ট্রি'
+                wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট কত টাকা অবশিষ্ট থাকবে'
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, allowUserDeletion: false, appScale: 100, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।', sellSuccessMsg: 'আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।', wdSuccessMsg: 'আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', faq1_q: 'কীভাবে কয়েন বিক্রি করব?', faq1_a: 'প্রথমে হোমপেজ থেকে কয়েন সিলেক্ট করুন। এরপর কত K বিক্রি করবেন তা বসিয়ে ট্রান্সফার স্ক্রিনশট আপলোড করে সাবমিট করুন।', faq2_q: 'টাকা পেতে কত সময় লাগে?', faq2_a: 'সাধারণত ৫-১০ মিনিটের মধ্যেই টাকা আপনার ব্যালেন্সে যোগ হয়ে যায়। এরপর আপনি উইথড্র রিকোয়েস্ট দিতে পারবেন।', minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
         let dataLoaded = false;
         let isAdminLoggingIn = false;
         
-        let _sView='home', _sAdmTab='dash', _sAdmSell='pending', _sAdmWd='pending', _sUsrHist='sells';
-        try {
-            _sView = localStorage.getItem('cb_view') || 'home';
-            _sAdmTab = localStorage.getItem('cb_adminTab') || 'dash';
-            _sAdmSell = localStorage.getItem('cb_adminSellTab') || 'pending';
-            _sAdmWd = localStorage.getItem('cb_adminWdTab') || 'pending';
-            _sUsrHist = localStorage.getItem('cb_userHistTab') || 'sells';
-        } catch(e) {}
-
         // Navigation States
         let state = { 
-            view: _sView, 
+            view: 'home', 
             selCoinId: null, selWdId: null, 
-            adminTab: _sAdmTab, adminSellTab: _sAdmSell, adminWdTab: _sAdmWd, 
-            editCoinId: null, 
+            adminTab: 'dash', adminSellTab: 'pending', adminWdTab: 'pending', editCoinId: null, 
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null, userHistTab: _sUsrHist, userOrderSearch: ''
+            adminHistoryType: null, userHistTab: 'sells', userOrderSearch: ''
         };
 
         let prevPendingCount = 0;
@@ -200,20 +188,12 @@
         const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
-        let cacheData = null;
-        try { cacheData = localStorage.getItem('cb_cache'); } catch(e) {}
+        let cacheData = localStorage.getItem('cb_cache');
         
         if (cacheData) {
             try {
                 let parsed = JSON.parse(cacheData);
                 settings = parsed.settings || DEFAULT_SETTINGS;
-                if(typeof applyAppScale === 'function') applyAppScale(settings.appScale);
-                
-                // Load saved language preference
-                let localLang = null;
-                try { localLang = localStorage.getItem('cb_lang'); } catch(e) {}
-                if(localLang) settings.lang = localLang;
-                
                 coins = parsed.coins || [];
                 pmMethods = parsed.pmMethods || [];
                 orders = parsed.orders || [];
@@ -222,8 +202,7 @@
                 tickets = parsed.tickets || [];
                 users = parsed.users || []; 
                 
-                let isLogged = false;
-                try { isLogged = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
+                let isLogged = localStorage.getItem('cb_loggedIn') === 'true';
 
                 if (isAdminUrl || isLogged) {
                     currentUser = parsed.currentUser || (isAdminUrl ? { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' } : null);
@@ -272,10 +251,7 @@
             }
         }
 
-        function t(key) { 
-            let langPack = translations[settings.lang] || translations['bn'];
-            return langPack ? (langPack[key] || key) : key; 
-        }
+        function t(key) { return translations[settings.lang || 'bn'][key] || key; }
         function generateId(prefix) { return `${prefix}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`; }
         
     </script>
@@ -291,9 +267,8 @@
             </div>
 
             <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center mx-auto mb-3 bg-[#091B30] shadow-[0_0_20px_rgba(232,199,121,0.2)] overflow-hidden">
-                    <i class="fa-solid fa-gem text-2xl gold-text" id="auth-logo-icon"></i>
-                    <img id="auth-logo-img" src="" class="hidden w-full h-full object-cover">
+                <div class="w-16 h-16 rounded-full border-2 border-[var(--accent-gold)] flex items-center justify-center mx-auto mb-3 bg-[#091B30] shadow-[0_0_20px_rgba(232,199,121,0.2)]">
+                    <i class="fa-solid fa-gem text-2xl gold-text"></i>
                 </div>
                 <h1 class="text-2xl font-black text-white tracking-tight" id="nav-title-auth">Coin Bazar</h1>
                 <p class="text-xs text-[var(--text-muted)] font-bold mt-1" id="auth-subtitle">Login to your account</p>
@@ -351,23 +326,31 @@
     <!-- MAIN APP UI -->
     <div id="main-ui" class="hidden min-h-screen flex-col">
         <!-- Header -->
-        <header id="main-header" class="sticky top-0 z-50 glass-panel px-4 py-3 flex justify-between items-center border-b border-[var(--border-color)] bg-[var(--bg-main)] shadow-md">
+        <header id="main-header" class="sticky top-0 z-50 glass-panel px-3 py-3 flex justify-between items-center border-b border-b-gray-800 bg-[var(--bg-main)]">
             <div class="flex items-center gap-3 cursor-pointer flex-shrink-0" onclick="switchView('home')">
                 <img id="nav-logo" src="https://placehold.co/100x100/122B45/E8C779?text=CB" class="w-10 h-10 rounded-full object-contain border-2 border-[var(--accent-gold)] shadow-[0_0_12px_rgba(232,199,121,0.4)] bg-white">
                 <h1 id="nav-title" class="text-lg sm:text-xl font-black tracking-tight gold-text whitespace-nowrap drop-shadow-md">Coin Bazar</h1>
             </div>
             
-            <div class="flex items-center gap-2 ml-auto">
+            <div class="flex items-center gap-1.5 ml-auto">
+                <!-- Top Header Fast Action Buttons -->
+                <button onclick="switchView('faq')" class="w-8 h-8 rounded-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-circle-question text-sm"></i>
+                </button>
+                <button onclick="switchView('support')" class="w-8 h-8 rounded-full bg-[var(--bg-sidebar)] border border-[var(--border-color)] text-[var(--accent-cyan)] hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-headset text-sm"></i>
+                </button>
+
                 <!-- Notification Bell -->
                 <div class="relative cursor-pointer flex-shrink-0" onclick="toggleNotifications()">
-                    <button class="bg-[var(--bg-sidebar)] w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center shadow-sm active:scale-95">
-                        <i class="fa-solid fa-bell text-sm"></i>
+                    <button class="bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--bg-card)] transition flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-bell text-[11px]"></i>
                     </button>
-                    <span id="notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-[var(--error)] rounded-full text-[9px] font-black text-white flex items-center justify-center border-2 border-[var(--bg-main)] shadow-sm"></span>
+                    <span id="notif-badge" class="hidden absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--error)] rounded-full text-[8px] font-black text-white flex items-center justify-center border border-[var(--bg-main)] shadow-sm"></span>
                 </div>
                 <!-- Menu Button -->
-                <button onclick="toggleMobileMenu()" class="bg-gradient-to-r from-[var(--accent-cyan)] to-[#1a9bb0] h-10 px-4 rounded-xl text-[var(--bg-main)] border border-transparent shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2 flex-shrink-0 ml-1">
-                    <i class="fa-solid fa-bars-staggered text-sm"></i> <span class="font-black text-[11px] uppercase tracking-widest mt-0.5">Menu</span>
+                <button onclick="toggleMobileMenu()" class="bg-gradient-to-tr from-[var(--accent-cyan)] to-[#1a9bb0] w-8 h-8 rounded-full text-[var(--bg-main)] border border-transparent shadow-[0_2px_10px_rgba(53,217,242,0.3)] hover:shadow-[0_4px_15px_rgba(53,217,242,0.5)] hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center flex-shrink-0 ml-1">
+                    <i class="fa-solid fa-bars text-sm"></i>
                 </button>
             </div>
         </header>
@@ -401,6 +384,9 @@
                 <div class="my-2 border-t border-[var(--border-color)]"></div>
                 
                 <!-- Support & Settings -->
+                <button onclick="handleMenuNav('support')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-headset w-5 text-center text-[var(--accent-cyan)]"></i> Support Center</button>
+                <button onclick="handleMenuNav('faq')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-circle-question w-5 text-center text-[var(--accent-gold)]"></i> FAQ & Help</button>
+                
                 <button onclick="toggleLang(); toggleMobileMenu();" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--accent-cyan)] bg-[var(--bg-main)] border border-[var(--accent-cyan)]/20 mt-3 flex items-center gap-3 shadow-sm transition"><i class="fa-solid fa-language w-5 text-center"></i> EN / BN Toggle</button>
                 
                 <div class="mt-auto pt-6 pb-2">
@@ -437,18 +423,6 @@
         <img id="modal-img-src" class="max-w-full max-h-[80vh] rounded-xl object-contain border-2 border-[var(--border-color)] shadow-2xl">
     </div>
     
-    <!-- Success Modal -->
-    <div id="success-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div class="glass-panel w-full max-w-xs rounded-2xl p-6 relative shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-[var(--border-color)] text-center transform scale-95 transition-transform duration-300" id="success-modal-content">
-            <div class="w-16 h-16 bg-[#e6f4ea] rounded-full flex items-center justify-center mx-auto mb-4 border-[4px] border-[#cce5d3]">
-                <i class="fa-solid fa-check text-3xl text-[#1e8e3e]"></i>
-            </div>
-            <h3 class="font-black text-white text-lg mb-2">Request Successful!</h3>
-            <p id="success-modal-msg" class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">Your form has been sent to the Admin successfully.</p>
-            <button onclick="closeSuccessModal()" class="w-full bg-[#e91e63] hover:bg-[#c2185b] text-white font-black text-[13px] py-3.5 rounded-xl transition-all shadow-md active:scale-95 uppercase tracking-wide">OK</button>
-        </div>
-    </div>
-
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
@@ -459,36 +433,7 @@
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
             }
-
-            // Apply Auth UI (Logo & Title) from Cache instantly
-            updateAuthUIDynamically(settings);
-            
-            // Listen to real-time changes from Database for Auth UI
-            db.collection('cb_data').doc('global_state').onSnapshot(doc => {
-                if(doc.exists) {
-                    let data = doc.data();
-                    let s = data.settings || DEFAULT_SETTINGS;
-                    updateAuthUIDynamically(s);
-                    if(typeof applyAppScale === 'function') applyAppScale(s.appScale);
-                }
-            }, err => console.warn("Auth UI Sync Error:", err));
         };
-
-        function updateAuthUIDynamically(s) {
-            let titleEl = document.getElementById('nav-title-auth');
-            if(titleEl) titleEl.innerText = s.name || 'Coin Bazar';
-            
-            let iconEl = document.getElementById('auth-logo-icon');
-            let imgEl = document.getElementById('auth-logo-img');
-            
-            if(s.logo) {
-                if(iconEl) iconEl.classList.add('hidden');
-                if(imgEl) { imgEl.src = s.logo; imgEl.classList.remove('hidden'); }
-            } else {
-                if(iconEl) iconEl.classList.remove('hidden');
-                if(imgEl) { imgEl.classList.add('hidden'); imgEl.src = ''; }
-            }
-        }
 
         function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
@@ -566,8 +511,7 @@
                 await db.collection('cb_users').doc(cred.user.uid).set({
                     id: cred.user.uid, name: name, username: username, email: email,
                     tg: '', balance: 0, role: role, status: 'active', profilePic: '',
-                    createdAt: new Date().toLocaleString(),
-                    plainPass: pass
+                    createdAt: new Date().toLocaleString()
                 });
                 
                 await auth.signOut(); 
@@ -581,7 +525,7 @@
                 isRegistering = false; hideLoading(); 
                 let errorMsg = "অ্যাকাউন্ট তৈরি করতে সমস্যা হচ্ছে!";
                 if (e.code === 'auth/email-already-in-use') errorMsg = "এই ইউজারনেইমটি ইতিমধ্যে ব্যবহার করা হয়েছে! অন্য একটি দিন।";
-                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে না!";
+                else if (e.code === 'auth/invalid-email') errorMsg = "ইউজারনেমে কোনো স্পেশাল ক্যারেক্টার দেওয়া যাবে কেজি না!";
                 showToast(errorMsg, "error"); 
             }
         }
@@ -597,7 +541,7 @@
             showLoading();
             try { 
                 await auth.signInWithEmailAndPassword(email, pass); 
-                try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
+                localStorage.setItem('cb_loggedIn', 'true');
             } 
             catch (e) { hideLoading(); showToast("ইউজারনেইম বা পাসওয়ার্ড ভুল হয়েছে!", "error"); }
         }
@@ -605,10 +549,8 @@
         async function handleLogout() {
             showLoading();
             try { 
-                try {
-                    localStorage.removeItem('cb_loggedIn');
-                    localStorage.removeItem('cb_cache'); // clear cache on logout
-                } catch(e) {}
+                localStorage.removeItem('cb_loggedIn');
+                localStorage.removeItem('cb_cache'); // clear cache on logout
                 await auth.signOut(); 
                 window.location.href = window.location.pathname; 
             } 
@@ -632,20 +574,13 @@
 
         // --- Core Application Logic & Sync ---
         let unsubGlobal = null; let unsubUsers = null; let unsubOrders = null; let unsubTickets = null; let unsubNotifications = null;
-        let initialNotifLoad = true; let lastNotifCount = 0; let initialOrderLoad = true;
+        let initialNotifLoad = true; let lastNotifCount = 0;
 
         function startDataSync(user) {
             unsubGlobal = db.collection('cb_data').doc('global_state').onSnapshot(doc => {
                 if (doc.exists) {
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
-                    if(typeof applyAppScale === 'function') applyAppScale(settings.appScale);
-                    
-                    // Prioritize user's local language preference safely
-                    try {
-                        let localLang = localStorage.getItem('cb_lang');
-                        if(localLang) settings.lang = localLang;
-                    } catch(e) {}
                     
                     if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
@@ -700,12 +635,11 @@
                 
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
-                    if(!initialOrderLoad && curPending > prevPendingCount) { 
+                    if(curPending > prevPendingCount) { 
                         playNotifSound(); 
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
                     prevPendingCount = curPending;
-                    initialOrderLoad = false;
                 }
                 if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
@@ -743,15 +677,13 @@
                     auth.signOut();
                     return;
                 }
-                try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
+                localStorage.setItem('cb_loggedIn', 'true');
                 requestNotificationPermission(); 
                 startDataSync(user); 
             } 
             else {
-                try {
-                    localStorage.removeItem('cb_loggedIn');
-                    localStorage.removeItem('cb_cache');
-                } catch(e) {}
+                localStorage.removeItem('cb_loggedIn');
+                localStorage.removeItem('cb_cache');
                 stopDataSync();
                 if (isAdminUrl) {
                     autoLoginAdmin(); // Magic Auto Login
@@ -766,24 +698,6 @@
         });
 
         // ================= HELPER FUNCTIONS =================
-        function applyAppScale(scale) {
-            let s = parseInt(scale) || 100;
-            if(s < 50) s = 50;
-            if(s > 200) s = 200;
-            // আধুনিক স্কেলিং মেথড যা সাইটের কোয়ালিটি নষ্ট করে না
-            document.documentElement.style.fontSize = (16 * (s / 100)) + 'px';
-        }
-
-        function updateAppScale(val) {
-            let scale = parseInt(val) || 100; 
-            if(scale < 50) scale = 50; 
-            if(scale > 200) scale = 200; 
-            settings.appScale = scale; 
-            db.collection('cb_data').doc('global_state').update({ 'settings.appScale': scale }); 
-            applyAppScale(scale); 
-            showToast("UI Size Updated to " + scale + "%"); 
-        }
-
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const overlay = document.getElementById('mobile-menu-overlay');
@@ -803,34 +717,9 @@
         }
         function updateMobileMenuProfile() {
             if(!currentUser) return;
-            document.getElementById('menu-name').innerText = currentUser.name || 'User';
-            document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
-            document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
-        }
-
-        // ================= SUCCESS MODAL LOGIC =================
-        function showSuccessModal(msg) {
-            document.getElementById('success-modal-msg').innerText = msg;
-            let modal = document.getElementById('success-modal');
-            let content = document.getElementById('success-modal-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeSuccessModal() {
-            let modal = document.getElementById('success-modal');
-            let content = document.getElementById('success-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                switchView('home'); 
-            }, 300);
+            document.getElementById('menu-name').innerText = currentUser.name;
+            document.getElementById('menu-uname').innerText = '@' + currentUser.username;
+            document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
         }
 
         async function addNotification(userId, title, message, type='info') {
@@ -863,12 +752,7 @@
         function switchView(view) {
             state.view = view; renderApp(); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        function toggleLang() { 
-            settings.lang = settings.lang === 'bn' ? 'en' : 'bn'; 
-            try { localStorage.setItem('cb_lang', settings.lang); } catch(e) {}
-            renderApp(); 
-        }
+        function toggleLang() { settings.lang = settings.lang === 'bn' ? 'en' : 'bn'; renderApp(); }
 
         function exportCSV(type) {
             let data = [], filename = '';
@@ -891,14 +775,6 @@
         function renderApp() {
             if(!currentUser) return; 
             
-            try {
-                localStorage.setItem('cb_view', state.view);
-                localStorage.setItem('cb_adminTab', state.adminTab);
-                localStorage.setItem('cb_adminSellTab', state.adminSellTab);
-                localStorage.setItem('cb_adminWdTab', state.adminWdTab);
-                localStorage.setItem('cb_userHistTab', state.userHistTab);
-            } catch(e){}
-
             const cont = document.getElementById('app-container');
             
             // SECURITY: Strict Admin Isolation based on URL
@@ -913,12 +789,10 @@
 
             if(state.view === 'admin') hideUserHeaderElements(); else showUserHeaderElements();
             
-            if(document.getElementById('nav-title')) document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
-            if(document.getElementById('nav-logo')) {
-                document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
-                document.getElementById('nav-logo').classList.remove('hidden');
-            }
-            if(document.getElementById('live-notice')) document.getElementById('live-notice').innerText = settings.notice || '';
+            document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
+            document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
+            document.getElementById('nav-logo').classList.remove('hidden');
+            document.getElementById('live-notice').innerText = settings.notice || '';
             
             if (currentUser.status === 'blocked' && state.view !== 'admin') {
                 cont.innerHTML = `<div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_30px_rgba(255,100,124,0.1)]"><i class="fa-solid fa-user-lock text-6xl text-[var(--error)] mb-4"></i><h2 class="text-xl font-black text-white mb-2 uppercase">Account Suspended</h2><p class="text-sm text-[var(--text-muted)] mb-6">Your account has been temporarily blocked. You cannot perform any transactions at this time.</p><button onclick="switchView('support')" class="cyan-btn px-6 py-2.5 rounded-xl font-black text-sm w-full"><i class="fa-solid fa-headset"></i> ${t('contact_sup')}</button></div>`;
@@ -929,35 +803,19 @@
                 return;
             }
 
-            try {
-                if(state.view === 'home') cont.innerHTML = renderHome();
-                else if(state.view === 'history') cont.innerHTML = renderUserHistory();
-                else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
-                else if(state.view === 'admin' && currentUser.role === 'admin') cont.innerHTML = renderAdmin();
-                else if(state.view === 'support') cont.innerHTML = renderSupport();
-                else if(state.view === 'faq') cont.innerHTML = renderFaq();
-                
-                document.querySelectorAll('[data-i18n]').forEach(el => { 
-                    let key = el.getAttribute('data-i18n'); 
-                    let langPack = translations[settings.lang] || translations['bn'];
-                    if(langPack && langPack[key]) el.innerText = langPack[key]; 
-                });
+            if(state.view === 'home') cont.innerHTML = renderHome();
+            else if(state.view === 'history') cont.innerHTML = renderUserHistory();
+            else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
+            else if(state.view === 'admin' && currentUser.role === 'admin') cont.innerHTML = renderAdmin();
+            else if(state.view === 'support') cont.innerHTML = renderSupport();
+            else if(state.view === 'faq') cont.innerHTML = renderFaq();
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => { 
+                let key = el.getAttribute('data-i18n'); if(translations[settings.lang || 'bn'] && translations[settings.lang || 'bn'][key]) el.innerText = translations[settings.lang || 'bn'][key]; 
+            });
 
-                if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
-                    setTimeout(() => { let box = document.getElementById('chat-box'); if(box) box.scrollTop = box.scrollHeight; }, 50);
-                }
-            } catch (renderError) {
-                console.error("UI Render Error: ", renderError);
-                cont.innerHTML = `<div class="glass-panel p-6 rounded-2xl mt-10 text-center border-t-2 border-[var(--error)] mx-4">
-                    <i class="fa-solid fa-triangle-exclamation text-4xl text-[var(--error)] mb-3"></i>
-                    <h3 class="text-white font-black text-lg mb-2">Display Error</h3>
-                    <p class="text-xs text-[var(--text-muted)] mb-3">There was a problem loading the interface data.</p>
-                    <div class="bg-[var(--bg-main)] p-3 rounded-lg text-left overflow-auto border border-[var(--error)]/30 max-h-40">
-                        <p class="text-[10px] text-[var(--error)] font-mono mb-1">${renderError.message}</p>
-                        <p class="text-[8px] text-[var(--text-muted)] font-mono">${renderError.stack}</p>
-                    </div>
-                    <button onclick="window.location.reload()" class="mt-4 cyan-btn px-4 py-2 rounded-lg text-xs font-black">Refresh Page</button>
-                </div>`;
+            if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
+                setTimeout(() => { let box = document.getElementById('chat-box'); if(box) box.scrollTop = box.scrollHeight; }, 50);
             }
         }
 
@@ -993,21 +851,21 @@
             </div>
             
             <div class="glass-panel p-5 rounded-2xl mb-6 shadow-lg">
-                <h3 class="text-sm font-black text-white mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3"><i class="fa-solid fa-user-pen text-[var(--accent-gold)]"></i> ${t('edit_prof')}</h3>
+                <h3 class="text-sm font-black text-white mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3"><i class="fa-solid fa-user-pen text-[var(--accent-gold)]"></i> Edit Profile Info</h3>
                 <div class="space-y-4">
-                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">${t('full_name')}</label><input type="text" id="prof-name" value="${currentUser.name}" class="w-full input-premium rounded-xl p-3.5 text-xs"></div>
-                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">${t('uname_login')}</label><input type="text" id="prof-uname" value="${currentUser.username}" class="w-full input-premium rounded-xl p-3.5 text-xs font-mono"></div>
-                    <button onclick="updateProfileDetails()" class="w-full gold-btn py-3.5 rounded-xl text-xs flex justify-center items-center gap-2 mt-2 uppercase tracking-widest"><i class="fa-solid fa-floppy-disk"></i> ${t('save_prof')}</button>
+                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">Full Name</label><input type="text" id="prof-name" value="${currentUser.name}" class="w-full input-premium rounded-xl p-3.5 text-xs"></div>
+                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">Username (For Login)</label><input type="text" id="prof-uname" value="${currentUser.username}" class="w-full input-premium rounded-xl p-3.5 text-xs font-mono"></div>
+                    <button onclick="updateProfileDetails()" class="w-full gold-btn py-3.5 rounded-xl text-xs flex justify-center items-center gap-2 mt-2 uppercase tracking-widest"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
                 </div>
             </div>
 
             <div class="glass-panel p-5 rounded-2xl mb-6 shadow-lg">
-                <h3 class="text-sm font-black text-white mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3"><i class="fa-solid fa-shield-halved text-[var(--accent-cyan)]"></i> ${t('acc_sec')}</h3>
+                <h3 class="text-sm font-black text-white mb-4 flex items-center gap-2 border-b border-[var(--border-color)] pb-3"><i class="fa-solid fa-shield-halved text-[var(--accent-cyan)]"></i> Account Security</h3>
                 <div class="space-y-4">
-                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">${t('curr_pass')}</label><input type="password" id="prof-curr-pass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="..."></div>
-                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">${t('new_pass')}</label><input type="password" id="prof-pass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="Minimum 6 characters"></div>
-                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">${t('conf_new_pass')}</label><input type="password" id="prof-cpass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="Retype password"></div>
-                    <button onclick="updateUserPassword()" class="w-full cyan-btn py-3.5 rounded-xl text-xs flex justify-center items-center gap-2 mt-2 uppercase tracking-widest"><i class="fa-solid fa-key"></i> ${t('update_pass')}</button>
+                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">Current Password</label><input type="password" id="prof-curr-pass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="যে পাসওয়ার্ড দিয়ে লগইন করেছেন"></div>
+                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">New Password</label><input type="password" id="prof-pass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="Minimum 6 characters"></div>
+                    <div><label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1.5 ml-1">Confirm New Password</label><input type="password" id="prof-cpass" class="w-full input-premium rounded-xl p-3.5 text-xs" placeholder="Retype password"></div>
+                    <button onclick="updateUserPassword()" class="w-full cyan-btn py-3.5 rounded-xl text-xs flex justify-center items-center gap-2 mt-2 uppercase tracking-widest"><i class="fa-solid fa-key"></i> Update Password</button>
                 </div>
             </div>
             `;
@@ -1079,18 +937,18 @@
         // ================= USER HISTORY VIEW =================
         function renderUserHistory() {
             let resetTime = currentUser.resetTimestamp ? new Date(currentUser.resetTimestamp) : new Date(0);
-            let allMyOrders = (orders || []).filter(o => o && o.userId === currentUser.id);
-            let visibleOrders = allMyOrders.filter(o => o && new Date(o.time) >= resetTime);
+            let allMyOrders = orders.filter(o => o.userId === currentUser.id);
+            let visibleOrders = allMyOrders.filter(o => new Date(o.time) >= resetTime);
 
-            let mySells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'approved');
-            let myWds = visibleOrders.filter(o => o && o.type === 'wd' && o.status === 'approved');
-            let pendSells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'pending');
-            let pendWds = visibleOrders.filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+            let mySells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'approved');
+            let myWds = visibleOrders.filter(o => o.type === 'wd' && o.status === 'approved');
+            let pendSells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'pending');
+            let pendWds = visibleOrders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
 
-            let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive) || 0), 0);
+            let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive)), 0);
             let totalSellCount = mySells.length;
 
-            let totalWithdrawn = myWds.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+            let totalWithdrawn = myWds.reduce((sum, o) => sum + parseFloat(o.total), 0);
             let totalWdCount = myWds.length;
 
             state.userHistTab = state.userHistTab || 'sells';
@@ -1104,10 +962,10 @@
             let filteredPendWds = q ? pendWds.filter(o => o.id.toLowerCase().includes(q)) : pendWds;
 
             let tabBtns = [
-                { id: 'sells', label: t('sell_hist'), count: totalSellCount },
-                { id: 'wds', label: t('wd_hist'), count: totalWdCount },
-                { id: 'pend_sells', label: t('pend_sells'), count: pendSells.length },
-                { id: 'pend_wds', label: t('pend_wds'), count: pendWds.length }
+                { id: 'sells', label: 'Sell History', count: totalSellCount },
+                { id: 'wds', label: 'Withdraw History', count: totalWdCount },
+                { id: 'pend_sells', label: 'Pending Sells', count: pendSells.length },
+                { id: 'pend_wds', label: 'Pending Wds', count: pendWds.length }
             ].map(t => {
                 let active = state.userHistTab === t.id ? 'bg-[var(--accent-cyan)] text-[var(--bg-main)] shadow-md' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border border-[var(--border-color)]';
                 let countBg = state.userHistTab === t.id ? 'bg-[var(--bg-main)] text-[var(--accent-cyan)]' : 'bg-[var(--bg-main)] text-[var(--text-muted)] border border-[var(--border-color)]';
@@ -1132,7 +990,7 @@
                             <h4 class="text-xs font-black text-[var(--accent-cyan)]">${c}</h4>
                             <span class="text-[8px] bg-[var(--bg-main)] px-1.5 py-0.5 rounded font-bold text-[var(--text-muted)] border border-[var(--border-color)]">${coinStats[c].count} Sells</span>
                         </div>
-                        <div class="flex justify-between text-[10px] font-bold text-[var(--text-muted)] mb-1"><span>${t('tot_paid')}</span><span>${t('received')}</span></div>
+                        <div class="flex justify-between text-[10px] font-bold text-[var(--text-muted)] mb-1"><span>Total Paid</span><span>Received</span></div>
                         <div class="flex justify-between text-sm font-black">
                             <span class="text-[var(--success)] drop-shadow-sm">৳${coinStats[c].paid.toFixed(2)}</span>
                             <span class="text-[var(--accent-gold)]">${coinStats[c].k}K</span>
@@ -1160,11 +1018,11 @@
 
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--success)]">
-                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3"><i class="fa-solid fa-layer-group text-[var(--accent-gold)]"></i> ${t('coin_stats')}</h3>
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3"><i class="fa-solid fa-layer-group text-[var(--accent-gold)]"></i> Coin-wise Stats (Paid)</h3>
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             ${coinGrid}
                         </div>
-                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2 mt-4"><i class="fa-solid fa-list-check text-[var(--success)]"></i> ${t('det_sell_hist')}</h3>
+                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2 mt-4"><i class="fa-solid fa-list-check text-[var(--success)]"></i> Detailed Sell History</h3>
                         <div class="space-y-2 max-h-[300px] overflow-y-auto hide-scroll pr-1">
                             ${detailedListHtml}
                         </div>
@@ -1201,26 +1059,26 @@
 
             return `
                 <div class="flex items-center justify-between mb-4 mt-2">
-                    <h2 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[var(--accent-cyan)]"></i> ${t('my_dash')}</h2>
+                    <h2 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[var(--accent-cyan)]"></i> My Dashboard</h2>
                     <div class="flex gap-2">
-                        <button onclick="exportUserCSV()" class="bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] hover:text-white hover:bg-[var(--accent-cyan)] px-3 py-1.5 rounded-lg border border-[var(--accent-cyan)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-file-csv"></i> ${t('download')}</button>
-                        <button onclick="resetUserHistory()" class="bg-[var(--error)]/10 text-[var(--error)] hover:text-white hover:bg-[var(--error)] px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-rotate-right"></i> ${t('reset')}</button>
+                        <button onclick="exportUserCSV()" class="bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] hover:text-white hover:bg-[var(--accent-cyan)] px-3 py-1.5 rounded-lg border border-[var(--accent-cyan)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-file-csv"></i> Download</button>
+                        <button onclick="resetUserHistory()" class="bg-[var(--error)]/10 text-[var(--error)] hover:text-white hover:bg-[var(--error)] px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-rotate-right"></i> Reset</button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div class="glass-panel p-3 rounded-2xl text-center shadow-sm border-t-2 border-[var(--success)] flex flex-col justify-center">
-                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">${t('tot_recv')}</p>
+                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Total Payment Received</p>
                         <h3 class="text-xl font-black text-[var(--success)]">৳${totalEarned.toFixed(2)}</h3>
                     </div>
                     <div class="glass-panel p-3 rounded-2xl text-center shadow-sm border-t-2 border-[var(--error)] flex flex-col justify-center">
-                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">${t('tot_wd')}</p>
+                        <p class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1">Total Withdrawn</p>
                         <h3 class="text-xl font-black text-[var(--error)]">৳${totalWithdrawn.toFixed(2)}</h3>
                     </div>
                 </div>
                 
                 <div class="mb-4 relative shadow-sm">
-                    <input type="text" value="${state.userOrderSearch || ''}" oninput="state.userOrderSearch=this.value; renderApp()" placeholder="${t('search_ord')}" class="w-full input-premium p-3 rounded-xl text-xs font-bold pl-11 border focus:border-[var(--accent-cyan)]">
+                    <input type="text" value="${state.userOrderSearch || ''}" oninput="state.userOrderSearch=this.value; renderApp()" placeholder="Search by Order ID (e.g. ORD-XXXX)" class="w-full input-premium p-3 rounded-xl text-xs font-bold pl-11 border focus:border-[var(--accent-cyan)]">
                     <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i>
                 </div>
 
@@ -1269,8 +1127,8 @@
 
         // ================= HOME VIEW =================
         function renderHome() {
-            let coinHtml = (coins || []).filter(c => c).map(c => {
-                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${String(c.name || 'CB').substring(0,2)}`;
+            let coinHtml = coins.map(c => {
+                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${c.name.substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
                 if(c.active) { 
                     activeClass = state.selCoinId === c.id ? 'active-coin' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:-translate-y-1 cursor-pointer'; 
@@ -1307,12 +1165,12 @@
 
             let socials = '';
             if(settings.wa) {
-                let link = String(settings.wa).startsWith('http') ? settings.wa : `https://wa.me/${String(settings.wa).replace(/[^0-9]/g, '')}`;
+                let link = settings.wa.startsWith('http') ? settings.wa : `https://wa.me/${settings.wa.replace(/[^0-9]/g, '')}`;
                 let inner = settings.waLogo ? `<img src="${settings.waLogo}" class="w-full h-full object-cover rounded-full">` : `<i class="fa-brands fa-whatsapp text-xl"></i>`;
                 socials += `<a href="${link}" target="_blank" class="w-10 h-10 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-full flex items-center justify-center shadow hover:scale-110 transition overflow-hidden">${inner}</a>`;
             }
             if(settings.tg) {
-                let link = String(settings.tg).startsWith('http') ? settings.tg : `https://t.me/${String(settings.tg).replace('@', '')}`;
+                let link = settings.tg.startsWith('http') ? settings.tg : `https://t.me/${settings.tg.replace('@', '')}`;
                 let inner = settings.tgLogo ? `<img src="${settings.tgLogo}" class="w-full h-full object-cover rounded-full">` : `<i class="fa-brands fa-telegram text-xl"></i>`;
                 socials += `<a href="${link}" target="_blank" class="w-10 h-10 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 rounded-full flex items-center justify-center shadow hover:scale-110 transition overflow-hidden">${inner}</a>`;
             }
@@ -1328,26 +1186,24 @@
             }
             let socialDiv = socials ? `<div class="mt-5 flex justify-center gap-4 pt-5 border-t border-[var(--border-color)]/50">${socials}</div>` : '';
 
-            let activeOrders = (orders || []).filter(o => o && o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
+            let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
             let activeHtml = activeOrders.map(o => {
                 let sClass = `status-badge ${o.status}`; let sIcon = o.status === 'pending' ? 'fa-clock' : 'fa-spinner fa-spin';
-                let sText = String(t(o.status==='processing' ? 'proc' : 'pend')).toUpperCase();
-                let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName || 'Method'}`;
+                let sText = t(o.status==='processing' ? 'proc' : 'pend').toUpperCase();
+                let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName}`;
                 
                 let amtText = o.type === 'sell' ? `+ ৳${o.paidAmount || o.receive}` : `- ৳${o.total}`;
-                if (o.type === 'wd' && (o.methodName || '').toLowerCase().includes('binance') && o.receiveUsd) {
-                    amtText = `- $${Number(o.receiveUsd).toFixed(2)}`;
+                if (o.type === 'wd' && o.methodName.toLowerCase().includes('binance') && o.receiveUsd) {
+                    amtText = `- $${o.receiveUsd.toFixed(2)}`;
                 }
                 
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
-                let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> ${t('view_proof')}</button>` : '';
+                let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
-                let displayId = (o.id && o.id.includes('-')) ? o.id.split('-')[1] : o.id;
-
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-3 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <button onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-xs font-black font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition shadow-md flex items-center gap-2 active:scale-95"><i class="fa-solid fa-copy text-sm"></i> ${displayId}</button>
+                        <button onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-xs font-black font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition shadow-md flex items-center gap-2 active:scale-95"><i class="fa-solid fa-copy text-sm"></i> ${o.id.split('-')[1]}</button>
                     </div>
                     <div class="flex justify-between items-end mt-2">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
@@ -1355,7 +1211,7 @@
                     </div>
                 </div>`;
             }).join('');
-            let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> ${t('active_pend')}</h3>${activeHtml}</div>` : '';
+            let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Active Pending Orders</h3>${activeHtml}</div>` : '';
 
             // Optional Telegram field based on Admin settings
             let tgFieldHtml = settings.requireTelegram ? `
@@ -1375,8 +1231,8 @@
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mt-1">@${currentUser.username}</p>
                         </div>
                     </div>
-                    <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)] flex justify-center">
-                        <button onclick="openWdModal()" class="gold-btn px-6 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest transition-all"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">${t('wd')}</span></button>
+                    <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)]">
+                        <button onclick="openWdModal()" class="gold-btn w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">${t('wd')}</span></button>
                     </div>
                 </div>
 
@@ -1402,15 +1258,8 @@
                     </div>
 
                     <div class="mb-6">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-cloud-arrow-up text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
-                        <div class="relative group cursor-pointer">
-                            <input type="file" id="sell-ss" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="let f=this.files[0]; let el=document.getElementById('ss-filename'); let ic=document.getElementById('ss-icon'); let bx=document.getElementById('ss-box'); if(f){ el.innerText=f.name; el.classList.add('text-[var(--accent-cyan)]'); ic.className='fa-solid fa-circle-check text-3xl text-[var(--success)] mb-2 drop-shadow-md'; bx.classList.add('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]'); }else{ el.innerText='Tap to upload screenshot'; el.classList.remove('text-[var(--accent-cyan)]'); ic.className='fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity'; bx.classList.remove('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]'); }">
-                            <div id="ss-box" class="bg-[var(--bg-sidebar)] border-2 border-dashed border-[var(--border-color)] group-hover:border-[var(--accent-cyan)]/70 group-hover:bg-[var(--bg-main)] rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 shadow-inner">
-                                <i id="ss-icon" class="fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity drop-shadow-sm"></i>
-                                <p id="ss-filename" class="text-xs font-black text-[var(--text-muted)] truncate w-full px-2 mt-1">Tap here to select file</p>
-                                <span class="text-[9px] bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded-full text-[var(--text-muted)] mt-3 font-bold shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-image"></i> JPG, PNG, JPEG</span>
-                            </div>
-                        </div>
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-camera text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
+                        <input type="file" id="sell-ss" accept="image/*" class="w-full text-xs text-[var(--text-muted)] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-[var(--accent-cyan)] file:text-[var(--bg-main)] hover:file:opacity-90 input-premium rounded-xl p-1.5 cursor-pointer">
                     </div>
 
                     <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">${t('submit')}</span></button>
@@ -1522,17 +1371,16 @@
             await db.collection('cb_orders').doc(newOrder.id).set(newOrder);
             state.selCoinId = null; 
             hideLoading();
-            
-            let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
-            showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
+            showToast("Order submitted successfully!"); 
+            switchView('home');
         }
 
         function openWdModal() {
             state.selWdId = null; let grid = document.getElementById('wd-methods-grid');
-            let activeMethods = (pmMethods || []).filter(m => m && m.active !== false);
+            let activeMethods = pmMethods.filter(m => m.active !== false);
             
             grid.innerHTML = activeMethods.map(m => {
-                let isBinance = String(m.name || '').toLowerCase().includes('binance');
+                let isBinance = m.name.toLowerCase().includes('binance');
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-0.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-0.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
                 
                 let chargeHtml = '';
@@ -1632,10 +1480,7 @@
             await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
             let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
             await db.collection('cb_orders').doc(newWd.id).set(newWd);
-            closeWdModal(); 
-            
-            let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
-            showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
+            closeWdModal(); showToast("Withdrawal requested!"); switchView('home');
         }
 
         function viewImg(src) { document.getElementById('modal-img-src').src = src; document.getElementById('img-modal').classList.remove('hidden'); }
@@ -1653,17 +1498,13 @@
                 { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
                 { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'set', icon: 'fa-cog', label: t('set') }
-            ];
-
-            let menuTabs = [
-                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
-                { id: 'manual', icon: 'fa-users', label: t('users') },
+                { id: 'support', icon: 'fa-comments', label: t('tickets') }, 
                 { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
+            let tktOpen = tickets.filter(t => t.status === 'open').length;
 
             let activeTabObj = tabs.find(t => t.id === state.adminTab);
             
@@ -1678,18 +1519,23 @@
                     <div class="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold bg-[var(--bg-main)] px-3 py-1.5 rounded-xl border-2 border-[var(--border-color)] shadow-inner flex items-center gap-1"><i class="fa-solid fa-caret-down text-lg"></i></div>
                 </button>
                 <div id="admin-tab-menu" class="hidden absolute top-full left-0 mt-3 w-full bg-[#091B30] border-2 border-[var(--accent-cyan)]/40 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] flex-col gap-2 p-3 z-[70]">` + 
-                menuTabs.map(tab => {
+                tabs.map(tab => {
                     let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent scale-[1.02]' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-main)] hover:text-white';
+                    let extra = '';
+                    if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${sellPending}</span>`;
+                    if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${wdPending}</span>`;
+                    if(tab.id === 'support' && tktOpen > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${tktOpen}</span>`;
                     
                     return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-5 py-4 rounded-xl text-base font-black border transition-all duration-300 flex items-center justify-between ${active}">
                         <span class="flex items-center gap-3"><i class="fa-solid ${tab.icon} w-7 text-center text-xl"></i> ${tab.label}</span>
+                        ${extra}
                     </button>`;
                 }).join('') + `</div></div>`;
 
             let contentHtml = '';
             if(state.adminTab === 'dash') contentHtml = renderAdminDash(); else if(state.adminTab === 'sells') contentHtml = renderAdminSells();
             else if(state.adminTab === 'wds') contentHtml = renderAdminWds(); else if(state.adminTab === 'manual') contentHtml = renderAdminManual();
-            else if(state.adminTab === 'set') contentHtml = renderAdminSettings();
+            else if(state.adminTab === 'support') contentHtml = renderAdminSupport(); else if(state.adminTab === 'set') contentHtml = renderAdminSettings();
 
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
@@ -1753,24 +1599,16 @@
                         <div id="ahm-list" class="flex-1 overflow-y-auto hide-scroll space-y-2 pr-1"></div>
                     </div>
                 </div>
-
-                <!-- Admin Lifetime Stats Modal -->
-                <div id="admin-lifetime-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] hidden flex flex-col p-4 pt-10 backdrop-blur-sm">
-                    <div class="glass-panel w-full max-w-lg mx-auto rounded-2xl p-4 flex flex-col max-h-[85vh] relative shadow-2xl border-t border-[var(--accent-cyan)]">
-                        <button onclick="closeLifetimeStats()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--error)] bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
-                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 pr-8">
-                            <h3 class="font-black text-white text-base flex items-center gap-2"><i class="fa-solid fa-chart-line text-[var(--accent-cyan)]"></i> Lifetime Stats</h3>
-                            <button onclick="resetLifetimeStats()" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-1.5 rounded-lg text-[9px] font-black hover:bg-[var(--error)] hover:text-white transition shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-trash"></i> Reset All</button>
-                        </div>
-                        <div id="lifetime-stats-content" class="flex-1 overflow-y-auto hide-scroll space-y-4 pr-1"></div>
-                    </div>
-                </div>
             `;
         }
 
         function renderAdminDash() {
-            let sellPending = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'pending').length;
-            let wdPending = (orders || []).filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
+            let totalUsers = users.length; let totalBal = users.reduce((sum, u) => sum + (Number(u.balance)||0), 0);
+            let totalSell = orders.filter(o=>o.type==='sell' && o.status==='approved').reduce((s,o)=>s+(parseFloat(o.paidAmount)||o.receive), 0);
+            let totalWd = orders.filter(o=>o.type==='wd' && o.status==='approved').reduce((s,o)=>s+o.total, 0);
+
+            let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
+            let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
             let totalPending = sellPending + wdPending;
 
             let pendingBoardHtml = `
@@ -1791,57 +1629,31 @@
                 </div>
             </div>`;
 
-            let actionBtnsHtml = `
-            <div class="grid grid-cols-2 gap-3 mb-5 mt-2">
-                <button onclick="state.adminTab='sells'; state.adminSellTab='pending'; renderApp()" class="glass-panel p-5 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-[0_8px_25px_rgba(22,199,132,0.15)] flex flex-col items-center justify-center gap-3 active:scale-95">
-                    <div class="relative inline-block">
-                        <i class="fa-solid fa-coins text-[var(--success)] text-4xl drop-shadow-md"></i>
-                        ${sellPending > 0 ? `<span class="absolute -top-3 -right-4 bg-[var(--error)] text-white text-[11px] px-2 py-0.5 rounded-full font-black shadow-md border-2 border-[var(--bg-card)]">${sellPending}</span>` : ''}
-                    </div>
-                    <span class="text-sm font-black text-white uppercase tracking-widest">${t('sells')}</span>
-                </button>
-                <button onclick="state.adminTab='wds'; state.adminWdTab='pending'; renderApp()" class="glass-panel p-5 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-[0_8px_25px_rgba(255,100,124,0.15)] flex flex-col items-center justify-center gap-3 active:scale-95">
-                    <div class="relative inline-block">
-                        <i class="fa-solid fa-money-bill-transfer text-[var(--error)] text-4xl drop-shadow-md"></i>
-                        ${wdPending > 0 ? `<span class="absolute -top-3 -right-4 bg-[var(--error)] text-white text-[11px] px-2 py-0.5 rounded-full font-black shadow-md border-2 border-[var(--bg-card)]">${wdPending}</span>` : ''}
-                    </div>
-                    <span class="text-sm font-black text-white uppercase tracking-widest">${t('wds')}</span>
-                </button>
-            </div>`;
-
-            let shortcutBtns = `
-            <div class="grid grid-cols-2 gap-3 mb-2 mt-4 pt-4 border-t border-[var(--border-color)]">
-                <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp();" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
-                    <i class="fa-solid fa-calendar-day text-[var(--accent-gold)] text-2xl drop-shadow-md"></i>
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Today's<br>Summary</span>
-                </button>
-                <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp(); setTimeout(()=>window.scrollTo({top:9999, behavior:'smooth'}), 100);" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[#9b59b6] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
-                    <i class="fa-solid fa-box-archive text-[#9b59b6] text-2xl drop-shadow-md"></i>
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Old<br>History</span>
-                </button>
-                <button onclick="openLifetimeStats()" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2 col-span-2">
-                    <i class="fa-solid fa-chart-line text-[var(--accent-cyan)] text-2xl drop-shadow-md"></i>
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Lifetime Stats<br>(Total & Pending)</span>
-                </button>
-            </div>`;
-
-            return pendingBoardHtml + trackBoxHtml + actionBtnsHtml + shortcutBtns;
+            return pendingBoardHtml + trackBoxHtml + `
+                <div class="grid grid-cols-2 gap-3 mb-5">
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-wallet gold-text text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_bal">${t('tot_bal')}</div><div class="text-xl font-black gold-text">৳${totalBal.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
+                </div>
+                <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-1"><i class="fa-solid fa-file-csv text-[var(--accent-gold)]"></i> ${t('exp_data')}</h3>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="openAdminHistory('users')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] py-3 rounded-xl text-[10px] font-black shadow-sm hover:shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:-translate-y-0.5 hover:bg-[var(--accent-cyan)] hover:text-white transition-all duration-300 active:scale-95 flex flex-col items-center justify-center"><i class="fa-solid fa-file-export block text-base mb-1.5"></i> Users</button>
+                    <button onclick="openAdminHistory('sells')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--success)]/40 text-[var(--success)] py-3 rounded-xl text-[10px] font-black shadow-sm hover:shadow-[0_4px_15px_rgba(22,199,132,0.3)] hover:-translate-y-0.5 hover:bg-[var(--success)] hover:text-white transition-all duration-300 active:scale-95 flex flex-col items-center justify-center"><i class="fa-solid fa-file-export block text-base mb-1.5"></i> Sells</button>
+                    <button onclick="openAdminHistory('wds')" class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--error)]/40 text-[var(--error)] py-3 rounded-xl text-[10px] font-black shadow-sm hover:shadow-[0_4px_15px_rgba(255,100,124,0.3)] hover:-translate-y-0.5 hover:bg-[var(--error)] hover:text-white transition-all duration-300 active:scale-95 flex flex-col items-center justify-center"><i class="fa-solid fa-file-export block text-base mb-1.5"></i> Withdraws</button>
+                </div>
+            `;
         }
 
         // --- Admin History Modal & Delete Functions ---
         function openAdminHistory(type) {
-            try {
-                state.adminHistoryType = type;
-                let title = type === 'users' ? 'All-Time Users History' : (type === 'sells' ? 'All-Time Sells History' : 'All-Time Withdraws History');
-                document.getElementById('ahm-title').innerText = title;
-                document.getElementById('ahm-search').value = '';
-                document.getElementById('ahm-dl-btn').onclick = () => exportCSV(type);
-                renderAdminHistoryList();
-                document.getElementById('admin-history-modal').classList.remove('hidden');
-            } catch(e) {
-                console.error("Modal Error:", e);
-                showToast("Error opening list!", "error");
-            }
+            state.adminHistoryType = type;
+            let title = type === 'users' ? 'All-Time Users History' : (type === 'sells' ? 'All-Time Sells History' : 'All-Time Withdraws History');
+            document.getElementById('ahm-title').innerText = title;
+            document.getElementById('ahm-search').value = '';
+            document.getElementById('ahm-dl-btn').onclick = () => exportCSV(type);
+            renderAdminHistoryList();
+            document.getElementById('admin-history-modal').classList.remove('hidden');
         }
         
         function closeAdminHistory() {
@@ -1849,109 +1661,21 @@
             document.getElementById('admin-history-modal').classList.add('hidden');
         }
 
-        function openLifetimeStats() {
-            let allSells = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved');
-            let totalSpent = 0;
-            let coinStats = {};
-            
-            allSells.forEach(o => {
-                let amt = Number(o.paidAmount || o.receive || 0);
-                totalSpent += amt;
-                if(!coinStats[o.coinName]) coinStats[o.coinName] = { k: 0, spent: 0 };
-                coinStats[o.coinName].k += Number(o.k || 0);
-                coinStats[o.coinName].spent += amt;
-            });
-            
-            let pendingWds = (orders || []).filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
-            let totalPendingWd = pendingWds.reduce((sum, o) => sum + Number(o.total || 0), 0);
-            
-            let coinHtml = Object.keys(coinStats).map(c => `
-                <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
-                    <span class="text-xs font-black text-white">${c}</span>
-                    <div class="text-right">
-                        <span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${coinStats[c].k}K</span>
-                        <span class="text-sm text-[var(--success)] font-black">৳${coinStats[c].spent.toFixed(2)}</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            if(!coinHtml) coinHtml = `<p class="text-center text-[10px] text-[var(--text-muted)] italic py-4 border border-dashed border-[var(--border-color)] rounded-xl">No coins bought yet.</p>`;
-
-            let html = `
-                <div class="glass-panel p-4 rounded-xl shadow-inner border-l-4 border-l-[var(--success)] mb-2 flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase mb-1">Total Lifetime Spent</p>
-                        <h2 class="text-xl font-black text-[var(--success)]">৳${totalSpent.toFixed(2)}</h2>
-                    </div>
-                    <i class="fa-solid fa-coins text-3xl text-[var(--success)] opacity-20"></i>
-                </div>
-                
-                <div class="glass-panel p-4 rounded-xl shadow-inner border-l-4 border-l-[var(--accent-gold)] mb-4 flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase mb-1">Pending Withdrawals</p>
-                        <h2 class="text-xl font-black text-[var(--accent-gold)]">৳${totalPendingWd.toFixed(2)}</h2>
-                    </div>
-                    <i class="fa-solid fa-clock-rotate-left text-3xl text-[var(--accent-gold)] opacity-20"></i>
-                </div>
-                
-                <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-2 uppercase flex items-center gap-2"><i class="fa-solid fa-layer-group text-[var(--accent-cyan)]"></i> Coin Breakdown</h3>
-                <div class="space-y-2">
-                    ${coinHtml}
-                </div>
-            `;
-            
-            document.getElementById('lifetime-stats-content').innerHTML = html;
-            document.getElementById('admin-lifetime-modal').classList.remove('hidden');
-        }
-        
-        function closeLifetimeStats() {
-            document.getElementById('admin-lifetime-modal').classList.add('hidden');
-        }
-
-        async function resetLifetimeStats() {
-            if(!confirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে না!")) return;
-            
-            showLoading();
-            try {
-                let batch = db.batch();
-                let historyOrders = orders.filter(o => o.status === 'approved' || o.status === 'rejected' || o.archived);
-                
-                historyOrders.forEach(o => {
-                    batch.delete(db.collection('cb_orders').doc(o.id));
-                });
-                
-                await batch.commit();
-                
-                // Clear daily archives too
-                dailyArchives = [];
-                await db.collection('cb_data').doc('global_state').update({ dailyArchives: [] });
-                
-                hideLoading();
-                showToast("সমস্ত হিস্ট্রি এবং লাইফটাইম হিসেব মুছে ফেলা হয়েছে!");
-                closeLifetimeStats();
-                renderApp();
-            } catch(e) {
-                hideLoading();
-                console.error(e);
-                showToast("Error resetting stats!", "error");
-            }
-        }
-
-        function deleteHistoryItem(id, type) {
+        async function deleteHistoryItem(id, type) {
             let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডাটাবেস থেকে চিরতরে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি চিরতরে ডিলিট করতে চান?";
             if(!confirm(msg)) return;
             
             try {
                 if(type === 'users') {
-                    users = users.filter(u => u.id !== id); 
-                    db.collection('cb_users').doc(id).delete();
+                    await db.collection('cb_users').doc(id).delete();
+                    users = users.filter(u => u.id !== id); // update local instantly
                 } else {
-                    orders = orders.filter(o => o.id !== id); 
-                    db.collection('cb_orders').doc(id).delete();
+                    await db.collection('cb_orders').doc(id).delete();
+                    orders = orders.filter(o => o.id !== id); // update local instantly
                 }
                 showToast("সফলভাবে ডিলিট করা হয়েছে!");
-                renderAdminHistoryList(); 
-                renderApp(); 
+                renderAdminHistoryList(); // Update the list UI
+                renderApp(); // Update dashboard counts
             } catch(e) {
                 console.error(e);
                 showToast("Error deleting data!", "error");
@@ -1964,53 +1688,48 @@
             let q = searchInput.value.toLowerCase().trim();
             let html = '';
             
-            try {
-                if (state.adminHistoryType === 'users') {
-                    let list = (users || []).filter(u => u);
-                    if(q) list = list.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
-                    html = list.map(u => `
-                        <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
-                            <div>
-                                <h4 class="text-xs font-black text-white">${u.name || 'Unknown'} <span class="text-[8px] bg-[var(--bg-main)] px-1 py-0.5 rounded border border-[var(--border-color)] text-[var(--text-muted)] ml-1">${u.role || 'user'}</span></h4>
-                                <p class="text-[9px] text-[var(--accent-cyan)] font-mono mb-1">@${u.username || 'unknown'}</p>
-                                <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block">UID: ${u.id || 'N/A'}</p>
-                            </div>
-                            <div class="text-right flex flex-col items-end gap-1">
-                                <div class="text-xs font-black gold-text">৳${Number(u.balance||0).toFixed(2)}</div>
-                                <div class="text-[8px] text-[var(--text-muted)]">${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</div>
-                                <button onclick="deleteHistoryItem('${u.id}', 'users')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </div>`).join('');
-                } else {
-                    let filterType = state.adminHistoryType === 'sells' ? 'sell' : 'wd';
-                    let list = (orders || []).filter(o => o && o.type === filterType);
-                    if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.acc||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
-                    
-                    html = list.map(o => {
-                        let u = (users || []).find(x => x && x.id === o.userId);
-                        let title = o.type === 'sell' ? `${o.k}K ${o.coinName}` : `${o.methodName}`;
-                        let amt = o.type === 'sell' ? (o.paidAmount || o.receive) : o.total;
-                        let color = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
-                        let sClass = `status-badge ${o.status}`;
-                        return `
-                        <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
-                            <div>
-                                <h4 class="text-[11px] font-black text-white">${u ? u.name : 'Unknown'}</h4>
-                                <p class="text-[9px] text-[var(--text-muted)] mt-0.5">${title}</p>
-                                <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block mt-1">ID: ${o.id}</p>
-                            </div>
-                            <div class="text-right flex flex-col items-end gap-1">
-                                <span class="font-black text-xs ${color}">৳${amt}</span>
-                                <span class="${sClass} px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block">${o.status}</span>
-                                <span class="text-[7px] text-[var(--text-muted)]">${o.time}</span>
-                                <button onclick="deleteHistoryItem('${o.id}', '${state.adminHistoryType}')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </div>
-                        </div>`;
-                    }).join('');
-                }
-            } catch (err) {
-                console.error(err);
-                html = `<p class="text-center text-[var(--error)] text-xs">Error formatting data.</p>`;
+            if (state.adminHistoryType === 'users') {
+                let list = users;
+                if(q) list = list.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
+                html = list.map(u => `
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
+                        <div>
+                            <h4 class="text-xs font-black text-white">${u.name} <span class="text-[8px] bg-[var(--bg-main)] px-1 py-0.5 rounded border border-[var(--border-color)] text-[var(--text-muted)] ml-1">${u.role}</span></h4>
+                            <p class="text-[9px] text-[var(--accent-cyan)] font-mono mb-1">@${u.username}</p>
+                            <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block">UID: ${u.id}</p>
+                        </div>
+                        <div class="text-right flex flex-col items-end gap-1">
+                            <div class="text-xs font-black gold-text">৳${Number(u.balance||0).toFixed(2)}</div>
+                            <div class="text-[8px] text-[var(--text-muted)]">${(u.createdAt||'N/A').split(',')[0]}</div>
+                            <button onclick="deleteHistoryItem('${u.id}', 'users')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
+                    </div>`).join('');
+            } else {
+                let filterType = state.adminHistoryType === 'sells' ? 'sell' : 'wd';
+                let list = orders.filter(o => o.type === filterType);
+                if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.acc||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
+                
+                html = list.map(o => {
+                    let u = users.find(x => x.id === o.userId);
+                    let title = o.type === 'sell' ? `${o.k}K ${o.coinName}` : `${o.methodName}`;
+                    let amt = o.type === 'sell' ? (o.paidAmount || o.receive) : o.total;
+                    let color = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
+                    let sClass = `status-badge ${o.status}`;
+                    return `
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
+                        <div>
+                            <h4 class="text-[11px] font-black text-white">${u ? u.name : 'Unknown'}</h4>
+                            <p class="text-[9px] text-[var(--text-muted)] mt-0.5">${title}</p>
+                            <p class="text-[8px] text-[var(--text-muted)] font-mono bg-[var(--bg-main)] px-1 py-0.5 rounded inline-block mt-1">ID: ${o.id}</p>
+                        </div>
+                        <div class="text-right flex flex-col items-end gap-1">
+                            <span class="font-black text-xs ${color}">৳${amt}</span>
+                            <span class="${sClass} px-1.5 py-0.5 rounded text-[8px] font-black uppercase inline-block">${o.status}</span>
+                            <span class="text-[7px] text-[var(--text-muted)]">${o.time}</span>
+                            <button onclick="deleteHistoryItem('${o.id}', '${state.adminHistoryType}')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2.5 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1.5 shadow-sm active:scale-90"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
+                    </div>`;
+                }).join('');
             }
             if(!html) html = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No records found.</p>`;
             document.getElementById('ahm-list').innerHTML = html;
@@ -2048,11 +1767,11 @@
             let q = state.adminOrderSearch || '';
 
             if(state.adminSellTab === 'pending') {
-                let list = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'pending');
+                let list = orders.filter(o => o.type === 'sell' && o.status === 'pending');
                 if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
                 
                 contentHtml = list.map(o => {
-                    let u = (users || []).find(x=>x && x.id===o.userId);
+                    let u = users.find(x=>x.id===o.userId);
                     let tgCopyBtn = o.tgUsername ? `<button onclick="copyText('${o.tgUsername}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>` : '';
                     return `
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--accent-cyan)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-3 flex flex-col gap-2 relative overflow-hidden shadow-sm hover:shadow-md transition">
@@ -2076,11 +1795,11 @@
                 if(!contentHtml) contentHtml = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">${t('no_pend')}</p>`;
             } 
             else if(state.adminSellTab === 'approved') {
-                let list = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved');
+                let list = orders.filter(o => o.type === 'sell' && o.status === 'approved');
                 if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
                 
                 contentHtml = list.map(o => {
-                    let u = (users || []).find(x=>x && x.id===o.userId);
+                    let u = users.find(x=>x.id===o.userId);
                     return `
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--success)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-2 flex justify-between items-center hover:shadow-md transition">
                         <div>
@@ -2089,18 +1808,14 @@
                             <div class="text-xs text-[var(--accent-cyan)] font-bold mt-1">${o.k}K ${o.coinName}</div>
                             <div onclick="copyText('${o.id}')" class="cursor-pointer text-[8px] font-mono text-[var(--accent-gold)] mt-1 bg-[var(--bg-main)] px-1 rounded border border-[var(--border-color)] inline-block hover:bg-[var(--accent-gold)] hover:text-black transition"><i class="fa-solid fa-copy"></i> ${o.id}</div>
                         </div>
-                        <div class="text-right flex flex-col items-end">
-                            <div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div>
-                            <div class="text-sm text-[var(--success)] font-black mb-1">Paid: ৳${o.paidAmount}</div>
-                            <button onclick="deleteHistoryItem('${o.id}', 'sells')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </div>
+                        <div class="text-right"><div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div><div class="text-sm text-[var(--success)] font-black">Paid: ৳${o.paidAmount}</div></div>
                     </div>`;
                 }).join('');
                 if(!contentHtml) contentHtml = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">${t('no_apprv')}</p>`;
             }
             else if(state.adminSellTab === 'daily') {
                 searchBox = ''; // Hide search for daily
-                let todayOrders = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved' && !o.archived);
+                let todayOrders = orders.filter(o => o.type === 'sell' && o.status === 'approved' && !o.archived);
                 let summary = {}; let totalK = 0; let totalPaid = 0;
                 todayOrders.forEach(o => { if(!summary[o.coinName]) summary[o.coinName] = { k: 0, paid: 0, orig: 0 }; summary[o.coinName].k += o.k; summary[o.coinName].paid += o.paidAmount; totalK += o.k; totalPaid += o.paidAmount; });
                 let sumHtml = Object.keys(summary).map(c => `<div class="flex justify-between border-b border-[var(--border-color)] pb-2 mb-2"><span class="text-[11px] font-black text-white">${c}</span><div class="text-right"><span class="text-xs text-[var(--accent-cyan)] font-bold">${summary[c].k}K</span> <span class="text-[11px] text-[var(--success)] ml-2">৳${summary[c].paid}</span></div></div>`).join('');
@@ -2112,65 +1827,40 @@
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
-                ${(dailyArchives || []).filter(a=>a).map((a, idx) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right flex items-center gap-2"><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-1">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div><button onclick="deleteArchive(${idx})" class="w-7 h-7 bg-[var(--error)]/10 text-[var(--error)] rounded-lg flex items-center justify-center border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white transition active:scale-90" title="Delete Archive"><i class="fa-solid fa-trash text-[10px]"></i></button></div></div>`).join('')}`;
+                ${dailyArchives.map((a) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div></div>`).join('')}`;
             }
             return subTabHtml + searchBox + contentHtml;
         }
 
-        function deleteArchive(idx) {
-            if(confirm("আপনি কি নিশ্চিত যে এই পুরাতন হিসেবটি ডিলিট করতে চান? এটি আর ফেরত পাওয়া যাবে না।")) {
-                let newArchive = [...dailyArchives];
-                newArchive.splice(idx, 1);
-                dailyArchives = newArchive;
-                db.collection('cb_data').doc('global_state').update({ dailyArchives: newArchive });
-                showToast("পুরাতন হিসেব ডিলিট করা হয়েছে!");
-                renderApp();
-            }
-        }
-
-        function archiveDaily() {
-            let todayOrders = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved' && !o.archived);
+        async function archiveDaily() {
+            let todayOrders = orders.filter(o => o.type === 'sell' && o.status === 'approved' && !o.archived);
             if(todayOrders.length === 0) return showToast("Nothing to archive today!", "error");
             if(confirm("Are you sure? This will reset today's live summary and save it to history.")) {
                 let sum = { date: new Date().toLocaleDateString(), totalK: 0, totalPaid: 0 };
                 const batch = db.batch();
-                todayOrders.forEach(o => { 
-                    sum.totalK += o.k; 
-                    sum.totalPaid += o.paidAmount; 
-                    o.archived = true;
-                    batch.update(db.collection('cb_orders').doc(o.id), {archived: true}); 
-                });
+                todayOrders.forEach(o => { sum.totalK += o.k; sum.totalPaid += o.paidAmount; batch.update(db.collection('cb_orders').doc(o.id), {archived: true}); });
                 let newArchive = [...dailyArchives]; newArchive.unshift(sum);
-                dailyArchives = newArchive;
-                db.collection('cb_data').doc('global_state').update({ dailyArchives: newArchive });
-                batch.commit(); 
-                showToast("Summary Archived Successfully!");
-                renderApp();
+                await db.collection('cb_data').doc('global_state').update({ dailyArchives: newArchive });
+                await batch.commit(); showToast("Summary Archived Successfully!");
             }
         }
         
         function openApproveModal(id) { let o = orders.find(x=>x.id===id); if(o.status !== 'pending') return; state.tempApproveId = id; document.getElementById('sa-orig-val').innerText = `৳${o.receive}`; document.getElementById('sa-custom-amt').value = o.receive; document.getElementById('sell-approve-modal').classList.remove('hidden'); }
         function closeApproveModal() { state.tempApproveId = null; document.getElementById('sell-approve-modal').classList.add('hidden'); }
-        
-        function confirmApproveSell() {
+        async function confirmApproveSell() {
             if(!state.tempApproveId) return; let o = orders.find(x=>x.id===state.tempApproveId); if(!o || o.status !== 'pending') return;
             let amt = parseFloat(document.getElementById('sa-custom-amt').value); if(isNaN(amt) || amt < 0) return showToast("Invalid amount!", "error");
             let u = users.find(x=>x.id===o.userId);
-            u.balance = (Number(u.balance)||0) + amt;
-            o.status = 'approved'; o.paidAmount = amt;
-            db.collection('cb_users').doc(u.id).update({ balance: u.balance });
-            db.collection('cb_orders').doc(o.id).update({ status: 'approved', paidAmount: amt });
-            addNotification(u.id, "Coin Sell Approved", `Added ৳${amt} to your balance for ${o.k}K ${o.coinName}.`, "success");
+            await db.collection('cb_users').doc(u.id).update({ balance: (Number(u.balance)||0) + amt });
+            await db.collection('cb_orders').doc(o.id).update({ status: 'approved', paidAmount: amt });
+            await addNotification(u.id, "Coin Sell Approved", `Added ৳${amt} to your balance for ${o.k}K ${o.coinName}.`, "success");
             closeApproveModal(); showToast(`Added ৳${amt}`);
-            renderApp();
         }
-        function rejectSell(id) { 
+        async function rejectSell(id) { 
             let o = orders.find(x=>x.id===id); if(o.status !== 'pending') return; 
-            o.status = 'rejected';
-            db.collection('cb_orders').doc(o.id).update({ status: 'rejected' });
-            addNotification(o.userId, "Coin Sell Rejected", `Your sell order of ${o.k}K ${o.coinName} was rejected.`, "error"); 
+            await db.collection('cb_orders').doc(o.id).update({ status: 'rejected' });
+            await addNotification(o.userId, "Coin Sell Rejected", `Your sell order of ${o.k}K ${o.coinName} was rejected.`, "error"); 
             showToast("Order Rejected", "error"); 
-            renderApp();
         }
 
         function renderAdminWds() {
@@ -2184,11 +1874,11 @@
             
             let list = [];
             if(state.adminWdTab === 'pending') {
-                list = (orders || []).filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+                list = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
             } else if(state.adminWdTab === 'approved') {
-                list = (orders || []).filter(o => o && o.type === 'wd' && o.status === 'approved');
+                list = orders.filter(o => o.type === 'wd' && o.status === 'approved');
             } else if(state.adminWdTab === 'rejected') {
-                list = (orders || []).filter(o => o && o.type === 'wd' && o.status === 'rejected');
+                list = orders.filter(o => o.type === 'wd' && o.status === 'rejected');
             }
 
             let q = state.adminOrderSearch || '';
@@ -2197,14 +1887,19 @@
             }
 
             let listHtml = list.map(o => {
-                let u = (users || []).find(x=>x && x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
+                let u = users.find(x=>x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
                 
                 let actionBtns = '';
-                if(o.status === 'pending' || o.status === 'processing') {
+                if(o.status === 'pending') {
                     actionBtns = `
                     <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
-                        <button onclick="openWdApproveModal('${o.id}')" class="flex-1 btn-modern-success py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-upload"></i> Upload Proof</button>
+                        <button onclick="markWdProc('${o.id}')" class="flex-1 gold-btn py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-spinner"></i> ${t('proc')}</button>
                         <button onclick="rejectWd('${o.id}')" class="flex-1 btn-modern-danger py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-rotate-left"></i> ${t('reject')}</button>
+                    </div>`;
+                } else if(o.status === 'processing') {
+                    actionBtns = `
+                    <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
+                        <button onclick="openWdApproveModal('${o.id}')" class="w-full btn-modern-success py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-check-double text-sm"></i> Upload Proof & Mark Paid</button>
                     </div>`;
                 } else if(o.status === 'approved' && o.adminSs) {
                     actionBtns = `
@@ -2216,29 +1911,24 @@
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
                 let payAmtHtml = o.receiveUsd ? `<span class="text-[var(--success)]">$${o.receiveUsd.toFixed(2)} USD</span> <span class="text-[10px] text-[var(--text-muted)]">(৳${o.receive})</span>` : `৳${o.receive}`;
                 
-                let delBtnHtml = (o.status === 'approved' || o.status === 'rejected') ? `<div class="mt-3 pt-3 border-t border-[var(--border-color)] text-right"><button onclick="deleteHistoryItem('${o.id}', 'wds')" class="text-[10px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-1.5 rounded-lg font-black hover:bg-[var(--error)] hover:text-white transition shadow-sm inline-flex items-center gap-1.5"><i class="fa-solid fa-trash"></i> Delete Record</button></div>` : '';
-
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}${delBtnHtml}</div>`;
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
             }).join('');
             return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
-        function markWdProc(id) { let o = orders.find(x=>x.id===id); if(o.status !== 'pending') return; o.status = 'processing'; db.collection('cb_orders').doc(o.id).update({ status: 'processing' }); renderApp(); }
-        function rejectWd(id) { 
+        async function markWdProc(id) { let o = orders.find(x=>x.id===id); if(o.status !== 'pending') return; await db.collection('cb_orders').doc(o.id).update({ status: 'processing' }); }
+        async function rejectWd(id) { 
             let o = orders.find(x=>x.id===id); if(o.status === 'rejected' || o.status === 'approved') return; 
             let u = users.find(x=>x.id===o.userId); 
-            u.balance = (Number(u.balance)||0) + o.total;
-            o.status = 'rejected';
-            db.collection('cb_users').doc(u.id).update({ balance: u.balance });
-            db.collection('cb_orders').doc(o.id).update({ status: 'rejected' });
-            addNotification(u.id, "Withdrawal Rejected", `৳${o.total} refunded to your balance.`, "error"); 
+            await db.collection('cb_users').doc(u.id).update({ balance: (Number(u.balance)||0) + o.total });
+            await db.collection('cb_orders').doc(o.id).update({ status: 'rejected' });
+            await addNotification(u.id, "Withdrawal Rejected", `৳${o.total} refunded to your balance.`, "error"); 
             showToast("Refunded ৳" + o.total); 
-            renderApp();
         }
         
         function openWdApproveModal(id) { state.wdApproveId = id; document.getElementById('wd-proof-img').value = ''; document.getElementById('wd-approve-modal').classList.remove('hidden'); }
         function closeWdApproveModal() { state.wdApproveId = null; document.getElementById('wd-approve-modal').classList.add('hidden'); }
         async function confirmApproveWd() {
-            if(!state.wdApproveId) return; let o = orders.find(x=>x.id===state.wdApproveId); if(o.status !== 'processing' && o.status !== 'pending') return; 
+            if(!state.wdApproveId) return; let o = orders.find(x=>x.id===state.wdApproveId); if(o.status !== 'processing') return; 
             let fileInput = document.getElementById('wd-proof-img');
             
             if(fileInput.files.length === 0) return showToast("পেমেন্টের স্ক্রিনশট (Proof) দিতে হবে!", "error");
@@ -2260,128 +1950,31 @@
         // --- ADVANCED USER MANAGEMENT SYSTEM ---
         function renderAdminManual() {
             let searchBox = `<div class="mb-5 relative shadow-sm"><input type="text" id="user-search-input" value="${state.userSearchQuery || ''}" oninput="state.userSearchQuery=this.value.toLowerCase(); document.getElementById('admin-user-list').innerHTML=renderUserList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3.5 rounded-xl text-[11px] font-bold pl-11 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
-            
-            let batchActions = settings.allowUserDeletion ? `
-            <div class="flex justify-between items-center mb-3 bg-[var(--bg-sidebar)] p-2.5 rounded-xl border border-[var(--border-color)] shadow-sm">
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="select-all-users" onchange="toggleSelectAllUsers(this)" class="w-3.5 h-3.5 accent-[var(--error)] rounded cursor-pointer ml-1">
-                    <label for="select-all-users" class="text-[10px] font-bold text-[var(--text-muted)] cursor-pointer select-none">Select All</label>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="deleteSelectedUsers()" class="bg-[var(--error)]/10 text-[var(--error)] hover:bg-[var(--error)] hover:text-white px-2.5 py-1.5 rounded-md border border-[var(--error)]/30 text-[8px] font-black transition shadow-sm"><i class="fa-solid fa-trash"></i> Delete Selected</button>
-                    <button onclick="deleteAllUsersConfirm()" class="bg-[var(--error)] text-white hover:bg-red-600 px-2.5 py-1.5 rounded-md border border-red-600 text-[8px] font-black transition shadow-sm"><i class="fa-solid fa-triangle-exclamation"></i> Delete All</button>
-                </div>
-            </div>` : '';
-
-            return searchBox + batchActions + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
+            return searchBox + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
         }
 
         function renderUserList() {
             let q = state.userSearchQuery || '';
-            let filtered = (users || []).filter(u => u && ((u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q)));
+            let filtered = users.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
+            if(filtered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
             
-            // মাস্টার অ্যাডমিনকে ডিলিট লিস্ট থেকে সুরক্ষিত রাখা হয়েছে
-            let safeFiltered = filtered.filter(u => u.email !== "masteradmin2026@coinbazar.app");
-
-            if(safeFiltered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
-            
-            return safeFiltered.map((u, index) => {
+            return filtered.map((u, index) => {
                 let dp = u.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${u.name.substring(0,1).toUpperCase()}`;
-                
-                let checkBtn = settings.allowUserDeletion ? `<input type="checkbox" value="${u.id}" class="user-checkbox w-3.5 h-3.5 accent-[var(--error)] rounded cursor-pointer">` : '';
-                let delBtn = settings.allowUserDeletion ? `<button onclick="deleteSingleUser('${u.id}')" class="bg-[var(--bg-main)] text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white w-6 h-6 rounded flex items-center justify-center transition shadow-sm" title="Delete User"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
-
                 return `
                 <div class="glass-panel p-3 rounded-xl mb-3 flex items-center justify-between border-l-4 ${u.status==='blocked'?'border-l-[var(--error)]':'border-l-[var(--accent-cyan)]'} hover:shadow-md transition hover:-translate-y-0.5">
                     <div class="flex items-center gap-3">
-                        ${checkBtn}
                         <div class="w-6 h-6 bg-[var(--bg-main)] text-[var(--accent-gold)] flex items-center justify-center rounded text-[10px] font-black shadow-inner border border-[var(--border-color)]">${index+1}</div>
                         <img src="${dp}" class="w-10 h-10 rounded-full border border-[var(--border-color)] object-cover shadow-sm">
                         <div>
                             <h4 class="font-black text-xs text-white">${u.name} ${u.status==='blocked'?'<span class="text-[8px] bg-[var(--error)] text-white px-1.5 py-0.5 rounded ml-1">BLOCKED</span>':''}</h4>
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mb-0.5">@${u.username}</p>
+                            <p class="text-[7px] font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-1 rounded border border-[var(--border-color)]">ID: ${u.id}</p>
                         </div>
                     </div>
-                    <div class="flex gap-1.5">
-                        ${delBtn}
-                        <button onclick="openUserManage('${u.id}')" class="cyan-btn px-3 py-2 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
-                    </div>
+                    <button onclick="openUserManage('${u.id}')" class="cyan-btn px-4 py-2 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
                 </div>
             `;
             }).join('');
-        }
-
-        // --- USER DELETION LOGIC ---
-        function toggleSelectAllUsers(checkbox) {
-            let checkboxes = document.querySelectorAll('.user-checkbox');
-            checkboxes.forEach(cb => cb.checked = checkbox.checked);
-        }
-
-        async function processUserDeletion(userIds) {
-            if(!settings.allowUserDeletion) return showToast("User deletion is currently disabled in settings!", "error");
-            showLoading();
-            try {
-                const batch = db.batch();
-                
-                // Get all collections to clean up
-                let orderSnap = await db.collection('cb_orders').get();
-                let notifSnap = await db.collection('cb_notifications').get();
-                let tkSnap = await db.collection('cb_tickets').get();
-
-                for (let uid of userIds) {
-                    // Delete User Doc
-                    batch.delete(db.collection('cb_users').doc(uid));
-
-                    // Delete Associated Orders
-                    orderSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
-                    // Delete Associated Notifications
-                    notifSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
-                    // Delete Associated Tickets
-                    tkSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
-                }
-                
-                await batch.commit();
-                hideLoading();
-                showToast(userIds.length + " User(s) and their data deleted successfully!");
-                document.getElementById('select-all-users').checked = false;
-                renderApp();
-            } catch (error) {
-                hideLoading();
-                console.error("Error deleting users:", error);
-                showToast("Failed to delete user(s).", "error");
-            }
-        }
-
-        function deleteSingleUser(uid) {
-            let msg = "সতর্কতা: আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।";
-            if(confirm(msg)) {
-                processUserDeletion([uid]);
-            }
-        }
-
-        function deleteSelectedUsers() {
-            let selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
-            if(selected.length === 0) return showToast("কোনো ইউজার সিলেক্ট করা হয়নি!", "error");
-            
-            let msg = `সতর্কতা: আপনি কি নিশ্চিত যে সিলেক্ট করা ${selected.length} জন ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারদের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।`;
-            if(confirm(msg)) {
-                processUserDeletion(selected);
-            }
-        }
-
-        function deleteAllUsersConfirm() {
-            let uids = users.filter(u => u.email !== "masteradmin2026@coinbazar.app").map(u => u.id);
-            if(uids.length === 0) return showToast("ডিলিট করার মতো কোনো ইউজার নেই!", "error");
-
-            let msg = `মারাত্মক সতর্কতা: আপনি কি নিশ্চিত যে মাস্টার-অ্যাডমিন ছাড়া ডাটাবেসের সমস্ত (${uids.length} জন) ইউজারকে একসাথে ডিলিট করতে চান?\n\nসবার সমস্ত ব্যালেন্স, সেল, উইথড্র, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা সম্পূর্ণভাবে মুছে যাবে! এই কাজটির পর আর কিছুই রিকভার করা সম্ভব নয়।`;
-            if(confirm(msg)) {
-                let doubleCheck = prompt("যদি আপনি সত্যিই সব ইউজার ডিলিট করতে চান, তবে বক্সে 'DELETE ALL' লিখে OK করুন।");
-                if (doubleCheck === 'DELETE ALL') {
-                    processUserDeletion(uids);
-                } else {
-                    showToast("ভুল টেক্সট! ডিলিট বাতিল করা হয়েছে।", "error");
-                }
-            }
         }
 
         function openUserManage(uid) {
@@ -2393,8 +1986,8 @@
         function closeUserManage() { state.activeManageUserId = null; document.getElementById('admin-user-manage-modal').classList.add('hidden'); }
 
         function updateUserManageModal() {
-            let u = (users || []).find(x=>x && x.id===state.activeManageUserId); if(!u) return;
-            let userOrders = (orders || []).filter(o => o && o.userId === u.id);
+            let u = users.find(x=>x.id===state.activeManageUserId); if(!u) return;
+            let userOrders = orders.filter(o => o.userId === u.id);
             
             let tabs = [ {id:'info', icon:'fa-info-circle', label:'Account'}, {id:'sells', icon:'fa-coins', label:'Sells'}, {id:'wds', icon:'fa-money-bill-transfer', label:'Wds'}, {id:'all', icon:'fa-list-check', label:'All Tx'} ];
             let tabsHtml = `<div class="flex gap-1 mb-4 border-b border-[var(--border-color)] pb-1">` + tabs.map(t => {
@@ -2412,14 +2005,12 @@
 
                 contentHtml = `
                 <div class="flex items-center gap-4 mb-4 bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm">
-                    <img src="${dp}" onclick="viewImg('${dp}')" class="w-14 h-14 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-lg cursor-pointer hover:opacity-80 transition" title="Click to view full image">
+                    <img src="${dp}" class="w-14 h-14 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-lg">
                     <div class="flex-1 overflow-hidden">
-                        <h3 class="font-black text-white text-sm truncate flex items-center gap-2">${u.name} <i class="fa-solid fa-copy text-[var(--accent-gold)] cursor-pointer text-xs" onclick="copyText('${u.name}')" title="Copy Name"></i></h3>
-                        <div class="flex flex-wrap gap-1.5 mt-2">
-                            <div onclick="copyText('${u.username}')" class="text-[9px] text-[var(--accent-cyan)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--accent-cyan)] hover:text-black transition active:scale-95 shadow-sm" title="Copy Username"><i class="fa-solid fa-copy"></i> @${u.username}</div>
-                            <div onclick="${u.plainPass ? `copyText('${u.plainPass}')` : ''}" class="text-[9px] text-[var(--error)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm" title="Copy Password"><i class="fa-solid fa-copy"></i> Pass: ${u.plainPass || 'Hidden'}</div>
-                        </div>
-                        <p class="text-[9px] text-[var(--text-muted)] mt-2"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
+                        <h3 class="font-black text-white text-sm truncate">${u.name}</h3>
+                        <p class="text-[10px] text-[var(--accent-cyan)] font-mono truncate">@${u.username}</p>
+                        <p class="text-[8px] font-mono text-[var(--text-muted)] mt-1 truncate">ID: ${u.id}</p>
+                        <p class="text-[9px] text-[var(--text-muted)] mt-1"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-4">
@@ -2432,7 +2023,12 @@
                 </div>
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
                 <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('add')}</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('sub')}</button></div>
+                
+                <!-- NEW: Role Toggle Button -->
+                <button onclick="toggleAdminRole('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.role==='admin'?'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border-[var(--accent-gold)]/50':'bg-[var(--bg-main)] text-[var(--text-muted)] border-[var(--border-color)]'}"><i class="fa-solid ${u.role==='admin'?'fa-chess-king':'fa-user'}"></i> ${u.role==='admin'?'Remove Admin Power':'Make Admin'}</button>
+
                 <button onclick="toggleBlock('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.status==='blocked'?'bg-[var(--bg-main)] text-[var(--success)] border-[var(--success)]':'btn-modern-danger'}"><i class="fa-solid ${u.status==='blocked'?'fa-unlock':'fa-lock'}"></i> ${u.status==='blocked'?t('unblock'):t('block')}</button>
+                <button onclick="showToast('For security, admin cannot see or reset password directly without backend. Ask user to reset from Profile.', 'info')" class="w-full bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 py-2.5 rounded-lg text-[10px] font-black uppercase shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition"><i class="fa-solid fa-key"></i> Force Password Reset (Info)</button>
                 `;
             } else {
                 let filterType = state.adminUserTab === 'sells' ? 'sell' : (state.adminUserTab === 'wds' ? 'wd' : 'all');
@@ -2458,43 +2054,27 @@
             }
         }
 
-        function toggleAdminRole(uid) {
+        async function toggleAdminRole(uid) {
             let u = users.find(x=>x.id===uid);
             let newRole = u.role === 'admin' ? 'user' : 'admin';
             if(confirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
-                u.role = newRole;
-                db.collection('cb_users').doc(u.id).update({ role: newRole });
+                await db.collection('cb_users').doc(u.id).update({ role: newRole });
                 showToast(`User is now ${newRole}`);
                 updateUserManageModal();
             }
         }
 
-        function toggleBlock(uid) { 
-            let u = users.find(x=>x.id===uid); 
-            u.status = u.status === 'blocked' ? 'active' : 'blocked';
-            db.collection('cb_users').doc(u.id).update({ status: u.status }); 
-            showToast(`User status updated`); 
-            updateUserManageModal(); 
-        }
-        
-        function modManualBal(uid, type) { 
+        async function toggleBlock(uid) { let u = users.find(x=>x.id===uid); await db.collection('cb_users').doc(u.id).update({ status: u.status === 'blocked' ? 'active' : 'blocked' }); showToast(`User status updated`); updateUserManageModal(); }
+        async function modManualBal(uid, type) { 
             let amt = parseFloat(document.getElementById(`m-amt-${uid}`).value); if(isNaN(amt) || amt <= 0) return showToast("Invalid amount!", "error"); 
             let u = users.find(x=>x.id===uid); 
-            if(type === 'add') { 
-                u.balance = (Number(u.balance)||0) + amt; 
-                db.collection('cb_users').doc(u.id).update({ balance: u.balance }); 
-            } else { 
-                if(amt > (Number(u.balance)||0)) return showToast("Not enough bal", "error"); 
-                u.balance = (Number(u.balance)||0) - amt; 
-                db.collection('cb_users').doc(u.id).update({ balance: u.balance }); 
-            } 
-            addNotification(uid, "Balance Update", `${type==='add'?'Added':'Deducted'} ৳${amt} from balance.`, "info"); 
-            showToast("Balance Updated"); 
-            updateUserManageModal();
+            if(type === 'add') { await db.collection('cb_users').doc(u.id).update({ balance: (Number(u.balance)||0) + amt }); } 
+            else { if(amt > (Number(u.balance)||0)) return showToast("Not enough bal", "error"); await db.collection('cb_users').doc(u.id).update({ balance: (Number(u.balance)||0) - amt }); } 
+            await addNotification(uid, "Balance Update", `${type==='add'?'Added':'Deducted'} ৳${amt} from balance.`, "info"); 
+            showToast("Balance Updated"); updateUserManageModal();
         }
 
         function renderAdminSupport() {
-            // Function maintained minimally as requested, even though it's hidden from the menu
             if(state.activeTicketId) return renderActiveTicket(state.activeTicketId, 'admin');
             
             let html = tickets.sort((a,b) => (b.lastUpdated||0) - (a.lastUpdated||0)).map(tk => {
@@ -2518,7 +2098,7 @@
         }
 
         function renderAdminSettings() {
-            let cList = (coins || []).filter(c=>c).map(c => `
+            let cList = coins.map(c => `
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl mb-2 flex justify-between items-center hover:shadow-md transition hover:-translate-y-0.5">
                     <div>
                         <div class="text-xs font-black text-white flex items-center gap-2">${c.name} ${c.active ? `<span class="text-[8px] bg-[var(--success)]/20 text-[var(--success)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--success)]/30">${t('active_on')}</span>` : `<span class="text-[8px] bg-[var(--error)]/20 text-[var(--error)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/30">${t('active_off')}</span>`}</div>
@@ -2562,8 +2142,8 @@
                 ${editC?`<button onclick="state.editCoinId=null; state.editCoinTiers=[]; renderApp()" class="w-full mt-2 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3 rounded-xl text-[11px] font-black border border-[var(--border-color)] hover:text-white uppercase transition shadow-sm">${t('cancel_btn')}</button>`:''}
             </div>`;
 
-            let pmListHtml = (pmMethods || []).filter(m=>m).map(m => {
-                let isBinance = String(m.name || '').toLowerCase().includes('binance');
+            let pmListHtml = pmMethods.map(m => {
+                let isBinance = m.name.toLowerCase().includes('binance');
                 return `
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl mb-2 flex justify-between items-center hover:shadow-md transition">
                     <div class="flex items-center gap-3">
@@ -2593,18 +2173,6 @@
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> ${t('sys_ctrl')}</h3>
                     
                     <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm">
-                        <div><div class="text-[11px] font-black text-white">Allow User Deletion</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Enable to show delete buttons in Users tab</div></div>
-                        <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-allow-del" class="sr-only peer" ${settings.allowUserDeletion ? 'checked' : ''} onchange="toggleAllowDel(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--error)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
-                    </div>
-
-                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
-                        <div><div class="text-[11px] font-black text-white">UI Zoom / Size (%)</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Scale the entire app size (Default: 100)</div></div>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="set-app-scale" value="${settings.appScale || 100}" onchange="updateAppScale(this.value)" class="w-16 input-premium p-1.5 rounded-lg text-xs font-bold text-center border focus:border-[var(--accent-cyan)] shadow-sm">
-                        </div>
-                    </div>
-
-                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
                         <div><div class="text-[11px] font-black text-white">${t('maint_mode')}</div><div class="text-[9px] text-[var(--text-muted)] mt-1">${t('maint_desc')}</div></div>
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-maintenance" class="sr-only peer" ${settings.maintenanceMode ? 'checked' : ''} onchange="toggleMaintenance(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--error)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
                     </div>
@@ -2614,29 +2182,34 @@
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-req-tg" class="sr-only peer" ${settings.requireTelegram ? 'checked' : ''} onchange="toggleReqTg(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--success)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
                     </div>
                 </div>
-                
-                <!-- SUCCESS MESSAGES (CUSTOM) -->
-                <div>
-                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Success Messages</h3>
-                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
-                        <div>
-                            <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1 block">Coin Sell Success Message</label>
-                            <input type="text" id="set-sell-msg" value="${settings.sellSuccessMsg || ''}" placeholder="Default: Your form has been sent..." class="w-full input-premium p-3 rounded-xl text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1 block">Withdraw Success Message</label>
-                            <input type="text" id="set-wd-msg" value="${settings.wdSuccessMsg || ''}" placeholder="Default: Your form has been sent..." class="w-full input-premium p-3 rounded-xl text-xs font-bold">
-                        </div>
-                        <button onclick="saveSuccessMsgs()" class="w-full btn-modern-success py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save Messages</button>
-                    </div>
-                </div>
-
                 <!-- Site Identity -->
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="site_set"><i class="fa-solid fa-globe"></i> ${t('site_set')}</h3>
                     <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm"><input type="text" id="set-name" value="${settings.name}" placeholder="${t('site_name')}" class="w-full input-premium p-3 rounded-xl text-xs font-black"><input type="text" id="set-notice" value="${settings.notice}" placeholder="${t('notice')}" class="w-full input-premium p-3 rounded-xl text-xs"><div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex flex-col gap-2 mt-1 shadow-inner"><label class="text-[9px] font-bold text-[var(--text-muted)] uppercase">${t('logo')}</label><input type="file" id="set-logo" accept="image/*" class="w-full text-[10px] text-[var(--accent-cyan)] font-bold"></div><button onclick="saveSiteIdentity()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button></div>
                 </div>
-                
+                <!-- FAQ & Help Settings -->
+                <div>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="faq_set"><i class="fa-solid fa-circle-question"></i> ${t('faq_set')}</h3>
+                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
+                        <div>
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">YouTube Video Link (Embed URL)</label>
+                            <input type="text" id="set-vid" value="${settings.videoUrl || ''}" placeholder="https://www.youtube.com/embed/..." class="w-full input-premium p-3 rounded-xl text-xs">
+                        </div>
+                        <div class="pt-2 border-t border-[var(--border-color)]">
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 1 - Question</label>
+                            <input type="text" id="set-fq1" value="${settings.faq1_q || ''}" class="w-full input-premium p-3 rounded-xl text-xs mb-2">
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 1 - Answer</label>
+                            <textarea id="set-fa1" class="w-full input-premium p-3 rounded-xl text-xs">${settings.faq1_a || ''}</textarea>
+                        </div>
+                        <div class="pt-2 border-t border-[var(--border-color)]">
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 2 - Question</label>
+                            <input type="text" id="set-fq2" value="${settings.faq2_q || ''}" class="w-full input-premium p-3 rounded-xl text-xs mb-2">
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] block mb-1">FAQ 2 - Answer</label>
+                            <textarea id="set-fa2" class="w-full input-premium p-3 rounded-xl text-xs">${settings.faq2_a || ''}</textarea>
+                        </div>
+                        <button onclick="saveFaqSettings()" class="w-full gold-btn py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> ${t('save')}</button>
+                    </div>
+                </div>
                 <!-- Social Links Setup (With Logos) -->
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="social_set"><i class="fa-solid fa-share-nodes"></i> ${t('social_set')}</h3>
@@ -2692,13 +2265,6 @@
             </div>`;
         }
         
-        async function saveSuccessMsgs() {
-            settings.sellSuccessMsg = document.getElementById('set-sell-msg').value;
-            settings.wdSuccessMsg = document.getElementById('set-wd-msg').value;
-            await db.collection('cb_data').doc('global_state').update({ 'settings': settings });
-            showToast("Success Messages Saved!");
-        }
-
         function addCoinTier() {
             let m = parseFloat(document.getElementById('t-min').value);
             let p = parseFloat(document.getElementById('t-price').value);
@@ -2708,18 +2274,10 @@
         }
         function removeCoinTier(idx) { state.editCoinTiers.splice(idx, 1); renderApp(); }
 
-        function toggleAllowDel(val) { settings.allowUserDeletion = val; db.collection('cb_data').doc('global_state').update({ 'settings.allowUserDeletion': val }); showToast(val ? "User Deletion: ENABLED" : "User Deletion: DISABLED"); renderApp(); }
-        function toggleMaintenance(val) { settings.maintenanceMode = val; db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': val }); showToast(val ? "Maintenance Mode ON" : "Maintenance Mode OFF"); }
-        function toggleReqTg(val) { settings.requireTelegram = val; db.collection('cb_data').doc('global_state').update({ 'settings.requireTelegram': val }); showToast(val ? "Telegram Required: ON" : "Telegram Required: OFF"); }
+        async function toggleMaintenance(val) { settings.maintenanceMode = val; await db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': val }); showToast(val ? "Maintenance Mode ON" : "Maintenance Mode OFF"); }
+        async function toggleReqTg(val) { settings.requireTelegram = val; await db.collection('cb_data').doc('global_state').update({ 'settings.requireTelegram': val }); showToast(val ? "Telegram Required: ON" : "Telegram Required: OFF"); }
 
-        async function saveSiteIdentity() { 
-            settings.name = document.getElementById('set-name').value; 
-            settings.notice = document.getElementById('set-notice').value; 
-            let logoInput = document.getElementById('set-logo'); 
-            if(logoInput.files.length > 0) settings.logo = await getBase64(logoInput.files[0]); 
-            db.collection('cb_data').doc('global_state').update({ 'settings': settings }); 
-            showToast("Site Identity Saved!"); 
-        }
+        async function saveSiteIdentity() { settings.name = document.getElementById('set-name').value; settings.notice = document.getElementById('set-notice').value; let logoInput = document.getElementById('set-logo'); if(logoInput.files.length > 0) settings.logo = await getBase64(logoInput.files[0]); await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); showToast("Site Identity Saved!"); }
         
         async function saveSocialLinks() { 
             settings.wa = document.getElementById('set-wa').value; 
@@ -2741,7 +2299,10 @@
         }
 
         async function saveFaqSettings() {
-            showToast("FAQ Settings Updated System-wide!");
+            settings.videoUrl = document.getElementById('set-vid').value;
+            settings.faq1_q = document.getElementById('set-fq1').value; settings.faq1_a = document.getElementById('set-fa1').value;
+            settings.faq2_q = document.getElementById('set-fq2').value; settings.faq2_a = document.getElementById('set-fa2').value;
+            await db.collection('cb_data').doc('global_state').update({ 'settings': settings }); showToast("FAQ Settings Saved!");
         }
 
         async function saveCoin() {
@@ -2755,11 +2316,10 @@
             if(state.editCoinId) { let index = newCoins.findIndex(x=>x.id===state.editCoinId); newCoins[index] = { ...newCoins[index], name:n, username:u, price:p, min:min, max:max, tiers: state.editCoinTiers, logo:logo, active:active }; state.editCoinId = null; } 
             else { newCoins.push({ id: Date.now(), name: n, username: u, price: p, min: min, max: max, tiers: state.editCoinTiers, logo: logo, active: active }); }
             state.editCoinTiers = [];
-            db.collection('cb_data').doc('global_state').update({ 'coins': newCoins }); 
-            showToast("Coin Saved!");
+            await db.collection('cb_data').doc('global_state').update({ 'coins': newCoins }); showToast("Coin Saved!");
         }
         function editCoin(id) { state.editCoinId = id; let c = coins.find(x=>x.id===id); state.editCoinTiers = c.tiers ? [...c.tiers] : []; renderApp(); }
-        function delCoin(id) { let newCoins = coins.filter(x=>x.id!==id); db.collection('cb_data').doc('global_state').update({ 'coins': newCoins }); showToast("Coin Deleted"); }
+        async function delCoin(id) { let newCoins = coins.filter(x=>x.id!==id); await db.collection('cb_data').doc('global_state').update({ 'coins': newCoins }); }
         
         async function updatePmLogo(id, input) {
             if(input.files && input.files[0]) {
@@ -2793,7 +2353,7 @@
             settings.binanceRate = binanceRate;
             settings.wdNotice = wdNotice;
             
-            db.collection('cb_data').doc('global_state').update({ 
+            await db.collection('cb_data').doc('global_state').update({ 
                 'pmMethods': newPm,
                 'settings': settings
             });
