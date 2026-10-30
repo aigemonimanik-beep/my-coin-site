@@ -1519,6 +1519,12 @@
                 { id: 'manual', icon: 'fa-users', label: t('users') },
                 { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
+
+            let menuTabs = [
+                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
+                { id: 'manual', icon: 'fa-users', label: t('users') },
+                { id: 'set', icon: 'fa-cog', label: t('set') }
+            ];
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
@@ -1536,15 +1542,11 @@
                     <div class="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold bg-[var(--bg-main)] px-3 py-1.5 rounded-xl border-2 border-[var(--border-color)] shadow-inner flex items-center gap-1"><i class="fa-solid fa-caret-down text-lg"></i></div>
                 </button>
                 <div id="admin-tab-menu" class="hidden absolute top-full left-0 mt-3 w-full bg-[#091B30] border-2 border-[var(--accent-cyan)]/40 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] flex-col gap-2 p-3 z-[70]">` + 
-                tabs.map(tab => {
+                menuTabs.map(tab => {
                     let active = state.adminTab === tab.id ? 'bg-gradient-to-r from-[var(--accent-cyan)] to-blue-600 text-white shadow-[0_4px_15px_rgba(53,217,242,0.4)] border-transparent scale-[1.02]' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--bg-main)] hover:text-white';
-                    let extra = '';
-                    if(tab.id === 'sells' && sellPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${sellPending}</span>`;
-                    if(tab.id === 'wds' && wdPending > 0) extra = `<span class="bg-[var(--error)] text-white text-xs px-3 py-1 rounded-full flex items-center justify-center shadow-md font-black">${wdPending}</span>`;
                     
                     return `<button onclick="state.adminTab='${tab.id}'; state.activeTicketId=null; state.adminOrderSearch=''; renderApp()" class="w-full text-left px-5 py-4 rounded-xl text-base font-black border transition-all duration-300 flex items-center justify-between ${active}">
                         <span class="flex items-center gap-3"><i class="fa-solid ${tab.icon} w-7 text-center text-xl"></i> ${tab.label}</span>
-                        ${extra}
                     </button>`;
                 }).join('') + `</div></div>`;
 
@@ -1641,7 +1643,25 @@
                 </div>
             </div>`;
 
-            return pendingBoardHtml + trackBoxHtml;
+            let actionBtnsHtml = `
+            <div class="grid grid-cols-2 gap-3 mb-5 mt-2">
+                <button onclick="state.adminTab='sells'; state.adminSellTab='pending'; renderApp()" class="glass-panel p-5 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-[0_8px_25px_rgba(22,199,132,0.15)] flex flex-col items-center justify-center gap-3 active:scale-95">
+                    <div class="relative inline-block">
+                        <i class="fa-solid fa-coins text-[var(--success)] text-4xl drop-shadow-md"></i>
+                        ${sellPending > 0 ? `<span class="absolute -top-3 -right-4 bg-[var(--error)] text-white text-[11px] px-2 py-0.5 rounded-full font-black shadow-md border-2 border-[var(--bg-card)]">${sellPending}</span>` : ''}
+                    </div>
+                    <span class="text-sm font-black text-white uppercase tracking-widest">${t('sells')}</span>
+                </button>
+                <button onclick="state.adminTab='wds'; state.adminWdTab='pending'; renderApp()" class="glass-panel p-5 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-[0_8px_25px_rgba(255,100,124,0.15)] flex flex-col items-center justify-center gap-3 active:scale-95">
+                    <div class="relative inline-block">
+                        <i class="fa-solid fa-money-bill-transfer text-[var(--error)] text-4xl drop-shadow-md"></i>
+                        ${wdPending > 0 ? `<span class="absolute -top-3 -right-4 bg-[var(--error)] text-white text-[11px] px-2 py-0.5 rounded-full font-black shadow-md border-2 border-[var(--bg-card)]">${wdPending}</span>` : ''}
+                    </div>
+                    <span class="text-sm font-black text-white uppercase tracking-widest">${t('wds')}</span>
+                </button>
+            </div>`;
+
+            return pendingBoardHtml + trackBoxHtml + actionBtnsHtml;
         }
 
         // --- Admin History Modal & Delete Functions ---
