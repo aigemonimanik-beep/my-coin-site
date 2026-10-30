@@ -88,7 +88,7 @@
         let _isLog = false;
         try { _isLog = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
         
-        if (_isLog) {
+        if (_isLog || _isAdm) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
             document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
@@ -170,6 +170,7 @@
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
         let dataLoaded = false;
+        let isAdminLoggingIn = false;
         
         let _sView='home', _sAdmTab='dash', _sAdmSell='pending', _sAdmWd='pending', _sUsrHist='sells';
         try {
@@ -195,16 +196,10 @@
         let prevPendingCount = 0;
         const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
-        // ================= INSTANT LOAD (CACHE SYSTEM) =================
-        // ফোর্সভালি আগের মাস্টার এডমিনের ক্যাশ ক্লিয়ার করা হচ্ছে (Ghost Destroyer)
-        try {
-            let rawCache = localStorage.getItem('cb_cache');
-            if (rawCache && (rawCache.includes('Master Admin') || rawCache.includes('masteradmin2026') || rawCache.includes('masteradmin'))) {
-                localStorage.removeItem('cb_cache');
-                localStorage.removeItem('cb_loggedIn');
-            }
-        } catch(e) {}
+        // URL Check for Admin
+        const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
+        // ================= INSTANT LOAD (CACHE SYSTEM) =================
         let cacheData = null;
         try { cacheData = localStorage.getItem('cb_cache'); } catch(e) {}
         
@@ -230,17 +225,20 @@
                 let isLogged = false;
                 try { isLogged = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
 
-                if (isLogged) {
-                    if (parsed.currentUser) {
-                        currentUser = parsed.currentUser;
-                        dataLoaded = !!currentUser;
-                    }
+                if (isAdminUrl || isLogged) {
+                    currentUser = parsed.currentUser || (isAdminUrl ? { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' } : null);
                     
-                    if(dataLoaded && currentUser) {
+                    if (isAdminUrl && currentUser) currentUser.role = 'admin';
+                    
+                    dataLoaded = !!currentUser;
+                    
+                    if(dataLoaded) {
                         document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('instant-routing').innerHTML = '';
                             document.getElementById('auth-wrapper').style.display = 'none'; 
                             document.getElementById('main-ui').style.display = 'flex';
+                            
+                            if (isAdminUrl) state.view = 'admin'; 
                             
                             updateMobileMenuProfile();
                             renderApp();
@@ -248,6 +246,16 @@
                     }
                 }
             } catch(e) { console.error("Cache parsing error", e); }
+        } else if (isAdminUrl) {
+            currentUser = { id: 'admin-temp', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active' };
+            dataLoaded = true;
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('instant-routing').innerHTML = '';
+                document.getElementById('auth-wrapper').style.display = 'none'; 
+                document.getElementById('main-ui').style.display = 'flex';
+                state.view = 'admin'; 
+                renderApp();
+            });
         }
 
         function saveToLocalCache() {
@@ -279,6 +287,7 @@
             <div id="auth-loading" class="absolute inset-0 bg-[#071426]/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm hidden">
                 <i class="fa-solid fa-spinner fa-spin text-4xl text-[var(--accent-cyan)] mb-3"></i>
                 <p class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase mt-2">Processing...</p>
+                <p id="admin-auto-login-msg" class="text-[9px] text-[var(--text-muted)] mt-2 hidden">Authenticating Admin...</p>
             </div>
 
             <div class="text-center mb-8">
@@ -389,17 +398,13 @@
                 <button onclick="handleMenuNav('history')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-chart-pie w-5 text-center text-[var(--success)]"></i> Dashboard & History</button>
                 <button onclick="handleMenuNav('profile')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-user-gear w-5 text-center text-[#9b59b6]"></i> My Profile</button>
                 
-                <div id="admin-menu-btn" class="hidden">
-                    <button onclick="handleMenuNav('admin')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--accent-gold)] bg-[var(--accent-gold)]/10 hover:bg-[var(--accent-gold)]/20 border border-[var(--accent-gold)]/30 flex items-center gap-3 transition mt-2"><i class="fa-solid fa-chess-king w-5 text-center"></i> Admin Panel</button>
-                </div>
-
                 <div class="my-2 border-t border-[var(--border-color)]"></div>
                 
                 <!-- Support & Settings -->
                 <button onclick="toggleLang(); toggleMobileMenu();" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--accent-cyan)] bg-[var(--bg-main)] border border-[var(--accent-cyan)]/20 mt-3 flex items-center gap-3 shadow-sm transition"><i class="fa-solid fa-language w-5 text-center"></i> EN / BN Toggle</button>
                 
                 <div class="mt-auto pt-6 pb-2">
-                    <button onclick="handleLogout()" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--error)] bg-[var(--error)]/10 border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-power-off w-5 text-center"></i> Logout</button>
+                    <button onclick="handleLogout()" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--error)] bg-[var(--error)]/10 border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-power-off w-5 text-center"></i> Logout Safely</button>
                 </div>
             </div>
         </div>
@@ -450,6 +455,11 @@
     <script>
         // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
         window.onload = () => {
+            if (isAdminUrl) {
+                document.getElementById('form-login').classList.add('hidden'); 
+                document.getElementById('reg-link-text').style.display = 'none';
+            }
+
             // Apply Auth UI (Logo & Title) from Cache instantly
             updateAuthUIDynamically(settings);
             
@@ -483,6 +493,29 @@
         function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
 
+        async function autoLoginAdmin() {
+            if(isAdminLoggingIn) return;
+            isAdminLoggingIn = true;
+            let adminEmail = "masteradmin2026@coinbazar.app";
+            let adminPass = "MasterAdmin2026!@#";
+            try {
+                await auth.signInWithEmailAndPassword(adminEmail, adminPass);
+                isAdminLoggingIn = false;
+            } catch (e) {
+                try {
+                    let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
+                    await db.collection('cb_users').doc(cred.user.uid).set({
+                        id: cred.user.uid, name: 'Master Admin', username: 'masteradmin2026', email: adminEmail,
+                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '',
+                        createdAt: new Date().toLocaleString()
+                    });
+                    isAdminLoggingIn = false;
+                } catch (err) {
+                    isAdminLoggingIn = false;
+                    switchAuth('login');
+                }
+            }
+        }
 
         // ================= AUTHENTICATION & INITIALIZATION LOGIC =================
         function showToast(msg, type = 'success') {
@@ -503,11 +536,12 @@
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Login to your account"; }
+            if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = isAdminUrl ? "Admin Portal Login" : "Login to your account"; }
             if(type === 'register') { document.getElementById('form-register').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Create a new account"; }
         }
 
         async function handleRegister() {
+            if(isAdminUrl) return; 
             let name = document.getElementById('reg-name').value.trim();
             let username = document.getElementById('reg-username').value.trim().toLowerCase();
             let pass = document.getElementById('reg-pass').value;
@@ -525,15 +559,9 @@
             isRegistering = true;
             try {
                 let cred = await auth.createUserWithEmailAndPassword(email, pass);
-                
                 let usersSnap = await db.collection('cb_users').get();
-                let realAdmins = 0;
-                usersSnap.forEach(doc => {
-                    let d = doc.data();
-                    if(d.role === 'admin') realAdmins++;
-                });
-                
-                let role = (realAdmins === 0) ? 'admin' : 'user';
+                let isFirstUser = usersSnap.empty;
+                let role = isFirstUser ? 'admin' : 'user';
 
                 await db.collection('cb_users').doc(cred.user.uid).set({
                     id: cred.user.uid, name: name, username: username, email: email,
@@ -619,7 +647,7 @@
                         if(localLang) settings.lang = localLang;
                     } catch(e) {}
                     
-                    if(settings.maintenanceMode === true && currentUser && currentUser.role === 'admin') {
+                    if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
                         db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
                     }
@@ -643,10 +671,7 @@
 
             unsubUsers = db.collection('cb_users').onSnapshot(snap => {
                 users = []; snap.forEach(d => users.push(d.data()));
-                
-                if (user) {
-                    currentUser = users.find(u => u.id === user.uid);
-                }
+                currentUser = users.find(u => u.id === user.uid);
                 
                 if(currentUser) {
                     dataLoaded = true; hideLoading();
@@ -659,9 +684,13 @@
                     renderApp(); 
                     saveToLocalCache();
                 } else { 
-                    localStorage.removeItem('cb_loggedIn');
-                    localStorage.removeItem('cb_cache');
-                    auth.signOut(); 
+                    if(isAdminUrl) {
+                        autoLoginAdmin(); 
+                    } else {
+                        localStorage.removeItem('cb_loggedIn');
+                        localStorage.removeItem('cb_cache');
+                        auth.signOut(); 
+                    }
                 }
             }, err => { showToast("Error loading user data", "error"); });
 
@@ -706,27 +735,14 @@
             if(unsubGlobal) unsubGlobal(); if(unsubUsers) unsubUsers(); if(unsubOrders) unsubOrders(); if(unsubTickets) unsubTickets(); if(unsubNotifications) unsubNotifications();
         }
 
-        // Authentication Flow with Real Admin Bypass
-        auth.onAuthStateChanged(async user => {
+        auth.onAuthStateChanged(user => {
             if (isRegistering) return;
             if (user) { 
-                // ==========================================
-                // ডাটাবেস থেকে আগের ভুয়া অ্যাডমিন চিরতরে মুছে ফেলার স্ক্রিপ্ট
-                // ==========================================
-                if (user.email.includes("masteradmin2026") || user.email.includes("admin@coinbazar.app") || user.email.includes("masteradmin")) {
-                    try {
-                        await db.collection('cb_users').doc(user.uid).delete(); // ডাটাবেস থেকে ডিলিট
-                        await user.delete(); // ফায়ারবেস থেকে ডিলিট
-                    } catch(e) { console.log("Cleanup error", e); }
-                    
-                    await auth.signOut();
-                    localStorage.removeItem('cb_loggedIn');
-                    localStorage.removeItem('cb_cache');
-                    window.location.reload();
+                // Auto switch regular user to admin if they enter ?admin
+                if (isAdminUrl && user.email !== "masteradmin2026@coinbazar.app") {
+                    auth.signOut();
                     return;
                 }
-                // ==========================================
-
                 try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
                 requestNotificationPermission(); 
                 startDataSync(user); 
@@ -737,12 +753,15 @@
                     localStorage.removeItem('cb_cache');
                 } catch(e) {}
                 stopDataSync();
-                
-                currentUser = null; dataLoaded = false; 
-                document.getElementById('instant-routing').innerHTML = '';
-                document.getElementById('auth-wrapper').style.display = 'flex'; 
-                document.getElementById('main-ui').style.display = 'none';
-                switchAuth('login');
+                if (isAdminUrl) {
+                    autoLoginAdmin(); // Magic Auto Login
+                } else {
+                    currentUser = null; dataLoaded = false; 
+                    document.getElementById('instant-routing').innerHTML = '';
+                    document.getElementById('auth-wrapper').style.display = 'flex'; 
+                    document.getElementById('main-ui').style.display = 'none';
+                    switchAuth('login');
+                }
             }
         });
 
@@ -787,15 +806,6 @@
             document.getElementById('menu-name').innerText = currentUser.name || 'User';
             document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
             document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
-            
-            let _isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
-            
-            // Show Admin Menu Button ONLY if user is an admin AND accessed via secret link
-            if (currentUser.role === 'admin' && _isAdminUrl) {
-                document.getElementById('admin-menu-btn').classList.remove('hidden');
-            } else {
-                document.getElementById('admin-menu-btn').classList.add('hidden');
-            }
         }
 
         // ================= SUCCESS MODAL LOGIC =================
@@ -891,13 +901,14 @@
 
             const cont = document.getElementById('app-container');
             
-            // SECURITY: Strict Check for Admin View
-            let _isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
-            
-            if (currentUser.role === 'admin' && _isAdminUrl) {
-                state.view = 'admin'; // Lock view to admin if using secret link
-            } else if (state.view === 'admin') {
-                state.view = 'home'; // Normal URL cannot see admin view
+            // SECURITY: Strict Admin Isolation based on URL
+            if (isAdminUrl) {
+                currentUser.role = 'admin'; // Force role instantly for UI
+                state.view = 'admin'; // Lock view to admin instantly
+            } else {
+                if (state.view === 'admin') {
+                    state.view = 'home'; // Normal URL cannot see admin view
+                }
             }
 
             if(state.view === 'admin') hideUserHeaderElements(); else showUserHeaderElements();
@@ -966,7 +977,6 @@
         // ================= USER PROFILE VIEW =================
         function renderUserProfile() {
             let dp = currentUser.profilePic || `https://placehold.co/150x150/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
-            let roleBadge = currentUser.role === 'admin' ? `<span class="bg-[var(--accent-gold)] text-[var(--bg-main)] text-[10px] px-2 py-0.5 rounded-full font-black ml-2 align-middle shadow-md uppercase tracking-wider">Admin</span>` : '';
             return `
             <div class="glass-panel p-6 rounded-3xl mb-6 relative border-t-4 border-t-[var(--accent-cyan)] text-center mt-2 shadow-xl">
                 <div class="profile-img-wrap mb-4" onclick="document.getElementById('prof-img-upload').click()">
@@ -974,7 +984,7 @@
                     <div class="overlay"><i class="fa-solid fa-camera text-white text-xl"></i></div>
                     <input type="file" id="prof-img-upload" accept="image/*" class="hidden" onchange="uploadProfilePic(this)">
                 </div>
-                <h2 class="text-xl font-black text-white mb-1 flex items-center justify-center gap-1">${currentUser.name} ${roleBadge}</h2>
+                <h2 class="text-xl font-black text-white mb-1">${currentUser.name}</h2>
                 <p class="text-xs text-[var(--accent-gold)] font-mono mb-4">@${currentUser.username}</p>
                 <div class="flex justify-center gap-3">
                     <div class="bg-[var(--bg-sidebar)] p-2.5 rounded-xl border border-[var(--border-color)] flex-1 shadow-inner"><p class="text-[9px] text-[var(--text-muted)] uppercase mb-1">Balance</p><p class="text-sm font-black gold-text">৳${currentUser.balance.toFixed(2)}</p></div>
@@ -2270,7 +2280,8 @@
             let q = state.userSearchQuery || '';
             let filtered = (users || []).filter(u => u && ((u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q)));
             
-            let safeFiltered = filtered;
+            // মাস্টার অ্যাডমিনকে ডিলিট লিস্ট থেকে সুরক্ষিত রাখা হয়েছে
+            let safeFiltered = filtered.filter(u => u.email !== "masteradmin2026@coinbazar.app");
 
             if(safeFiltered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
             
@@ -2359,10 +2370,10 @@
         }
 
         function deleteAllUsersConfirm() {
-            let uids = users.map(u => u.id);
+            let uids = users.filter(u => u.email !== "masteradmin2026@coinbazar.app").map(u => u.id);
             if(uids.length === 0) return showToast("ডিলিট করার মতো কোনো ইউজার নেই!", "error");
 
-            let msg = `মারাত্মক সতর্কতা: আপনি কি নিশ্চিত যে ডাটাবেসের সমস্ত (${uids.length} জন) ইউজারকে একসাথে ডিলিট করতে চান?\n\nসবার সমস্ত ব্যালেন্স, সেল, উইথড্র, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা সম্পূর্ণভাবে মুছে যাবে! এই কাজটির পর আর কিছুই রিকভার করা সম্ভব নয়।`;
+            let msg = `মারাত্মক সতর্কতা: আপনি কি নিশ্চিত যে মাস্টার-অ্যাডমিন ছাড়া ডাটাবেসের সমস্ত (${uids.length} জন) ইউজারকে একসাথে ডিলিট করতে চান?\n\nসবার সমস্ত ব্যালেন্স, সেল, উইথড্র, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা সম্পূর্ণভাবে মুছে যাবে! এই কাজটির পর আর কিছুই রিকভার করা সম্ভব নয়।`;
             if(confirm(msg)) {
                 let doubleCheck = prompt("যদি আপনি সত্যিই সব ইউজার ডিলিট করতে চান, তবে বক্সে 'DELETE ALL' লিখে OK করুন।");
                 if (doubleCheck === 'DELETE ALL') {
