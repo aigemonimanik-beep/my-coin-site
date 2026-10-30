@@ -193,6 +193,11 @@
             try {
                 let parsed = JSON.parse(cacheData);
                 settings = parsed.settings || DEFAULT_SETTINGS;
+                
+                // Load saved language preference
+                let localLang = localStorage.getItem('cb_lang');
+                if(localLang) settings.lang = localLang;
+                
                 coins = parsed.coins || [];
                 pmMethods = parsed.pmMethods || [];
                 orders = parsed.orders || [];
@@ -570,6 +575,10 @@
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
                     
+                    // Prioritize user's local language preference
+                    let localLang = localStorage.getItem('cb_lang');
+                    if(localLang) settings.lang = localLang;
+                    
                     if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
                         db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
@@ -740,7 +749,12 @@
         function switchView(view) {
             state.view = view; renderApp(); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        function toggleLang() { settings.lang = settings.lang === 'bn' ? 'en' : 'bn'; renderApp(); }
+        
+        function toggleLang() { 
+            settings.lang = settings.lang === 'bn' ? 'en' : 'bn'; 
+            localStorage.setItem('cb_lang', settings.lang); // Save selected language to browser storage
+            renderApp(); 
+        }
 
         function exportCSV(type) {
             let data = [], filename = '';
