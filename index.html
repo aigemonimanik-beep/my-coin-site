@@ -165,7 +165,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, allowUserDeletion: false, appScale: 100, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, allowUserDeletion: false, appScale: 100, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।', sellSuccessMsg: 'আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।', wdSuccessMsg: 'আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -437,6 +437,18 @@
         <img id="modal-img-src" class="max-w-full max-h-[80vh] rounded-xl object-contain border-2 border-[var(--border-color)] shadow-2xl">
     </div>
     
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="glass-panel w-full max-w-xs rounded-2xl p-6 relative shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-[var(--border-color)] text-center transform scale-95 transition-transform duration-300" id="success-modal-content">
+            <div class="w-16 h-16 bg-[#e6f4ea] rounded-full flex items-center justify-center mx-auto mb-4 border-[4px] border-[#cce5d3]">
+                <i class="fa-solid fa-check text-3xl text-[#1e8e3e]"></i>
+            </div>
+            <h3 class="font-black text-white text-lg mb-2">Request Successful!</h3>
+            <p id="success-modal-msg" class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed">Your form has been sent to the Admin successfully.</p>
+            <button onclick="closeSuccessModal()" class="w-full bg-[#e91e63] hover:bg-[#c2185b] text-white font-black text-[13px] py-3.5 rounded-xl transition-all shadow-md active:scale-95 uppercase tracking-wide">OK</button>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
@@ -794,6 +806,31 @@
             document.getElementById('menu-name').innerText = currentUser.name || 'User';
             document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
             document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
+        }
+
+        // ================= SUCCESS MODAL LOGIC =================
+        function showSuccessModal(msg) {
+            document.getElementById('success-modal-msg').innerText = msg;
+            let modal = document.getElementById('success-modal');
+            let content = document.getElementById('success-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeSuccessModal() {
+            let modal = document.getElementById('success-modal');
+            let content = document.getElementById('success-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                switchView('home'); 
+            }, 300);
         }
 
         async function addNotification(userId, title, message, type='info') {
@@ -1485,8 +1522,9 @@
             await db.collection('cb_orders').doc(newOrder.id).set(newOrder);
             state.selCoinId = null; 
             hideLoading();
-            showToast("Order submitted successfully!"); 
-            switchView('home');
+            
+            let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
+            showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
         }
 
         function openWdModal() {
@@ -1594,7 +1632,10 @@
             await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
             let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
             await db.collection('cb_orders').doc(newWd.id).set(newWd);
-            closeWdModal(); showToast("Withdrawal requested!"); switchView('home');
+            closeWdModal(); 
+            
+            let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
+            showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
         }
 
         function viewImg(src) { document.getElementById('modal-img-src').src = src; document.getElementById('img-modal').classList.remove('hidden'); }
@@ -2440,6 +2481,23 @@
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-req-tg" class="sr-only peer" ${settings.requireTelegram ? 'checked' : ''} onchange="toggleReqTg(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--success)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
                     </div>
                 </div>
+                
+                <!-- SUCCESS MESSAGES (CUSTOM) -->
+                <div>
+                    <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-comment-dots"></i> Success Messages</h3>
+                    <div class="space-y-3 glass-panel p-4 rounded-xl shadow-sm">
+                        <div>
+                            <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1 block">Coin Sell Success Message</label>
+                            <input type="text" id="set-sell-msg" value="${settings.sellSuccessMsg || ''}" placeholder="Default: Your form has been sent..." class="w-full input-premium p-3 rounded-xl text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-[var(--text-muted)] uppercase mb-1 block">Withdraw Success Message</label>
+                            <input type="text" id="set-wd-msg" value="${settings.wdSuccessMsg || ''}" placeholder="Default: Your form has been sent..." class="w-full input-premium p-3 rounded-xl text-xs font-bold">
+                        </div>
+                        <button onclick="saveSuccessMsgs()" class="w-full btn-modern-success py-3.5 rounded-xl mt-2 text-[11px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-floppy-disk"></i> Save Messages</button>
+                    </div>
+                </div>
+
                 <!-- Site Identity -->
                 <div>
                     <h3 class="text-[10px] font-black text-[var(--text-muted)] mb-3 uppercase border-b border-[var(--border-color)] pb-2 flex items-center gap-2" data-i18n="site_set"><i class="fa-solid fa-globe"></i> ${t('site_set')}</h3>
@@ -2501,6 +2559,13 @@
             </div>`;
         }
         
+        async function saveSuccessMsgs() {
+            settings.sellSuccessMsg = document.getElementById('set-sell-msg').value;
+            settings.wdSuccessMsg = document.getElementById('set-wd-msg').value;
+            await db.collection('cb_data').doc('global_state').update({ 'settings': settings });
+            showToast("Success Messages Saved!");
+        }
+
         function addCoinTier() {
             let m = parseFloat(document.getElementById('t-min').value);
             let p = parseFloat(document.getElementById('t-price').value);
@@ -2543,7 +2608,6 @@
         }
 
         async function saveFaqSettings() {
-            // Function kept minimally for backward compatibility if needed, though UI is removed
             showToast("FAQ Settings Updated System-wide!");
         }
 
