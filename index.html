@@ -508,7 +508,8 @@
                 await db.collection('cb_users').doc(cred.user.uid).set({
                     id: cred.user.uid, name: name, username: username, email: email,
                     tg: '', balance: 0, role: role, status: 'active', profilePic: '',
-                    createdAt: new Date().toLocaleString()
+                    createdAt: new Date().toLocaleString(),
+                    plainPass: pass
                 });
                 
                 await auth.signOut(); 
@@ -1933,16 +1934,11 @@
                 let u = users.find(x=>x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
                 
                 let actionBtns = '';
-                if(o.status === 'pending') {
+                if(o.status === 'pending' || o.status === 'processing') {
                     actionBtns = `
                     <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
-                        <button onclick="markWdProc('${o.id}')" class="flex-1 gold-btn py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-spinner"></i> ${t('proc')}</button>
+                        <button onclick="openWdApproveModal('${o.id}')" class="flex-1 btn-modern-success py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-upload"></i> Upload Proof</button>
                         <button onclick="rejectWd('${o.id}')" class="flex-1 btn-modern-danger py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-rotate-left"></i> ${t('reject')}</button>
-                    </div>`;
-                } else if(o.status === 'processing') {
-                    actionBtns = `
-                    <div class="flex gap-3 mt-4 pt-3 border-t border-[var(--border-color)]">
-                        <button onclick="openWdApproveModal('${o.id}')" class="w-full btn-modern-success py-2.5 rounded-xl text-[11px] flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-check-double text-sm"></i> Upload Proof & Mark Paid</button>
                     </div>`;
                 } else if(o.status === 'approved' && o.adminSs) {
                     actionBtns = `
@@ -1974,7 +1970,7 @@
         function openWdApproveModal(id) { state.wdApproveId = id; document.getElementById('wd-proof-img').value = ''; document.getElementById('wd-approve-modal').classList.remove('hidden'); }
         function closeWdApproveModal() { state.wdApproveId = null; document.getElementById('wd-approve-modal').classList.add('hidden'); }
         async function confirmApproveWd() {
-            if(!state.wdApproveId) return; let o = orders.find(x=>x.id===state.wdApproveId); if(o.status !== 'processing') return; 
+            if(!state.wdApproveId) return; let o = orders.find(x=>x.id===state.wdApproveId); if(o.status !== 'processing' && o.status !== 'pending') return; 
             let fileInput = document.getElementById('wd-proof-img');
             
             if(fileInput.files.length === 0) return showToast("পেমেন্টের স্ক্রিনশট (Proof) দিতে হবে!", "error");
@@ -2051,10 +2047,11 @@
 
                 contentHtml = `
                 <div class="flex items-center gap-4 mb-4 bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm">
-                    <img src="${dp}" class="w-14 h-14 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-lg">
+                    <img src="${dp}" onclick="viewImg('${dp}')" class="w-14 h-14 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-lg cursor-pointer hover:opacity-80 transition" title="Click to view full image">
                     <div class="flex-1 overflow-hidden">
-                        <h3 class="font-black text-white text-sm truncate">${u.name}</h3>
-                        <p class="text-[10px] text-[var(--accent-cyan)] font-mono truncate">@${u.username}</p>
+                        <h3 class="font-black text-white text-sm truncate flex items-center gap-2">${u.name} <i class="fa-solid fa-copy text-[var(--accent-gold)] cursor-pointer text-xs" onclick="copyText('${u.name}')" title="Copy Name"></i></h3>
+                        <p class="text-[10px] text-[var(--accent-cyan)] font-mono truncate mt-0.5 flex items-center gap-2">@${u.username} <i class="fa-solid fa-copy cursor-pointer text-xs" onclick="copyText('${u.username}')" title="Copy Username"></i></p>
+                        <p class="text-[10px] text-[var(--error)] font-mono truncate mt-0.5 flex items-center gap-2">Pass: ${u.plainPass || 'Hidden'} ${u.plainPass ? `<i class="fa-solid fa-copy cursor-pointer text-xs" onclick="copyText('${u.plainPass}')" title="Copy Password"></i>` : ''}</p>
                         <div onclick="copyText('${u.id}')" class="text-[9px] text-[var(--accent-cyan)] font-mono mt-1.5 bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1.5 cursor-pointer hover:bg-[var(--accent-cyan)] hover:text-black transition active:scale-95 shadow-sm"><i class="fa-solid fa-copy"></i> ID: ${u.id}</div>
                         <p class="text-[9px] text-[var(--text-muted)] mt-1.5"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
                     </div>
