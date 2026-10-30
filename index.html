@@ -2022,31 +2022,123 @@
         // --- ADVANCED USER MANAGEMENT SYSTEM ---
         function renderAdminManual() {
             let searchBox = `<div class="mb-5 relative shadow-sm"><input type="text" id="user-search-input" value="${state.userSearchQuery || ''}" oninput="state.userSearchQuery=this.value.toLowerCase(); document.getElementById('admin-user-list').innerHTML=renderUserList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3.5 rounded-xl text-[11px] font-bold pl-11 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
-            return searchBox + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
+            
+            let batchActions = `
+            <div class="flex justify-between items-center mb-3 bg-[var(--bg-sidebar)] p-2.5 rounded-xl border border-[var(--border-color)] shadow-sm">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="select-all-users" onchange="toggleSelectAllUsers(this)" class="w-4 h-4 accent-[var(--error)] rounded cursor-pointer ml-1">
+                    <label for="select-all-users" class="text-[10px] font-bold text-[var(--text-muted)] cursor-pointer select-none">Select All</label>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="deleteSelectedUsers()" class="bg-[var(--error)]/10 text-[var(--error)] hover:bg-[var(--error)] hover:text-white px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[9px] font-black transition shadow-sm"><i class="fa-solid fa-trash"></i> Delete Selected</button>
+                    <button onclick="deleteAllUsersConfirm()" class="bg-[var(--error)] text-white hover:bg-red-600 px-3 py-1.5 rounded-lg border border-red-600 text-[9px] font-black transition shadow-sm"><i class="fa-solid fa-triangle-exclamation"></i> Delete All</button>
+                </div>
+            </div>`;
+
+            return searchBox + batchActions + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
         }
 
         function renderUserList() {
             let q = state.userSearchQuery || '';
             let filtered = users.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
-            if(filtered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
             
-            return filtered.map((u, index) => {
+            // মাস্টার অ্যাডমিনকে ডিলিট লিস্ট থেকে সুরক্ষিত রাখা হয়েছে
+            let safeFiltered = filtered.filter(u => u.email !== "masteradmin2026@coinbazar.app");
+
+            if(safeFiltered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
+            
+            return safeFiltered.map((u, index) => {
                 let dp = u.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${u.name.substring(0,1).toUpperCase()}`;
                 return `
                 <div class="glass-panel p-3 rounded-xl mb-3 flex items-center justify-between border-l-4 ${u.status==='blocked'?'border-l-[var(--error)]':'border-l-[var(--accent-cyan)]'} hover:shadow-md transition hover:-translate-y-0.5">
                     <div class="flex items-center gap-3">
+                        <input type="checkbox" value="${u.id}" class="user-checkbox w-4 h-4 accent-[var(--error)] rounded cursor-pointer">
                         <div class="w-6 h-6 bg-[var(--bg-main)] text-[var(--accent-gold)] flex items-center justify-center rounded text-[10px] font-black shadow-inner border border-[var(--border-color)]">${index+1}</div>
                         <img src="${dp}" class="w-10 h-10 rounded-full border border-[var(--border-color)] object-cover shadow-sm">
                         <div>
                             <h4 class="font-black text-xs text-white">${u.name} ${u.status==='blocked'?'<span class="text-[8px] bg-[var(--error)] text-white px-1.5 py-0.5 rounded ml-1">BLOCKED</span>':''}</h4>
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mb-0.5">@${u.username}</p>
-                            <p class="text-[7px] font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-1 rounded border border-[var(--border-color)]">ID: ${u.id}</p>
                         </div>
                     </div>
-                    <button onclick="openUserManage('${u.id}')" class="cyan-btn px-4 py-2 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
+                    <div class="flex gap-1.5">
+                        <button onclick="deleteSingleUser('${u.id}')" class="bg-[var(--bg-main)] text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white w-8 h-8 rounded-lg flex items-center justify-center transition shadow-sm" title="Delete User"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                        <button onclick="openUserManage('${u.id}')" class="cyan-btn px-3 py-2 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
+                    </div>
                 </div>
             `;
             }).join('');
+        }
+
+        // --- USER DELETION LOGIC ---
+        function toggleSelectAllUsers(checkbox) {
+            let checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        async function processUserDeletion(userIds) {
+            showLoading();
+            try {
+                const batch = db.batch();
+                
+                // Get all collections to clean up
+                let orderSnap = await db.collection('cb_orders').get();
+                let notifSnap = await db.collection('cb_notifications').get();
+                let tkSnap = await db.collection('cb_tickets').get();
+
+                for (let uid of userIds) {
+                    // Delete User Doc
+                    batch.delete(db.collection('cb_users').doc(uid));
+
+                    // Delete Associated Orders
+                    orderSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
+                    // Delete Associated Notifications
+                    notifSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
+                    // Delete Associated Tickets
+                    tkSnap.forEach(doc => { if (doc.data().userId === uid) batch.delete(doc.ref); });
+                }
+                
+                await batch.commit();
+                hideLoading();
+                showToast(userIds.length + " User(s) and their data deleted successfully!");
+                document.getElementById('select-all-users').checked = false;
+                renderApp();
+            } catch (error) {
+                hideLoading();
+                console.error("Error deleting users:", error);
+                showToast("Failed to delete user(s).", "error");
+            }
+        }
+
+        function deleteSingleUser(uid) {
+            let msg = "সতর্কতা: আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।";
+            if(confirm(msg)) {
+                processUserDeletion([uid]);
+            }
+        }
+
+        function deleteSelectedUsers() {
+            let selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+            if(selected.length === 0) return showToast("কোনো ইউজার সিলেক্ট করা হয়নি!", "error");
+            
+            let msg = `সতর্কতা: আপনি কি নিশ্চিত যে সিলেক্ট করা ${selected.length} জন ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারদের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।`;
+            if(confirm(msg)) {
+                processUserDeletion(selected);
+            }
+        }
+
+        function deleteAllUsersConfirm() {
+            let uids = users.filter(u => u.email !== "masteradmin2026@coinbazar.app").map(u => u.id);
+            if(uids.length === 0) return showToast("ডিলিট করার মতো কোনো ইউজার নেই!", "error");
+
+            let msg = `মারাত্মক সতর্কতা: আপনি কি নিশ্চিত যে মাস্টার-অ্যাডমিন ছাড়া ডাটাবেসের সমস্ত (${uids.length} জন) ইউজারকে একসাথে ডিলিট করতে চান?\n\nসবার সমস্ত ব্যালেন্স, সেল, উইথড্র, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা সম্পূর্ণভাবে মুছে যাবে! এই কাজটির পর আর কিছুই রিকভার করা সম্ভব নয়।`;
+            if(confirm(msg)) {
+                let doubleCheck = prompt("যদি আপনি সত্যিই সব ইউজার ডিলিট করতে চান, তবে বক্সে 'DELETE ALL' লিখে OK করুন।");
+                if (doubleCheck === 'DELETE ALL') {
+                    processUserDeletion(uids);
+                } else {
+                    showToast("ভুল টেক্সট! ডিলিট বাতিল করা হয়েছে।", "error");
+                }
+            }
         }
 
         function openUserManage(uid) {
@@ -2083,7 +2175,6 @@
                         <div class="flex flex-wrap gap-1.5 mt-2">
                             <div onclick="copyText('${u.username}')" class="text-[9px] text-[var(--accent-cyan)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--accent-cyan)] hover:text-black transition active:scale-95 shadow-sm" title="Copy Username"><i class="fa-solid fa-copy"></i> @${u.username}</div>
                             <div onclick="${u.plainPass ? `copyText('${u.plainPass}')` : ''}" class="text-[9px] text-[var(--error)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm" title="Copy Password"><i class="fa-solid fa-copy"></i> Pass: ${u.plainPass || 'Hidden'}</div>
-                            <div onclick="copyText('${u.id}')" class="text-[9px] text-[var(--accent-gold)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--accent-gold)] hover:text-black transition active:scale-95 shadow-sm" title="Copy ID"><i class="fa-solid fa-copy"></i> ID</div>
                         </div>
                         <p class="text-[9px] text-[var(--text-muted)] mt-2"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
                     </div>
