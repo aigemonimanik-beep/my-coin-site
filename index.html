@@ -581,9 +581,11 @@
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
                     
-                    // Prioritize user's local language preference
-                    let localLang = localStorage.getItem('cb_lang');
-                    if(localLang) settings.lang = localLang;
+                    // Prioritize user's local language preference safely
+                    try {
+                        let localLang = localStorage.getItem('cb_lang');
+                        if(localLang) settings.lang = localLang;
+                    } catch(e) {}
                     
                     if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
                         settings.maintenanceMode = false;
@@ -813,19 +815,24 @@
                 return;
             }
 
-            if(state.view === 'home') cont.innerHTML = renderHome();
-            else if(state.view === 'history') cont.innerHTML = renderUserHistory();
-            else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
-            else if(state.view === 'admin' && currentUser.role === 'admin') cont.innerHTML = renderAdmin();
-            else if(state.view === 'support') cont.innerHTML = renderSupport();
-            else if(state.view === 'faq') cont.innerHTML = renderFaq();
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => { 
-                let key = el.getAttribute('data-i18n'); if(translations[settings.lang || 'bn'] && translations[settings.lang || 'bn'][key]) el.innerText = translations[settings.lang || 'bn'][key]; 
-            });
+            try {
+                if(state.view === 'home') cont.innerHTML = renderHome();
+                else if(state.view === 'history') cont.innerHTML = renderUserHistory();
+                else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
+                else if(state.view === 'admin' && currentUser.role === 'admin') cont.innerHTML = renderAdmin();
+                else if(state.view === 'support') cont.innerHTML = renderSupport();
+                else if(state.view === 'faq') cont.innerHTML = renderFaq();
+                
+                document.querySelectorAll('[data-i18n]').forEach(el => { 
+                    let key = el.getAttribute('data-i18n'); if(translations[settings.lang || 'bn'] && translations[settings.lang || 'bn'][key]) el.innerText = translations[settings.lang || 'bn'][key]; 
+                });
 
-            if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
-                setTimeout(() => { let box = document.getElementById('chat-box'); if(box) box.scrollTop = box.scrollHeight; }, 50);
+                if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
+                    setTimeout(() => { let box = document.getElementById('chat-box'); if(box) box.scrollTop = box.scrollHeight; }, 50);
+                }
+            } catch (renderError) {
+                console.error("UI Render Error: ", renderError);
+                cont.innerHTML = `<div class="glass-panel p-6 rounded-2xl mt-10 text-center border-t-2 border-[var(--error)] mx-4"><i class="fa-solid fa-triangle-exclamation text-4xl text-[var(--error)] mb-3"></i><h3 class="text-white font-black text-lg mb-2">Display Error</h3><p class="text-xs text-[var(--text-muted)]">There was a problem loading the interface data. Please clear your browser cache and refresh.</p></div>`;
             }
         }
 
@@ -1138,7 +1145,7 @@
         // ================= HOME VIEW =================
         function renderHome() {
             let coinHtml = coins.map(c => {
-                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${c.name.substring(0,2)}`;
+                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${(c.name || 'CB').substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
                 if(c.active) { 
                     activeClass = state.selCoinId === c.id ? 'active-coin' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:-translate-y-1 cursor-pointer'; 
@@ -1199,21 +1206,23 @@
             let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
             let activeHtml = activeOrders.map(o => {
                 let sClass = `status-badge ${o.status}`; let sIcon = o.status === 'pending' ? 'fa-clock' : 'fa-spinner fa-spin';
-                let sText = t(o.status==='processing' ? 'proc' : 'pend').toUpperCase();
-                let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName}`;
+                let sText = String(t(o.status==='processing' ? 'proc' : 'pend')).toUpperCase();
+                let topText = o.type === 'sell' ? `Sell: ${o.k}K ${o.coinName}` : `Withdraw: ${o.methodName || 'Method'}`;
                 
                 let amtText = o.type === 'sell' ? `+ ৳${o.paidAmount || o.receive}` : `- ৳${o.total}`;
-                if (o.type === 'wd' && o.methodName.toLowerCase().includes('binance') && o.receiveUsd) {
+                if (o.type === 'wd' && (o.methodName || '').toLowerCase().includes('binance') && o.receiveUsd) {
                     amtText = `- $${o.receiveUsd.toFixed(2)}`;
                 }
                 
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
                 let proofBtn = o.adminSs ? `<button onclick="viewImg('${o.adminSs}')" class="text-[9px] bg-[var(--bg-main)] text-[var(--success)] border border-[var(--success)]/30 px-2.5 py-1.5 rounded mt-2 font-black hover:bg-[var(--success)]/10 transition shadow-sm"><i class="fa-solid fa-receipt"></i> View Proof</button>` : '';
                 
+                let displayId = (o.id && o.id.includes('-')) ? o.id.split('-')[1] : o.id;
+
                 return `<div class="glass-panel rounded-xl p-4 mb-3 border-l-4 ${o.type==='sell'?'border-l-[var(--success)] shadow-[0_4px_15px_rgba(22,199,132,0.05)]':'border-l-[var(--error)] shadow-[0_4px_15px_rgba(255,100,124,0.05)]'} hover:-translate-y-0.5 transition duration-300">
                     <div class="flex justify-between items-center mb-2 pb-3 border-b border-[var(--border-color)]">
                         <span class="${sClass} px-2 py-1 rounded text-[9px] font-black tracking-wider flex items-center gap-1.5 shadow-sm"><i class="fa-solid ${sIcon}"></i> ${sText}</span>
-                        <button onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-xs font-black font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition shadow-md flex items-center gap-2 active:scale-95"><i class="fa-solid fa-copy text-sm"></i> ${o.id.split('-')[1]}</button>
+                        <button onclick="copyText('${o.id}')" title="Click to copy full ID" class="cursor-pointer text-xs font-black font-mono text-[var(--accent-gold)] bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition shadow-md flex items-center gap-2 active:scale-95"><i class="fa-solid fa-copy text-sm"></i> ${displayId}</button>
                     </div>
                     <div class="flex justify-between items-end mt-2">
                         <div><h4 class="font-black text-white text-sm mb-1">${topText}</h4><span class="text-[9px] text-[var(--text-muted)] font-medium"><i class="fa-regular fa-clock"></i> ${o.time}</span>${proofBtn}</div>
