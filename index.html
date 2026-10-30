@@ -237,7 +237,10 @@
             }
         }
 
-        function t(key) { return translations[settings.lang || 'bn'][key] || key; }
+        function t(key) { 
+            let langPack = translations[settings.lang] || translations['bn'];
+            return langPack ? (langPack[key] || key) : key; 
+        }
         function generateId(prefix) { return `${prefix}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`; }
         
     </script>
@@ -753,9 +756,9 @@
         }
         function updateMobileMenuProfile() {
             if(!currentUser) return;
-            document.getElementById('menu-name').innerText = currentUser.name;
-            document.getElementById('menu-uname').innerText = '@' + currentUser.username;
-            document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
+            document.getElementById('menu-name').innerText = currentUser.name || 'User';
+            document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
+            document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
         }
 
         async function addNotification(userId, title, message, type='info') {
@@ -830,10 +833,12 @@
 
             if(state.view === 'admin') hideUserHeaderElements(); else showUserHeaderElements();
             
-            document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
-            document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
-            document.getElementById('nav-logo').classList.remove('hidden');
-            document.getElementById('live-notice').innerText = settings.notice || '';
+            if(document.getElementById('nav-title')) document.getElementById('nav-title').innerText = settings.name || 'Coin Bazar';
+            if(document.getElementById('nav-logo')) {
+                document.getElementById('nav-logo').src = settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB'; 
+                document.getElementById('nav-logo').classList.remove('hidden');
+            }
+            if(document.getElementById('live-notice')) document.getElementById('live-notice').innerText = settings.notice || '';
             
             if (currentUser.status === 'blocked' && state.view !== 'admin') {
                 cont.innerHTML = `<div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_30px_rgba(255,100,124,0.1)]"><i class="fa-solid fa-user-lock text-6xl text-[var(--error)] mb-4"></i><h2 class="text-xl font-black text-white mb-2 uppercase">Account Suspended</h2><p class="text-sm text-[var(--text-muted)] mb-6">Your account has been temporarily blocked. You cannot perform any transactions at this time.</p><button onclick="switchView('support')" class="cyan-btn px-6 py-2.5 rounded-xl font-black text-sm w-full"><i class="fa-solid fa-headset"></i> ${t('contact_sup')}</button></div>`;
@@ -853,7 +858,9 @@
                 else if(state.view === 'faq') cont.innerHTML = renderFaq();
                 
                 document.querySelectorAll('[data-i18n]').forEach(el => { 
-                    let key = el.getAttribute('data-i18n'); if(translations[settings.lang || 'bn'] && translations[settings.lang || 'bn'][key]) el.innerText = translations[settings.lang || 'bn'][key]; 
+                    let key = el.getAttribute('data-i18n'); 
+                    let langPack = translations[settings.lang] || translations['bn'];
+                    if(langPack && langPack[key]) el.innerText = langPack[key]; 
                 });
 
                 if(state.view === 'support' || (state.view === 'admin' && state.adminTab === 'support' && state.activeTicketId)) {
@@ -861,7 +868,16 @@
                 }
             } catch (renderError) {
                 console.error("UI Render Error: ", renderError);
-                cont.innerHTML = `<div class="glass-panel p-6 rounded-2xl mt-10 text-center border-t-2 border-[var(--error)] mx-4"><i class="fa-solid fa-triangle-exclamation text-4xl text-[var(--error)] mb-3"></i><h3 class="text-white font-black text-lg mb-2">Display Error</h3><p class="text-xs text-[var(--text-muted)]">There was a problem loading the interface data. Please clear your browser cache and refresh.</p></div>`;
+                cont.innerHTML = `<div class="glass-panel p-6 rounded-2xl mt-10 text-center border-t-2 border-[var(--error)] mx-4">
+                    <i class="fa-solid fa-triangle-exclamation text-4xl text-[var(--error)] mb-3"></i>
+                    <h3 class="text-white font-black text-lg mb-2">Display Error</h3>
+                    <p class="text-xs text-[var(--text-muted)] mb-3">There was a problem loading the interface data.</p>
+                    <div class="bg-[var(--bg-main)] p-3 rounded-lg text-left overflow-auto border border-[var(--error)]/30 max-h-40">
+                        <p class="text-[10px] text-[var(--error)] font-mono mb-1">${renderError.message}</p>
+                        <p class="text-[8px] text-[var(--text-muted)] font-mono">${renderError.stack}</p>
+                    </div>
+                    <button onclick="window.location.reload()" class="mt-4 cyan-btn px-4 py-2 rounded-lg text-xs font-black">Refresh Page</button>
+                </div>`;
             }
         }
 
@@ -983,18 +999,18 @@
         // ================= USER HISTORY VIEW =================
         function renderUserHistory() {
             let resetTime = currentUser.resetTimestamp ? new Date(currentUser.resetTimestamp) : new Date(0);
-            let allMyOrders = orders.filter(o => o.userId === currentUser.id);
-            let visibleOrders = allMyOrders.filter(o => new Date(o.time) >= resetTime);
+            let allMyOrders = (orders || []).filter(o => o && o.userId === currentUser.id);
+            let visibleOrders = allMyOrders.filter(o => o && new Date(o.time) >= resetTime);
 
-            let mySells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'approved');
-            let myWds = visibleOrders.filter(o => o.type === 'wd' && o.status === 'approved');
-            let pendSells = visibleOrders.filter(o => o.type === 'sell' && o.status === 'pending');
-            let pendWds = visibleOrders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+            let mySells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'approved');
+            let myWds = visibleOrders.filter(o => o && o.type === 'wd' && o.status === 'approved');
+            let pendSells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'pending');
+            let pendWds = visibleOrders.filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
 
-            let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive)), 0);
+            let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive) || 0), 0);
             let totalSellCount = mySells.length;
 
-            let totalWithdrawn = myWds.reduce((sum, o) => sum + parseFloat(o.total), 0);
+            let totalWithdrawn = myWds.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
             let totalWdCount = myWds.length;
 
             state.userHistTab = state.userHistTab || 'sells';
@@ -1173,8 +1189,8 @@
 
         // ================= HOME VIEW =================
         function renderHome() {
-            let coinHtml = coins.map(c => {
-                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${(c.name || 'CB').substring(0,2)}`;
+            let coinHtml = (coins || []).filter(c => c).map(c => {
+                let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${String(c.name || 'CB').substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
                 if(c.active) { 
                     activeClass = state.selCoinId === c.id ? 'active-coin' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:-translate-y-1 cursor-pointer'; 
@@ -1211,12 +1227,12 @@
 
             let socials = '';
             if(settings.wa) {
-                let link = settings.wa.startsWith('http') ? settings.wa : `https://wa.me/${settings.wa.replace(/[^0-9]/g, '')}`;
+                let link = String(settings.wa).startsWith('http') ? settings.wa : `https://wa.me/${String(settings.wa).replace(/[^0-9]/g, '')}`;
                 let inner = settings.waLogo ? `<img src="${settings.waLogo}" class="w-full h-full object-cover rounded-full">` : `<i class="fa-brands fa-whatsapp text-xl"></i>`;
                 socials += `<a href="${link}" target="_blank" class="w-10 h-10 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 rounded-full flex items-center justify-center shadow hover:scale-110 transition overflow-hidden">${inner}</a>`;
             }
             if(settings.tg) {
-                let link = settings.tg.startsWith('http') ? settings.tg : `https://t.me/${settings.tg.replace('@', '')}`;
+                let link = String(settings.tg).startsWith('http') ? settings.tg : `https://t.me/${String(settings.tg).replace('@', '')}`;
                 let inner = settings.tgLogo ? `<img src="${settings.tgLogo}" class="w-full h-full object-cover rounded-full">` : `<i class="fa-brands fa-telegram text-xl"></i>`;
                 socials += `<a href="${link}" target="_blank" class="w-10 h-10 bg-[#0088cc]/10 text-[#0088cc] border border-[#0088cc]/30 rounded-full flex items-center justify-center shadow hover:scale-110 transition overflow-hidden">${inner}</a>`;
             }
@@ -1232,7 +1248,7 @@
             }
             let socialDiv = socials ? `<div class="mt-5 flex justify-center gap-4 pt-5 border-t border-[var(--border-color)]/50">${socials}</div>` : '';
 
-            let activeOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
+            let activeOrders = (orders || []).filter(o => o && o.userId === currentUser.id && o.status !== 'approved' && o.status !== 'rejected');
             let activeHtml = activeOrders.map(o => {
                 let sClass = `status-badge ${o.status}`; let sIcon = o.status === 'pending' ? 'fa-clock' : 'fa-spinner fa-spin';
                 let sText = String(t(o.status==='processing' ? 'proc' : 'pend')).toUpperCase();
@@ -1240,7 +1256,7 @@
                 
                 let amtText = o.type === 'sell' ? `+ ৳${o.paidAmount || o.receive}` : `- ৳${o.total}`;
                 if (o.type === 'wd' && (o.methodName || '').toLowerCase().includes('binance') && o.receiveUsd) {
-                    amtText = `- $${o.receiveUsd.toFixed(2)}`;
+                    amtText = `- $${Number(o.receiveUsd).toFixed(2)}`;
                 }
                 
                 let amtColor = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
@@ -1425,10 +1441,10 @@
 
         function openWdModal() {
             state.selWdId = null; let grid = document.getElementById('wd-methods-grid');
-            let activeMethods = pmMethods.filter(m => m.active !== false);
+            let activeMethods = (pmMethods || []).filter(m => m && m.active !== false);
             
             grid.innerHTML = activeMethods.map(m => {
-                let isBinance = m.name.toLowerCase().includes('binance');
+                let isBinance = String(m.name || '').toLowerCase().includes('binance');
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-0.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-0.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
                 
                 let chargeHtml = '';
@@ -1650,8 +1666,8 @@
         }
 
         function renderAdminDash() {
-            let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
-            let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
+            let sellPending = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'pending').length;
+            let wdPending = (orders || []).filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
             let totalPending = sellPending + wdPending;
 
             let pendingBoardHtml = `
@@ -1743,7 +1759,7 @@
             
             try {
                 if (state.adminHistoryType === 'users') {
-                    let list = users;
+                    let list = (users || []).filter(u => u);
                     if(q) list = list.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
                     html = list.map(u => `
                         <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition">
@@ -1760,11 +1776,11 @@
                         </div>`).join('');
                 } else {
                     let filterType = state.adminHistoryType === 'sells' ? 'sell' : 'wd';
-                    let list = orders.filter(o => o.type === filterType);
+                    let list = (orders || []).filter(o => o && o.type === filterType);
                     if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.acc||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
                     
                     html = list.map(o => {
-                        let u = users.find(x => x.id === o.userId);
+                        let u = (users || []).find(x => x && x.id === o.userId);
                         let title = o.type === 'sell' ? `${o.k}K ${o.coinName}` : `${o.methodName}`;
                         let amt = o.type === 'sell' ? (o.paidAmount || o.receive) : o.total;
                         let color = o.type === 'sell' ? 'text-[var(--success)]' : 'text-[var(--error)]';
@@ -1825,11 +1841,11 @@
             let q = state.adminOrderSearch || '';
 
             if(state.adminSellTab === 'pending') {
-                let list = orders.filter(o => o.type === 'sell' && o.status === 'pending');
+                let list = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'pending');
                 if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
                 
                 contentHtml = list.map(o => {
-                    let u = users.find(x=>x.id===o.userId);
+                    let u = (users || []).find(x=>x && x.id===o.userId);
                     let tgCopyBtn = o.tgUsername ? `<button onclick="copyText('${o.tgUsername}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>` : '';
                     return `
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--accent-cyan)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-3 flex flex-col gap-2 relative overflow-hidden shadow-sm hover:shadow-md transition">
@@ -1853,11 +1869,11 @@
                 if(!contentHtml) contentHtml = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">${t('no_pend')}</p>`;
             } 
             else if(state.adminSellTab === 'approved') {
-                let list = orders.filter(o => o.type === 'sell' && o.status === 'approved');
+                let list = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved');
                 if(q) list = list.filter(o => (o.tgUsername||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q));
                 
                 contentHtml = list.map(o => {
-                    let u = users.find(x=>x.id===o.userId);
+                    let u = (users || []).find(x=>x && x.id===o.userId);
                     return `
                     <div class="bg-[var(--bg-sidebar)] border-l-4 border-l-[var(--success)] border-y border-r border-[var(--border-color)] rounded-xl p-3 mb-2 flex justify-between items-center hover:shadow-md transition">
                         <div>
@@ -1873,7 +1889,7 @@
             }
             else if(state.adminSellTab === 'daily') {
                 searchBox = ''; // Hide search for daily
-                let todayOrders = orders.filter(o => o.type === 'sell' && o.status === 'approved' && !o.archived);
+                let todayOrders = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved' && !o.archived);
                 let summary = {}; let totalK = 0; let totalPaid = 0;
                 todayOrders.forEach(o => { if(!summary[o.coinName]) summary[o.coinName] = { k: 0, paid: 0, orig: 0 }; summary[o.coinName].k += o.k; summary[o.coinName].paid += o.paidAmount; totalK += o.k; totalPaid += o.paidAmount; });
                 let sumHtml = Object.keys(summary).map(c => `<div class="flex justify-between border-b border-[var(--border-color)] pb-2 mb-2"><span class="text-[11px] font-black text-white">${c}</span><div class="text-right"><span class="text-xs text-[var(--accent-cyan)] font-bold">${summary[c].k}K</span> <span class="text-[11px] text-[var(--success)] ml-2">৳${summary[c].paid}</span></div></div>`).join('');
@@ -1885,13 +1901,13 @@
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
-                ${dailyArchives.map((a) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div></div>`).join('')}`;
+                ${(dailyArchives || []).filter(a=>a).map((a) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div></div>`).join('')}`;
             }
             return subTabHtml + searchBox + contentHtml;
         }
 
         function archiveDaily() {
-            let todayOrders = orders.filter(o => o.type === 'sell' && o.status === 'approved' && !o.archived);
+            let todayOrders = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved' && !o.archived);
             if(todayOrders.length === 0) return showToast("Nothing to archive today!", "error");
             if(confirm("Are you sure? This will reset today's live summary and save it to history.")) {
                 let sum = { date: new Date().toLocaleDateString(), totalK: 0, totalPaid: 0 };
@@ -1946,11 +1962,11 @@
             
             let list = [];
             if(state.adminWdTab === 'pending') {
-                list = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+                list = (orders || []).filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
             } else if(state.adminWdTab === 'approved') {
-                list = orders.filter(o => o.type === 'wd' && o.status === 'approved');
+                list = (orders || []).filter(o => o && o.type === 'wd' && o.status === 'approved');
             } else if(state.adminWdTab === 'rejected') {
-                list = orders.filter(o => o.type === 'wd' && o.status === 'rejected');
+                list = (orders || []).filter(o => o && o.type === 'wd' && o.status === 'rejected');
             }
 
             let q = state.adminOrderSearch || '';
@@ -1959,7 +1975,7 @@
             }
 
             let listHtml = list.map(o => {
-                let u = users.find(x=>x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
+                let u = (users || []).find(x=>x && x.id===o.userId); let badge = `<span class="status-badge ${o.status} px-2 py-1 rounded text-[9px] font-black uppercase shadow-sm">${o.status}</span>`;
                 
                 let actionBtns = '';
                 if(o.status === 'pending' || o.status === 'processing') {
@@ -2038,7 +2054,7 @@
 
         function renderUserList() {
             let q = state.userSearchQuery || '';
-            let filtered = users.filter(u => (u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q));
+            let filtered = (users || []).filter(u => u && ((u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q)));
             
             // মাস্টার অ্যাডমিনকে ডিলিট লিস্ট থেকে সুরক্ষিত রাখা হয়েছে
             let safeFiltered = filtered.filter(u => u.email !== "masteradmin2026@coinbazar.app");
@@ -2153,8 +2169,8 @@
         function closeUserManage() { state.activeManageUserId = null; document.getElementById('admin-user-manage-modal').classList.add('hidden'); }
 
         function updateUserManageModal() {
-            let u = users.find(x=>x.id===state.activeManageUserId); if(!u) return;
-            let userOrders = orders.filter(o => o.userId === u.id);
+            let u = (users || []).find(x=>x && x.id===state.activeManageUserId); if(!u) return;
+            let userOrders = (orders || []).filter(o => o && o.userId === u.id);
             
             let tabs = [ {id:'info', icon:'fa-info-circle', label:'Account'}, {id:'sells', icon:'fa-coins', label:'Sells'}, {id:'wds', icon:'fa-money-bill-transfer', label:'Wds'}, {id:'all', icon:'fa-list-check', label:'All Tx'} ];
             let tabsHtml = `<div class="flex gap-1 mb-4 border-b border-[var(--border-color)] pb-1">` + tabs.map(t => {
@@ -2278,7 +2294,7 @@
         }
 
         function renderAdminSettings() {
-            let cList = coins.map(c => `
+            let cList = (coins || []).filter(c=>c).map(c => `
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl mb-2 flex justify-between items-center hover:shadow-md transition hover:-translate-y-0.5">
                     <div>
                         <div class="text-xs font-black text-white flex items-center gap-2">${c.name} ${c.active ? `<span class="text-[8px] bg-[var(--success)]/20 text-[var(--success)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--success)]/30">${t('active_on')}</span>` : `<span class="text-[8px] bg-[var(--error)]/20 text-[var(--error)] px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/30">${t('active_off')}</span>`}</div>
@@ -2322,8 +2338,8 @@
                 ${editC?`<button onclick="state.editCoinId=null; state.editCoinTiers=[]; renderApp()" class="w-full mt-2 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3 rounded-xl text-[11px] font-black border border-[var(--border-color)] hover:text-white uppercase transition shadow-sm">${t('cancel_btn')}</button>`:''}
             </div>`;
 
-            let pmListHtml = pmMethods.map(m => {
-                let isBinance = m.name.toLowerCase().includes('binance');
+            let pmListHtml = (pmMethods || []).filter(m=>m).map(m => {
+                let isBinance = String(m.name || '').toLowerCase().includes('binance');
                 return `
                 <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3 rounded-xl mb-2 flex justify-between items-center hover:shadow-md transition">
                     <div class="flex items-center gap-3">
