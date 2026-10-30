@@ -1758,8 +1758,9 @@
                 <div id="admin-lifetime-modal" class="fixed inset-0 bg-[#071426]/90 z-[150] hidden flex flex-col p-4 pt-10 backdrop-blur-sm">
                     <div class="glass-panel w-full max-w-lg mx-auto rounded-2xl p-4 flex flex-col max-h-[85vh] relative shadow-2xl border-t border-[var(--accent-cyan)]">
                         <button onclick="closeLifetimeStats()" class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--error)] bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
-                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 pr-10">
+                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 pr-8">
                             <h3 class="font-black text-white text-base flex items-center gap-2"><i class="fa-solid fa-chart-line text-[var(--accent-cyan)]"></i> Lifetime Stats</h3>
+                            <button onclick="resetLifetimeStats()" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-1.5 rounded-lg text-[9px] font-black hover:bg-[var(--error)] hover:text-white transition shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-trash"></i> Reset All</button>
                         </div>
                         <div id="lifetime-stats-content" class="flex-1 overflow-y-auto hide-scroll space-y-4 pr-1"></div>
                     </div>
@@ -1905,6 +1906,35 @@
         
         function closeLifetimeStats() {
             document.getElementById('admin-lifetime-modal').classList.add('hidden');
+        }
+
+        async function resetLifetimeStats() {
+            if(!confirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে না!")) return;
+            
+            showLoading();
+            try {
+                let batch = db.batch();
+                let historyOrders = orders.filter(o => o.status === 'approved' || o.status === 'rejected' || o.archived);
+                
+                historyOrders.forEach(o => {
+                    batch.delete(db.collection('cb_orders').doc(o.id));
+                });
+                
+                await batch.commit();
+                
+                // Clear daily archives too
+                dailyArchives = [];
+                await db.collection('cb_data').doc('global_state').update({ dailyArchives: [] });
+                
+                hideLoading();
+                showToast("সমস্ত হিস্ট্রি এবং লাইফটাইম হিসেব মুছে ফেলা হয়েছে!");
+                closeLifetimeStats();
+                renderApp();
+            } catch(e) {
+                hideLoading();
+                console.error(e);
+                showToast("Error resetting stats!", "error");
+            }
         }
 
         function deleteHistoryItem(id, type) {
@@ -2059,7 +2089,11 @@
                             <div class="text-xs text-[var(--accent-cyan)] font-bold mt-1">${o.k}K ${o.coinName}</div>
                             <div onclick="copyText('${o.id}')" class="cursor-pointer text-[8px] font-mono text-[var(--accent-gold)] mt-1 bg-[var(--bg-main)] px-1 rounded border border-[var(--border-color)] inline-block hover:bg-[var(--accent-gold)] hover:text-black transition"><i class="fa-solid fa-copy"></i> ${o.id}</div>
                         </div>
-                        <div class="text-right"><div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div><div class="text-sm text-[var(--success)] font-black">Paid: ৳${o.paidAmount}</div></div>
+                        <div class="text-right flex flex-col items-end">
+                            <div class="text-[9px] text-[var(--text-muted)] line-through">Orig: ৳${o.receive}</div>
+                            <div class="text-sm text-[var(--success)] font-black mb-1">Paid: ৳${o.paidAmount}</div>
+                            <button onclick="deleteHistoryItem('${o.id}', 'sells')" class="mt-1 text-[9px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-2 py-1 rounded hover:bg-[var(--error)] hover:text-white transition flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </div>
                     </div>`;
                 }).join('');
                 if(!contentHtml) contentHtml = `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">${t('no_apprv')}</p>`;
@@ -2182,7 +2216,9 @@
                 let copyBtn = `<button onclick="copyText('${o.acc}')" class="ml-2 bg-[var(--bg-main)] text-[var(--text-muted)] hover:text-white px-1.5 py-0.5 rounded border border-[var(--border-color)] text-[8px] active:scale-90 transition"><i class="fa-solid fa-copy"></i> Copy</button>`;
                 let payAmtHtml = o.receiveUsd ? `<span class="text-[var(--success)]">$${o.receiveUsd.toFixed(2)} USD</span> <span class="text-[10px] text-[var(--text-muted)]">(৳${o.receive})</span>` : `৳${o.receive}`;
                 
-                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}</div>`;
+                let delBtnHtml = (o.status === 'approved' || o.status === 'rejected') ? `<div class="mt-3 pt-3 border-t border-[var(--border-color)] text-right"><button onclick="deleteHistoryItem('${o.id}', 'wds')" class="text-[10px] bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-1.5 rounded-lg font-black hover:bg-[var(--error)] hover:text-white transition shadow-sm inline-flex items-center gap-1.5"><i class="fa-solid fa-trash"></i> Delete Record</button></div>` : '';
+
+                return `<div class="glass-panel rounded-xl p-4 mb-4 border-l-4 ${o.status === 'pending' ? 'border-l-[var(--accent-gold)] shadow-[0_0_15px_rgba(232,199,121,0.1)]' : (o.status === 'approved' ? 'border-l-[var(--success)] shadow-[0_0_15px_rgba(22,199,132,0.1)]' : 'border-l-[var(--accent-cyan)] shadow-[0_0_15px_rgba(53,217,242,0.1)]')} hover:-translate-y-0.5 transition"><div class="flex justify-between items-start mb-2"><div><span class="text-[13px] font-black text-white">${u?u.name:'Unknown'}</span><div onclick="copyText('${o.id}')" title="Copy ID" class="cursor-pointer text-[9px] font-mono text-[var(--accent-gold)] bg-[var(--bg-main)] px-1.5 py-0.5 rounded border border-[var(--accent-gold)]/30 mt-1 w-max hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95 inline-flex items-center gap-1"><i class="fa-solid fa-copy"></i> ${o.id}</div></div><div class="text-right">${badge}<div class="text-[8px] text-[var(--text-muted)] mt-1">${o.time}</div></div></div><p class="text-xs font-bold text-[var(--text-muted)] mt-2 bg-[var(--bg-main)] p-2 rounded-lg border border-[var(--border-color)] flex flex-col items-start gap-1"><span>Method: <span class="text-[var(--accent-gold)]">${o.methodName}</span></span> <span class="flex items-center">Acc: <span class="text-[var(--accent-cyan)] font-mono ml-1">${o.acc}</span>${copyBtn}</span> <span class="text-[var(--error)] font-black text-lg mt-1 block drop-shadow-md">Pay: ${payAmtHtml}</span></p>${actionBtns}${delBtnHtml}</div>`;
             }).join('');
             return subTabHtml + searchBox + (listHtml || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active requests.</p>`);
         }
