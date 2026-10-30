@@ -574,7 +574,7 @@
 
         // --- Core Application Logic & Sync ---
         let unsubGlobal = null; let unsubUsers = null; let unsubOrders = null; let unsubTickets = null; let unsubNotifications = null;
-        let initialNotifLoad = true; let lastNotifCount = 0;
+        let initialNotifLoad = true; let lastNotifCount = 0; let initialOrderLoad = true;
 
         function startDataSync(user) {
             unsubGlobal = db.collection('cb_data').doc('global_state').onSnapshot(doc => {
@@ -641,11 +641,12 @@
                 
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
-                    if(curPending > prevPendingCount) { 
+                    if(!initialOrderLoad && curPending > prevPendingCount) { 
                         playNotifSound(); 
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
                     prevPendingCount = curPending;
+                    initialOrderLoad = false;
                 }
                 if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
@@ -2050,10 +2051,12 @@
                     <img src="${dp}" onclick="viewImg('${dp}')" class="w-14 h-14 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-lg cursor-pointer hover:opacity-80 transition" title="Click to view full image">
                     <div class="flex-1 overflow-hidden">
                         <h3 class="font-black text-white text-sm truncate flex items-center gap-2">${u.name} <i class="fa-solid fa-copy text-[var(--accent-gold)] cursor-pointer text-xs" onclick="copyText('${u.name}')" title="Copy Name"></i></h3>
-                        <p class="text-[10px] text-[var(--accent-cyan)] font-mono truncate mt-0.5 flex items-center gap-2">@${u.username} <i class="fa-solid fa-copy cursor-pointer text-xs" onclick="copyText('${u.username}')" title="Copy Username"></i></p>
-                        <p class="text-[10px] text-[var(--error)] font-mono truncate mt-0.5 flex items-center gap-2">Pass: ${u.plainPass || 'Hidden'} ${u.plainPass ? `<i class="fa-solid fa-copy cursor-pointer text-xs" onclick="copyText('${u.plainPass}')" title="Copy Password"></i>` : ''}</p>
-                        <div onclick="copyText('${u.id}')" class="text-[9px] text-[var(--accent-cyan)] font-mono mt-1.5 bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1.5 cursor-pointer hover:bg-[var(--accent-cyan)] hover:text-black transition active:scale-95 shadow-sm"><i class="fa-solid fa-copy"></i> ID: ${u.id}</div>
-                        <p class="text-[9px] text-[var(--text-muted)] mt-1.5"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <div onclick="copyText('${u.username}')" class="text-[9px] text-[var(--accent-cyan)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--accent-cyan)] hover:text-black transition active:scale-95 shadow-sm" title="Copy Username"><i class="fa-solid fa-copy"></i> @${u.username}</div>
+                            <div onclick="${u.plainPass ? `copyText('${u.plainPass}')` : ''}" class="text-[9px] text-[var(--error)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm" title="Copy Password"><i class="fa-solid fa-copy"></i> Pass: ${u.plainPass || 'Hidden'}</div>
+                            <div onclick="copyText('${u.id}')" class="text-[9px] text-[var(--accent-gold)] font-mono bg-[var(--bg-main)] px-2 py-1 rounded-lg border border-[var(--border-color)] inline-flex items-center gap-1 cursor-pointer hover:bg-[var(--accent-gold)] hover:text-black transition active:scale-95 shadow-sm" title="Copy ID"><i class="fa-solid fa-copy"></i> ID</div>
+                        </div>
+                        <p class="text-[9px] text-[var(--text-muted)] mt-2"><i class="fa-regular fa-calendar"></i> Joined: ${u.createdAt ? String(u.createdAt).split(',')[0] : 'N/A'}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 mb-4">
