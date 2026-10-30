@@ -88,7 +88,7 @@
         let _isLog = false;
         try { _isLog = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
         
-        if (_isLog || _isAdm) {
+        if (_isLog) {
             document.getElementById('instant-routing').innerHTML = '#main-ui { display: flex !important; flex-direction: column; } #auth-wrapper { display: none !important; }';
         } else {
             document.getElementById('instant-routing').innerHTML = '#auth-wrapper { display: flex !important; } #main-ui { display: none !important; }';
@@ -195,9 +195,16 @@
         let prevPendingCount = 0;
         const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
 
-        const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
-
         // ================= INSTANT LOAD (CACHE SYSTEM) =================
+        // ফোর্সভালি আগের মাস্টার এডমিনের ক্যাশ ক্লিয়ার করা হচ্ছে (Ghost Destroyer)
+        try {
+            let rawCache = localStorage.getItem('cb_cache');
+            if (rawCache && (rawCache.includes('Master Admin') || rawCache.includes('masteradmin2026') || rawCache.includes('masteradmin'))) {
+                localStorage.removeItem('cb_cache');
+                localStorage.removeItem('cb_loggedIn');
+            }
+        } catch(e) {}
+
         let cacheData = null;
         try { cacheData = localStorage.getItem('cb_cache'); } catch(e) {}
         
@@ -223,17 +230,13 @@
                 let isLogged = false;
                 try { isLogged = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
 
-                if (isAdminUrl || isLogged) {
-                    if (isAdminUrl) {
-                        currentUser = { id: 'admin-master', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active', profilePic: 'https://placehold.co/100x100/122B45/E8C779?text=A' };
-                        state.view = 'admin';
-                    } else {
+                if (isLogged) {
+                    if (parsed.currentUser) {
                         currentUser = parsed.currentUser;
+                        dataLoaded = !!currentUser;
                     }
                     
-                    dataLoaded = !!currentUser;
-                    
-                    if(dataLoaded) {
+                    if(dataLoaded && currentUser) {
                         document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('instant-routing').innerHTML = '';
                             document.getElementById('auth-wrapper').style.display = 'none'; 
@@ -522,9 +525,15 @@
             isRegistering = true;
             try {
                 let cred = await auth.createUserWithEmailAndPassword(email, pass);
+                
                 let usersSnap = await db.collection('cb_users').get();
-                let isFirstUser = usersSnap.empty;
-                let role = isFirstUser ? 'admin' : 'user';
+                let realAdmins = 0;
+                usersSnap.forEach(doc => {
+                    let d = doc.data();
+                    if(d.role === 'admin') realAdmins++;
+                });
+                
+                let role = (realAdmins === 0) ? 'admin' : 'user';
 
                 await db.collection('cb_users').doc(cred.user.uid).set({
                     id: cred.user.uid, name: name, username: username, email: email,
@@ -635,9 +644,7 @@
             unsubUsers = db.collection('cb_users').onSnapshot(snap => {
                 users = []; snap.forEach(d => users.push(d.data()));
                 
-                if (isAdminUrl) {
-                    currentUser = { id: 'admin-master', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active', profilePic: 'https://placehold.co/100x100/122B45/E8C779?text=A' };
-                } else {
+                if (user) {
                     currentUser = users.find(u => u.id === user.uid);
                 }
                 
@@ -699,44 +706,45 @@
             if(unsubGlobal) unsubGlobal(); if(unsubUsers) unsubUsers(); if(unsubOrders) unsubOrders(); if(unsubTickets) unsubTickets(); if(unsubNotifications) unsubNotifications();
         }
 
-        if (isAdminUrl) {
-            // Bypass Firebase Auth entirely for Admin URL
-            document.addEventListener('DOMContentLoaded', () => {
-                currentUser = { id: 'admin-master', name: 'Master Admin', username: 'admin', role: 'admin', balance: 0, status: 'active', profilePic: 'https://placehold.co/100x100/122B45/E8C779?text=A' };
-                dataLoaded = true;
-                state.view = 'admin'; // Lock to admin view
-                
-                document.getElementById('instant-routing').innerHTML = '';
-                document.getElementById('auth-wrapper').style.display = 'none'; 
-                document.getElementById('main-ui').style.display = 'flex';
-                
-                startDataSync({ uid: 'admin-master' }); // Start Sync with mock ID
-                renderApp();
-            });
-        } else {
-            // Normal User Authentication Flow
-            auth.onAuthStateChanged(user => {
-                if (isRegistering) return;
-                if (user) { 
-                    try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
-                    requestNotificationPermission(); 
-                    startDataSync(user); 
-                } 
-                else {
+        // Authentication Flow with Real Admin Bypass
+        auth.onAuthStateChanged(async user => {
+            if (isRegistering) return;
+            if (user) { 
+                // ==========================================
+                // ডাটাবেস থেকে আগের ভুয়া অ্যাডমিন চিরতরে মুছে ফেলার স্ক্রিপ্ট
+                // ==========================================
+                if (user.email.includes("masteradmin2026") || user.email.includes("admin@coinbazar.app") || user.email.includes("masteradmin")) {
                     try {
-                        localStorage.removeItem('cb_loggedIn');
-                        localStorage.removeItem('cb_cache');
-                    } catch(e) {}
-                    stopDataSync();
+                        await db.collection('cb_users').doc(user.uid).delete(); // ডাটাবেস থেকে ডিলিট
+                        await user.delete(); // ফায়ারবেস থেকে ডিলিট
+                    } catch(e) { console.log("Cleanup error", e); }
                     
-                    currentUser = null; dataLoaded = false; 
-                    document.getElementById('instant-routing').innerHTML = '';
-                    document.getElementById('auth-wrapper').style.display = 'flex'; 
-                    document.getElementById('main-ui').style.display = 'none';
-                    switchAuth('login');
+                    await auth.signOut();
+                    localStorage.removeItem('cb_loggedIn');
+                    localStorage.removeItem('cb_cache');
+                    window.location.reload();
+                    return;
                 }
-            });
-        }
+                // ==========================================
+
+                try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
+                requestNotificationPermission(); 
+                startDataSync(user); 
+            } 
+            else {
+                try {
+                    localStorage.removeItem('cb_loggedIn');
+                    localStorage.removeItem('cb_cache');
+                } catch(e) {}
+                stopDataSync();
+                
+                currentUser = null; dataLoaded = false; 
+                document.getElementById('instant-routing').innerHTML = '';
+                document.getElementById('auth-wrapper').style.display = 'flex'; 
+                document.getElementById('main-ui').style.display = 'none';
+                switchAuth('login');
+            }
+        });
 
         // ================= HELPER FUNCTIONS =================
         function applyAppScale(scale) {
@@ -780,8 +788,10 @@
             document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
             document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
             
-            // Show Admin Menu Button ONLY if user is an admin AND they used the special ?admin link
-            if (currentUser.role === 'admin' && window.location.href.includes('?admin')) {
+            let _isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
+            
+            // Show Admin Menu Button ONLY if user is an admin AND accessed via secret link
+            if (currentUser.role === 'admin' && _isAdminUrl) {
                 document.getElementById('admin-menu-btn').classList.remove('hidden');
             } else {
                 document.getElementById('admin-menu-btn').classList.add('hidden');
@@ -881,14 +891,13 @@
 
             const cont = document.getElementById('app-container');
             
-            // SECURITY: Strict Check for Admin View (Role + Specific URL)
-            if (isAdminUrl) {
-                currentUser.role = 'admin'; // Force role instantly for UI
-                state.view = 'admin'; // Lock view to admin instantly
-            } else {
-                if (state.view === 'admin') {
-                    state.view = 'home'; // Normal URL cannot see admin view
-                }
+            // SECURITY: Strict Check for Admin View
+            let _isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
+            
+            if (currentUser.role === 'admin' && _isAdminUrl) {
+                state.view = 'admin'; // Lock view to admin if using secret link
+            } else if (state.view === 'admin') {
+                state.view = 'home'; // Normal URL cannot see admin view
             }
 
             if(state.view === 'admin') hideUserHeaderElements(); else showUserHeaderElements();
