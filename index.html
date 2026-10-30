@@ -1619,10 +1619,6 @@
         }
 
         function renderAdminDash() {
-            let totalUsers = users.length; 
-            let totalSell = orders.filter(o=>o.type==='sell' && o.status==='approved').reduce((s,o)=>s+(parseFloat(o.paidAmount)||o.receive), 0);
-            let totalWd = orders.filter(o=>o.type==='wd' && o.status==='approved').reduce((s,o)=>s+o.total, 0);
-
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
             let totalPending = sellPending + wdPending;
@@ -1645,13 +1641,7 @@
                 </div>
             </div>`;
 
-            return pendingBoardHtml + trackBoxHtml + `
-                <div class="grid grid-cols-3 gap-3 mb-5">
-                    <div onclick="openAdminHistory('users')" class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-0.5 transition shadow-sm cursor-pointer hover:shadow-lg active:scale-95"><i class="fa-solid fa-users text-[var(--accent-cyan)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="tot_users">${t('tot_users')}</div><div class="text-xl font-black text-white">${totalUsers}</div></div>
-                    <div onclick="openAdminHistory('sells')" class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--success)] hover:-translate-y-0.5 transition shadow-sm cursor-pointer hover:shadow-lg active:scale-95"><i class="fa-solid fa-chart-line text-[var(--success)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="bought">${t('bought')}</div><div class="text-xl font-black text-white">৳${totalSell.toFixed(0)}</div></div>
-                    <div onclick="openAdminHistory('wds')" class="glass-panel p-4 rounded-2xl text-center border-t-2 border-[var(--error)] hover:-translate-y-0.5 transition shadow-sm cursor-pointer hover:shadow-lg active:scale-95"><i class="fa-solid fa-money-bill-trend-up text-[var(--error)] text-3xl mb-2 drop-shadow-md"></i><div class="text-[10px] text-[var(--text-muted)] font-bold uppercase" data-i18n="wd_paid">${t('wd_paid')}</div><div class="text-xl font-black text-white">৳${totalWd.toFixed(0)}</div></div>
-                </div>
-            `;
+            return pendingBoardHtml + trackBoxHtml;
         }
 
         // --- Admin History Modal & Delete Functions ---
