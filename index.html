@@ -1797,7 +1797,19 @@
                 </button>
             </div>`;
 
-            return pendingBoardHtml + trackBoxHtml + actionBtnsHtml;
+            let shortcutBtns = `
+            <div class="grid grid-cols-2 gap-3 mb-2 mt-4 pt-4 border-t border-[var(--border-color)]">
+                <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp();" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
+                    <i class="fa-solid fa-calendar-day text-[var(--accent-gold)] text-2xl drop-shadow-md"></i>
+                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Today's<br>Summary</span>
+                </button>
+                <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp(); setTimeout(()=>window.scrollTo({top:9999, behavior:'smooth'}), 100);" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[#9b59b6] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
+                    <i class="fa-solid fa-box-archive text-[#9b59b6] text-2xl drop-shadow-md"></i>
+                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Old<br>History</span>
+                </button>
+            </div>`;
+
+            return pendingBoardHtml + trackBoxHtml + actionBtnsHtml + shortcutBtns;
         }
 
         // --- Admin History Modal & Delete Functions ---
@@ -1992,9 +2004,20 @@
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
-                ${(dailyArchives || []).filter(a=>a).map((a) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-2">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div></div>`).join('')}`;
+                ${(dailyArchives || []).filter(a=>a).map((a, idx) => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-2 flex justify-between items-center hover:border-[var(--accent-cyan)]/30 transition"><div><span class="text-[10px] font-bold text-white bg-[var(--bg-main)] px-2 py-1 rounded border border-[var(--border-color)]">${a.date}</span></div><div class="text-right flex items-center gap-2"><div class="text-right"><span class="text-[11px] text-[var(--accent-cyan)] font-bold mr-1">${a.totalK}K</span> <span class="text-sm text-[var(--success)] font-black">৳${a.totalPaid}</span></div><button onclick="deleteArchive(${idx})" class="w-7 h-7 bg-[var(--error)]/10 text-[var(--error)] rounded-lg flex items-center justify-center border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white transition active:scale-90" title="Delete Archive"><i class="fa-solid fa-trash text-[10px]"></i></button></div></div>`).join('')}`;
             }
             return subTabHtml + searchBox + contentHtml;
+        }
+
+        function deleteArchive(idx) {
+            if(confirm("আপনি কি নিশ্চিত যে এই পুরাতন হিসেবটি ডিলিট করতে চান? এটি আর ফেরত পাওয়া যাবে না।")) {
+                let newArchive = [...dailyArchives];
+                newArchive.splice(idx, 1);
+                dailyArchives = newArchive;
+                db.collection('cb_data').doc('global_state').update({ dailyArchives: newArchive });
+                showToast("পুরাতন হিসেব ডিলিট করা হয়েছে!");
+                renderApp();
+            }
         }
 
         function archiveDaily() {
