@@ -140,7 +140,7 @@
             }
         };
 
-        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, allowUserDeletion: false, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
+        const DEFAULT_SETTINGS = { name: 'Coin Bazar', logo: '', notice: 'Welcome to the Premium Coin Bazar! Best rates guaranteed.', tg: '', wa: '', fb: '', yt: '', waLogo: '', tgLogo: '', fbLogo: '', ytLogo: '', lang: 'bn', requireTelegram: false, maintenanceMode: false, allowUserDeletion: false, appScale: 100, minWd: 50, wdNotice: 'সর্বনিম্ন উত্তোলন ৫০ টাকা। সঠিক নাম্বার দিন।' };
         
         let settings = DEFAULT_SETTINGS, coins = [], pmMethods = [], users = [], orders = [], dailyArchives = [], notifications = [], tickets = [];
         let currentUser = null;
@@ -172,6 +172,7 @@
             try {
                 let parsed = JSON.parse(cacheData);
                 settings = parsed.settings || DEFAULT_SETTINGS;
+                if(typeof applyAppScale === 'function') applyAppScale(settings.appScale);
                 
                 // Load saved language preference
                 let localLang = null;
@@ -418,6 +419,7 @@
                     let data = doc.data();
                     let s = data.settings || DEFAULT_SETTINGS;
                     updateAuthUIDynamically(s);
+                    if(typeof applyAppScale === 'function') applyAppScale(s.appScale);
                 }
             }, err => console.warn("Auth UI Sync Error:", err));
         };
@@ -587,6 +589,7 @@
                 if (doc.exists) {
                     let data = doc.data();
                     settings = data.settings || DEFAULT_SETTINGS; 
+                    if(typeof applyAppScale === 'function') applyAppScale(settings.appScale);
                     
                     // Prioritize user's local language preference safely
                     try {
@@ -713,6 +716,24 @@
         });
 
         // ================= HELPER FUNCTIONS =================
+        function applyAppScale(scale) {
+            let s = parseInt(scale) || 100;
+            if(s < 50) s = 50;
+            if(s > 200) s = 200;
+            // আধুনিক স্কেলিং মেথড যা সাইটের কোয়ালিটি নষ্ট করে না
+            document.documentElement.style.fontSize = (16 * (s / 100)) + 'px';
+        }
+
+        function updateAppScale(val) {
+            let scale = parseInt(val) || 100; 
+            if(scale < 50) scale = 50; 
+            if(scale > 200) scale = 200; 
+            settings.appScale = scale; 
+            db.collection('cb_data').doc('global_state').update({ 'settings.appScale': scale }); 
+            applyAppScale(scale); 
+            showToast("UI Size Updated to " + scale + "%"); 
+        }
+
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const overlay = document.getElementById('mobile-menu-overlay');
@@ -2334,6 +2355,13 @@
                     <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm">
                         <div><div class="text-[11px] font-black text-white">Allow User Deletion</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Enable to show delete buttons in Users tab</div></div>
                         <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="set-allow-del" class="sr-only peer" ${settings.allowUserDeletion ? 'checked' : ''} onchange="toggleAllowDel(this.checked)"><div class="w-10 h-6 bg-[var(--bg-main)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--text-muted)] peer-checked:after:bg-[var(--error)] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--bg-card)] border border-[var(--border-color)] shadow-inner"></div></label>
+                    </div>
+
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
+                        <div><div class="text-[11px] font-black text-white">UI Zoom / Size (%)</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Scale the entire app size (Default: 100)</div></div>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="set-app-scale" value="${settings.appScale || 100}" onchange="updateAppScale(this.value)" class="w-16 input-premium p-1.5 rounded-lg text-xs font-bold text-center border focus:border-[var(--accent-cyan)] shadow-sm">
+                        </div>
                     </div>
 
                     <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
