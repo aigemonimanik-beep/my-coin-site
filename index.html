@@ -1102,38 +1102,33 @@
         function renderUserHistory() {
             let resetTime = currentUser.resetTimestamp ? new Date(currentUser.resetTimestamp) : new Date(0);
             let allMyOrders = (orders || []).filter(o => o && o.userId === currentUser.id);
-            let visibleOrders = allMyOrders.filter(o => o && new Date(o.time) >= resetTime);
+            let visibleOrders = allMyOrders.filter(o => o && new Date(o.time) >= resetTime && !o.hiddenByUser);
 
             let mySells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'approved');
             let myWds = visibleOrders.filter(o => o && o.type === 'wd' && o.status === 'approved');
-            let pendSells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'pending');
-            let pendWds = visibleOrders.filter(o => o && o.type === 'wd' && (o.status === 'pending' || o.status === 'processing'));
+            
+            let allMySells = visibleOrders.filter(o => o && o.type === 'sell');
+            let allMyWds = visibleOrders.filter(o => o && o.type === 'wd');
 
             let totalEarned = mySells.reduce((sum, o) => sum + (parseFloat(o.paidAmount) || parseFloat(o.receive) || 0), 0);
-            let totalSellCount = mySells.length;
-
             let totalWithdrawn = myWds.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
-            let totalWdCount = myWds.length;
 
+            if (state.userHistTab === 'pend_sells' || state.userHistTab === 'pend_wds') state.userHistTab = 'sells';
             state.userHistTab = state.userHistTab || 'sells';
             
             // Search Filtering
             let q = (state.userOrderSearch || '').toLowerCase().trim();
             
-            let filteredMySells = q ? mySells.filter(o => o.id.toLowerCase().includes(q)) : mySells;
-            let filteredMyWds = q ? myWds.filter(o => o.id.toLowerCase().includes(q)) : myWds;
-            let filteredPendSells = q ? pendSells.filter(o => o.id.toLowerCase().includes(q)) : pendSells;
-            let filteredPendWds = q ? pendWds.filter(o => o.id.toLowerCase().includes(q)) : pendWds;
+            let filteredAllMySells = q ? allMySells.filter(o => o.id.toLowerCase().includes(q)) : allMySells;
+            let filteredAllMyWds = q ? allMyWds.filter(o => o.id.toLowerCase().includes(q)) : allMyWds;
 
             let tabBtns = [
-                { id: 'sells', label: t('sell_hist'), count: totalSellCount },
-                { id: 'wds', label: t('wd_hist'), count: totalWdCount },
-                { id: 'pend_sells', label: t('pend_sells'), count: pendSells.length },
-                { id: 'pend_wds', label: t('pend_wds'), count: pendWds.length }
+                { id: 'sells', label: t('sell_hist'), count: allMySells.length },
+                { id: 'wds', label: t('wd_hist'), count: allMyWds.length }
             ].map(t => {
                 let active = state.userHistTab === t.id ? 'bg-[var(--accent-cyan)] text-[var(--bg-main)] shadow-md' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border border-[var(--border-color)]';
                 let countBg = state.userHistTab === t.id ? 'bg-[var(--bg-main)] text-[var(--accent-cyan)]' : 'bg-[var(--bg-main)] text-[var(--text-muted)] border border-[var(--border-color)]';
-                return `<button onclick="state.userHistTab='${t.id}'; renderApp()" class="flex-1 basis-[45%] py-2.5 rounded-xl text-[11px] font-black transition-all duration-300 ${active}">${t.label} <span class="${countBg} px-1.5 py-0.5 rounded text-[9px] ml-1 shadow-inner">${t.count}</span></button>`;
+                return `<button onclick="state.userHistTab='${t.id}'; renderApp()" class="flex-1 py-2.5 rounded-xl text-[11px] font-black transition-all duration-300 ${active}">${t.label} <span class="${countBg} px-1.5 py-0.5 rounded text-[9px] ml-1 shadow-inner">${t.count}</span></button>`;
             }).join('');
 
             let contentHtml = '';
@@ -1166,7 +1161,14 @@
                     coinGrid = `<div class="col-span-2 text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No completed sells yet.</p></div>`;
                 }
                 
-                let detailedListHtml = filteredMySells.length > 0 ? filteredMySells.map(o => `
+                let detailedListHtml = filteredAllMySells.length > 0 ? filteredAllMySells.map(o => {
+                    let isPending = o.status === 'pending';
+                    let isRejected = o.status === 'rejected';
+                    let amt = isPending || isRejected ? o.receive : (o.paidAmount || o.receive);
+                    let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--success)]');
+                    let sign = isRejected ? '' : '+ ';
+                    let delBtn = (!isPending) ? `<button onclick="hideUserOrder('${o.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-1.5 py-0.5 rounded hover:bg-[var(--error)] hover:text-white transition shadow-sm ml-1" title="হিস্ট্রি ডিলিট করুন"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
+                    return `
                     <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition mb-2">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span>
@@ -1174,11 +1176,15 @@
                             <span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span>
                         </div>
                         <div class="text-right flex flex-col items-end">
-                            <span class="text-sm font-black text-[var(--success)]">+ ৳${o.paidAmount || o.receive}</span>
-                            <span class="status-badge approved px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Approved</span>
+                            <span class="text-sm font-black ${color}">${sign}৳${amt}</span>
+                            <div class="flex items-center mt-1">
+                                <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
+                                ${delBtn}
+                            </div>
                         </div>
                     </div>
-                `).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching orders found.</p></div>`;
+                    `;
+                }).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching orders found.</p></div>`;
 
                 contentHtml = `
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--success)]">
@@ -1197,25 +1203,29 @@
                     <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--error)]">
                         <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-money-bill-transfer text-[var(--error)]"></i> Withdraw History</h3>
                         <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
-                            ${filteredMyWds.length > 0 ? filteredMyWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--error)]">- ৳${o.total}</span><span class="status-badge approved px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Approved</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching withdraws.</p></div>`}
-                        </div>
-                    </div>
-                `;
-            } else if (state.userHistTab === 'pend_sells') {
-                contentHtml = `
-                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-cyan)]">
-                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> Pending Coin Sells</h3>
-                        <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
-                            ${filteredPendSells.length > 0 ? filteredPendSells.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.k}K ${o.coinName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.receive}</span><span class="status-badge pending px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">Pending</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching pending sells.</p></div>`}
-                        </div>
-                    </div>
-                `;
-            } else if (state.userHistTab === 'pend_wds') {
-                contentHtml = `
-                    <div class="glass-panel p-4 rounded-2xl mb-6 shadow-lg border-t-2 border-[var(--accent-gold)]">
-                        <h3 class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-3 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-gold)]"></i> Pending Withdraws</h3>
-                        <div class="space-y-2 max-h-[400px] overflow-y-auto hide-scroll pr-1">
-                            ${filteredPendWds.length > 0 ? filteredPendWds.map(o => `<div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition"><div class="flex flex-col"><span class="text-xs font-black text-white">${o.methodName}</span><span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span><span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span></div><div class="text-right flex flex-col items-end"><span class="text-sm font-black text-[var(--accent-gold)]">৳${o.total}</span><span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1">${o.status}</span></div></div>`).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching pending withdraws.</p></div>`}
+                            ${filteredAllMyWds.length > 0 ? filteredAllMyWds.map(o => {
+                                let isPending = o.status === 'pending' || o.status === 'processing';
+                                let isRejected = o.status === 'rejected';
+                                let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--error)]');
+                                let sign = isRejected ? '' : '- ';
+                                let delBtn = (!isPending) ? `<button onclick="hideUserOrder('${o.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-1.5 py-0.5 rounded hover:bg-[var(--error)] hover:text-white transition shadow-sm ml-1" title="হিস্ট্রি ডিলিট করুন"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
+                                return `
+                                <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition mb-2">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-black text-white">${o.methodName}</span>
+                                        <span class="text-[9px] text-[var(--text-muted)] mt-1">${o.time}</span>
+                                        <span class="text-[8px] font-mono text-[var(--accent-gold)] mt-1">ID: ${o.id}</span>
+                                    </div>
+                                    <div class="text-right flex flex-col items-end">
+                                        <span class="text-sm font-black ${color}">${sign}৳${o.total}</span>
+                                        <div class="flex items-center mt-1">
+                                            <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
+                                            ${delBtn}
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('') : `<div class="text-center py-4 border border-dashed border-[var(--border-color)] rounded-xl"><p class="text-[10px] text-[var(--text-muted)]">No matching withdraws.</p></div>`}
                         </div>
                     </div>
                 `;
@@ -1287,6 +1297,18 @@
             link.click(); 
             document.body.removeChild(link); 
             showToast("File Downloaded!");
+        }
+
+        async function hideUserOrder(id) {
+            if(confirm("আপনি কি নিশ্চিত যে এই হিস্ট্রি মুছতে চান? (এটি শুধু আপনার লিস্ট থেকে মুছে যাবে, এডমিন প্যানেলে হিসেব থেকে যাবে)")) {
+                try {
+                    await db.collection('cb_orders').doc(id).update({ hiddenByUser: true });
+                    showToast("হিস্ট্রি মুছে ফেলা হয়েছে!");
+                    renderApp();
+                } catch(e) {
+                    showToast("Error deleting history", "error");
+                }
+            }
         }
 
         // ================= HOME VIEW =================
