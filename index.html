@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Coin Bazar | Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1100,9 +1103,8 @@
 
         // ================= USER HISTORY VIEW =================
         function renderUserHistory() {
-            let resetTime = currentUser.resetTimestamp ? new Date(currentUser.resetTimestamp) : new Date(0);
             let allMyOrders = (orders || []).filter(o => o && o.userId === currentUser.id);
-            let visibleOrders = allMyOrders.filter(o => o && new Date(o.time) >= resetTime && !o.hiddenByUser);
+            let visibleOrders = allMyOrders.filter(o => o && !o.hiddenByUser);
 
             let mySells = visibleOrders.filter(o => o && o.type === 'sell' && o.status === 'approved');
             let myWds = visibleOrders.filter(o => o && o.type === 'wd' && o.status === 'approved');
@@ -1122,6 +1124,7 @@
             let filteredAllMySells = q ? allMySells.filter(o => o.id.toLowerCase().includes(q)) : allMySells;
             let filteredAllMyWds = q ? allMyWds.filter(o => o.id.toLowerCase().includes(q)) : allMyWds;
 
+            // শুধুমাত্র ২টি বাটন রাখা হয়েছে (পেন্ডিং বাটনগুলো রিমুভ করা আছে)
             let tabBtns = [
                 { id: 'sells', label: t('sell_hist'), count: allMySells.length },
                 { id: 'wds', label: t('wd_hist'), count: allMyWds.length }
@@ -1236,7 +1239,7 @@
                     <h2 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[var(--accent-cyan)]"></i> ${t('my_dash')}</h2>
                     <div class="flex gap-2">
                         <button onclick="exportUserCSV()" class="bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] hover:text-white hover:bg-[var(--accent-cyan)] px-3 py-1.5 rounded-lg border border-[var(--accent-cyan)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-file-csv"></i> ${t('download')}</button>
-                        <button onclick="resetUserHistory()" class="bg-[var(--error)]/10 text-[var(--error)] hover:text-white hover:bg-[var(--error)] px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-rotate-right"></i> ${t('reset')}</button>
+                        <button onclick="resetUserHistory()" class="bg-[var(--error)]/10 text-[var(--error)] hover:text-white hover:bg-[var(--error)] px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-trash-can"></i> All Reset</button>
                     </div>
                 </div>
 
@@ -1265,18 +1268,34 @@
         }
 
         async function resetUserHistory() {
-            if(confirm(t('reset_confirm'))) {
-                await db.collection('cb_users').doc(currentUser.id).update({
-                    resetTimestamp: new Date().toISOString()
-                });
-                showToast("History Reset Successful!");
-                renderApp();
+            if(confirm("আপনার সমস্ত কমপ্লিট হওয়া (Approved/Rejected) হিস্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?")) {
+                showLoading();
+                try {
+                    let batch = db.batch();
+                    let myCompletedOrders = orders.filter(o => o.userId === currentUser.id && o.status !== 'pending' && o.status !== 'processing' && !o.hiddenByUser);
+                    
+                    if(myCompletedOrders.length === 0) {
+                        hideLoading();
+                        return showToast("মুছে ফেলার মতো কোনো পুরনো হিস্ট্রি নেই!", "error");
+                    }
+
+                    myCompletedOrders.forEach(o => {
+                        batch.update(db.collection('cb_orders').doc(o.id), { hiddenByUser: true });
+                    });
+                    
+                    await batch.commit();
+                    hideLoading();
+                    showToast("হিস্ট্রি ফাকা করা হয়েছে!");
+                    renderApp();
+                } catch(e) {
+                    hideLoading();
+                    showToast("Error resetting history", "error");
+                }
             }
         }
 
         function exportUserCSV() {
-            let resetTime = currentUser.resetTimestamp ? new Date(currentUser.resetTimestamp) : new Date(0);
-            let myOrders = orders.filter(o => o.userId === currentUser.id && new Date(o.time) >= resetTime);
+            let myOrders = orders.filter(o => o.userId === currentUser.id && !o.hiddenByUser);
             if(myOrders.length === 0) return showToast("No data to export", "error");
 
             let data = [['Order ID', 'Type', 'Coin/Method', 'Amount/K', 'Value (BDT)', 'Status', 'Date']];
