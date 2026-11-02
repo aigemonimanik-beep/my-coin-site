@@ -22,7 +22,8 @@
             --accent-cyan: #35D9F2; --success: #16C784; --error: #FF647C;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; overscroll-behavior-y: none; }
+        html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
         
         .glass-panel { background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
         .gold-text { background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -172,25 +173,18 @@
         let dataLoaded = false;
         let isAdminLoggingIn = false;
         
-        let _sView='home', _sAdmTab='dash', _sAdmSell='pending', _sAdmWd='pending', _sUsrHist='sells';
-        try {
-            _sView = localStorage.getItem('cb_view') || 'home';
-            _sAdmTab = localStorage.getItem('cb_adminTab') || 'dash';
-            _sAdmSell = localStorage.getItem('cb_adminSellTab') || 'pending';
-            _sAdmWd = localStorage.getItem('cb_adminWdTab') || 'pending';
-            _sUsrHist = localStorage.getItem('cb_userHistTab') || 'sells';
-        } catch(e) {}
+        const _isAdminURL = window.location.href.includes('?admin') || window.location.href.includes('&admin');
 
-        // Navigation States
+        // Navigation States - Forced defaults on every page load
         let state = { 
-            view: _sView, 
+            view: _isAdminURL ? 'admin' : 'home', 
             selCoinId: null, selWdId: null, 
-            adminTab: _sAdmTab, adminSellTab: _sAdmSell, adminWdTab: _sAdmWd, 
+            adminTab: 'dash', adminSellTab: 'pending', adminWdTab: 'pending', 
             editCoinId: null, 
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null, userHistTab: _sUsrHist, userOrderSearch: ''
+            adminHistoryType: null, userHistTab: 'sells', userOrderSearch: ''
         };
 
         let prevPendingCount = 0;
@@ -1333,6 +1327,35 @@
             let unameDisplay = selC ? selC.username : '---';
             let unameBtn = selC ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">${t('copy')}</span></button>` : '';
 
+            let wdMethodsHtml = (pmMethods || []).filter(m => m && m.active !== false).map(m => {
+                let isBinance = String(m.name || '').toLowerCase().includes('binance');
+                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-6 h-6 object-contain rounded-full">` : `<div class="w-6 h-6 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
+                
+                let chargeHtml = '';
+                if(isBinance) {
+                    let rate = settings.binanceRate || 127;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">৳${rate}/$</span>`;
+                } else if(m.charge > 0) {
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">চার্জ ৳${m.charge}</span>`;
+                }
+
+                let savedNum = currentUser.savedAccounts && currentUser.savedAccounts[m.name] ? currentUser.savedAccounts[m.name] : '';
+                let savedDisplay = savedNum ? `<span class="text-[var(--accent-cyan)] text-[11px] font-mono ml-1.5">(${savedNum})</span>` : `<span class="text-[var(--text-muted)] text-[9px] ml-1.5 opacity-50">(নাম্বার নেই)</span>`;
+
+                return `
+                <div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-3 cursor-pointer flex items-center justify-between transition hover:border-[var(--accent-cyan)]/50">
+                    <div class="flex items-center gap-3">
+                        <div id="wd-radio-${m.id}" class="w-4 h-4 rounded-full border-2 border-[var(--text-muted)] flex items-center justify-center transition-all duration-300"></div>
+                        ${logoHtml}
+                        <div class="flex items-center">
+                            <span class="text-[12px] font-black text-white tracking-wide leading-tight">${m.name}</span>
+                            ${savedDisplay}
+                        </div>
+                    </div>
+                    ${chargeHtml}
+                </div>`;
+            }).join('');
+
             let socials = '';
             if(settings.wa) {
                 let link = String(settings.wa).startsWith('http') ? settings.wa : `https://wa.me/${String(settings.wa).replace(/[^0-9]/g, '')}`;
@@ -1466,7 +1489,7 @@
                             <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide" data-i18n="sel_method">${t('sel_method')}</label>
                             <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> পেমেন্ট নাম্বার অ্যাড করুন</button>
                         </div>
-                        <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid"></div>
+                        <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid">${wdMethodsHtml}</div>
                         
                         <div class="mb-4">
                             <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
@@ -1511,7 +1534,19 @@
             if (f) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
-                    bx.innerHTML = `<img src="${e.target.result}" class="w-full h-32 object-contain rounded-lg">`;
+                    bx.innerHTML = `
+                        <div class="relative w-full flex flex-col items-center">
+                            <div class="relative w-full z-20 cursor-pointer group" onclick="event.preventDefault(); viewImg('${e.target.result}')" title="Tap to view full image">
+                                <img src="${e.target.result}" class="w-full h-32 object-contain rounded-lg border border-[var(--border-color)] shadow-sm bg-[var(--bg-sidebar)]">
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 rounded-lg transition-opacity">
+                                    <i class="fa-solid fa-expand text-white text-3xl drop-shadow-md"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-[10px] text-[var(--accent-gold)] font-black z-20 flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-sidebar)] rounded-lg border border-[var(--accent-gold)]/30 cursor-pointer shadow-sm hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition active:scale-95" onclick="document.getElementById('sell-ss').click()">
+                                <i class="fa-solid fa-pen"></i> চেঞ্জ করুন (Change)
+                            </div>
+                        </div>
+                    `;
                     bx.classList.add('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]', 'p-2');
                     bx.classList.remove('p-6', 'border-dashed');
                 }
@@ -1592,37 +1627,21 @@
         }
 
         function openWdModal() {
-            state.selWdId = null; let grid = document.getElementById('wd-methods-grid');
-            let activeMethods = (pmMethods || []).filter(m => m && m.active !== false);
+            state.selWdId = null; 
             
-            grid.innerHTML = activeMethods.map(m => {
-                let isBinance = String(m.name || '').toLowerCase().includes('binance');
-                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-6 h-6 object-contain rounded-full">` : `<div class="w-6 h-6 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
-                
-                let chargeHtml = '';
-                if(isBinance) {
-                    let rate = settings.binanceRate || 127;
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">৳${rate}/$</span>`;
-                } else if(m.charge > 0) {
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">চার্জ ৳${m.charge}</span>`;
+            pmMethods.forEach(m => {
+                let el = document.getElementById(`wd-btn-${m.id}`);
+                let rad = document.getElementById(`wd-radio-${m.id}`);
+                if (el) {
+                    el.style.borderColor = 'var(--border-color)'; 
+                    el.style.background = 'rgba(7, 20, 38, 0.5)'; 
+                    el.style.boxShadow = 'none'; 
                 }
-
-                let savedNum = currentUser.savedAccounts && currentUser.savedAccounts[m.name] ? currentUser.savedAccounts[m.name] : '';
-                let savedDisplay = savedNum ? `<span class="text-[var(--accent-cyan)] text-[11px] font-mono ml-1.5">(${savedNum})</span>` : `<span class="text-[var(--text-muted)] text-[9px] ml-1.5 opacity-50">(নাম্বার নেই)</span>`;
-
-                return `
-                <div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-3 cursor-pointer flex items-center justify-between transition hover:border-[var(--accent-cyan)]/50">
-                    <div class="flex items-center gap-3">
-                        <div id="wd-radio-${m.id}" class="w-4 h-4 rounded-full border-2 border-[var(--text-muted)] flex items-center justify-center transition-all duration-300"></div>
-                        ${logoHtml}
-                        <div class="flex items-center">
-                            <span class="text-[12px] font-black text-white tracking-wide leading-tight">${m.name}</span>
-                            ${savedDisplay}
-                        </div>
-                    </div>
-                    ${chargeHtml}
-                </div>`;
-            }).join('');
+                if (rad) {
+                    rad.innerHTML = '';
+                    rad.style.borderColor = 'var(--text-muted)';
+                }
+            });
             
             let noticeBox = document.getElementById('wd-notice-box');
             if (settings.wdNotice) { noticeBox.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${settings.wdNotice}`; noticeBox.classList.remove('hidden'); } 
