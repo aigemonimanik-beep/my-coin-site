@@ -1466,11 +1466,13 @@
                         <div class="grid grid-cols-2 gap-2 mb-3" id="wd-methods-grid"></div>
                         
                         <div class="mb-4">
-                            <div class="flex justify-between items-end mb-2 ml-1 pr-1">
-                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" id="wd-acc-label">${t('acc_no')}</label>
-                                <div id="wd-acc-actions" class="hidden gap-2"></div>
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
+                            <div class="relative">
+                                <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 pr-[110px] font-bold text-white text-sm" placeholder="017...">
+                                <div id="wd-acc-actions" class="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
+                                    <button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 opacity-80"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>
+                                </div>
                             </div>
-                            <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
                         </div>
                         
                         <div class="mb-5">
@@ -1583,7 +1585,9 @@
             
             document.getElementById('wd-acc').value = ''; 
             let accActions = document.getElementById('wd-acc-actions');
-            if(accActions) { accActions.classList.add('hidden'); accActions.classList.remove('flex'); }
+            if(accActions) {
+                accActions.innerHTML = `<button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 opacity-80"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>`;
+            }
             
             document.getElementById('wd-amt').value = ''; document.getElementById('wd-calc-res').classList.add('hidden');
             let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content');
@@ -1592,7 +1596,7 @@
         function closeWdModal() { let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content'); modal.classList.add('opacity-0'); content.classList.add('translate-y-full'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
         
         async function saveCurrentWdAccount() {
-            if(!state.selWdId) return;
+            if(!state.selWdId) return showToast("আগে বিকাশ/নগদ/বাইনান্স মেথড সিলেক্ট করুন!", "error");
             let m = pmMethods.find(x=>x.id===state.selWdId);
             let val = document.getElementById('wd-acc').value.trim();
             if(!val) return showToast("নাম্বার খালি রাখা যাবে না!", "error");
@@ -1657,16 +1661,12 @@
                 if(savedAcc) {
                     accInput.value = savedAcc;
                     accActions.innerHTML = `
-                        <button onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--success)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-pen"></i> আপডেট</button>
-                        <button onclick="deleteCurrentWdAccount()" class="text-[9px] bg-[var(--error)]/10 text-[var(--error)] hover:bg-[var(--error)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--error)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-trash"></i> ডিলিট</button>
+                        <button type="button" onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--success)] text-[var(--bg-main)] px-2 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-pen"></i> আপডেট</button>
+                        <button type="button" onclick="deleteCurrentWdAccount()" class="text-[9px] bg-[var(--error)] text-white px-2 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-trash"></i></button>
                     `;
-                    accActions.classList.remove('hidden');
-                    accActions.classList.add('flex');
                 } else {
                     accInput.value = '';
-                    accActions.innerHTML = `<button onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--accent-cyan)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-floppy-disk"></i> সেভ করুন</button>`;
-                    accActions.classList.remove('hidden');
-                    accActions.classList.add('flex');
+                    accActions.innerHTML = `<button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>`;
                 }
             }
 
