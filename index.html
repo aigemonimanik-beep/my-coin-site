@@ -22,7 +22,7 @@
             --accent-cyan: #35D9F2; --success: #16C784; --error: #FF647C;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; overscroll-behavior-y: none; }
         
         .glass-panel { background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
         .gold-text { background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -1432,7 +1432,7 @@
                     <div class="mb-6">
                         <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-cloud-arrow-up text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
                         <div class="relative group cursor-pointer">
-                            <input type="file" id="sell-ss" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="let f=this.files[0]; let el=document.getElementById('ss-filename'); let ic=document.getElementById('ss-icon'); let bx=document.getElementById('ss-box'); if(f){ el.innerText=f.name; el.classList.add('text-[var(--accent-cyan)]'); ic.className='fa-solid fa-circle-check text-3xl text-[var(--success)] mb-2 drop-shadow-md'; bx.classList.add('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]'); }else{ el.innerText='Tap to upload screenshot'; el.classList.remove('text-[var(--accent-cyan)]'); ic.className='fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity'; bx.classList.remove('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]'); }">
+                            <input type="file" id="sell-ss" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleSellImageUpload(this)">
                             <div id="ss-box" class="bg-[var(--bg-sidebar)] border-2 border-dashed border-[var(--border-color)] group-hover:border-[var(--accent-cyan)]/70 group-hover:bg-[var(--bg-main)] rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 shadow-inner">
                                 <i id="ss-icon" class="fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity drop-shadow-sm"></i>
                                 <p id="ss-filename" class="text-xs font-black text-[var(--text-muted)] truncate w-full px-2 mt-1">Tap here to select file</p>
@@ -1464,7 +1464,7 @@
                         
                         <div class="flex justify-between items-center mb-3 ml-1">
                             <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide" data-i18n="sel_method">${t('sel_method')}</label>
-                            <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> নাম্বার এডিট/সেভ</button>
+                            <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> পেমেন্ট নাম্বার অ্যাড করুন</button>
                         </div>
                         <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid"></div>
                         
@@ -1505,6 +1505,28 @@
         }
         function copyText(txt) { navigator.clipboard.writeText(txt); showToast(t('copied')); }
         
+        function handleSellImageUpload(input) {
+            let f = input.files[0];
+            let bx = document.getElementById('ss-box');
+            if (f) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    bx.innerHTML = `<img src="${e.target.result}" class="w-full h-32 object-contain rounded-lg">`;
+                    bx.classList.add('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]', 'p-2');
+                    bx.classList.remove('p-6', 'border-dashed');
+                }
+                reader.readAsDataURL(f);
+            } else {
+                bx.innerHTML = `
+                    <i id="ss-icon" class="fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity drop-shadow-sm"></i>
+                    <p id="ss-filename" class="text-xs font-black text-[var(--text-muted)] truncate w-full px-2 mt-1">Tap here to select file</p>
+                    <span class="text-[9px] bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded-full text-[var(--text-muted)] mt-3 font-bold shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-image"></i> JPG, PNG, JPEG</span>
+                `;
+                bx.classList.remove('border-[var(--accent-cyan)]', 'bg-[var(--bg-main)]', 'p-2');
+                bx.classList.add('p-6', 'border-dashed');
+            }
+        }
+
         function calcSell() {
             if(!state.selCoinId) return;
             let k = parseFloat(document.getElementById('sell-k').value); let box = document.getElementById('sell-calc-box'); let btn = document.getElementById('sell-submit-btn');
@@ -1622,15 +1644,20 @@
                 let savedNum = currentUser.savedAccounts && currentUser.savedAccounts[m.name] ? currentUser.savedAccounts[m.name] : '';
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-5 h-5 object-contain rounded-full">` : `<div class="w-5 h-5 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
                 
+                let saveBtnHtml = savedNum 
+                    ? `<button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm flex items-center gap-1.5" title="নাম্বার আপডেট করুন"><i class="fa-solid fa-pen"></i> আপডেট</button>` 
+                    : `<button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--success)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-check"></i> সেভ</button>`;
+
                 return `
-                <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3.5 rounded-xl shadow-sm hover:border-[var(--accent-cyan)]/40 transition">
+                <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3.5 rounded-xl shadow-sm hover:border-[var(--accent-cyan)]/40 transition mb-3">
                     <div class="flex justify-between items-center mb-2.5">
                         <span class="text-xs font-black text-white flex items-center gap-2">${logoHtml} ${m.name}</span>
+                        ${savedNum ? `<span class="text-[8px] bg-[var(--success)]/20 text-[var(--success)] px-2 py-0.5 rounded border border-[var(--success)]/30">অ্যাড করা আছে</span>` : `<span class="text-[8px] bg-[var(--error)]/20 text-[var(--error)] px-2 py-0.5 rounded border border-[var(--error)]/30">নাম্বার নেই</span>`}
                     </div>
                     <div class="flex gap-2">
                         <input type="text" id="manage-input-${m.id}" value="${savedNum}" placeholder="একাউন্ট নাম্বার দিন" class="flex-1 input-premium rounded-lg p-2.5 text-xs font-bold font-mono focus:border-[var(--accent-cyan)]">
-                        <button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--success)] hover:text-white transition active:scale-95 shadow-sm">সেভ</button>
-                        ${savedNum ? `<button onclick="delManageAcc('${m.name}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        ${saveBtnHtml}
+                        ${savedNum ? `<button onclick="delManageAcc('${m.name}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm" title="নাম্বার মুছে ফেলুন"><i class="fa-solid fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -1665,7 +1692,7 @@
                 saved[mName] = val;
                 currentUser.savedAccounts = saved; 
                 await db.collection('cb_users').doc(currentUser.id).update({ savedAccounts: saved });
-                showToast(mName + " নাম্বার সেভ হয়েছে!", "success");
+                showToast(mName + " নাম্বার সফলভাবে আপডেট হয়েছে!", "success");
                 openManageAccModal(); // re-render list
             } catch(e) {
                 showToast("সেভ করতে সমস্যা হয়েছে!", "error");
