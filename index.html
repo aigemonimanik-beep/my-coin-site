@@ -1473,49 +1473,59 @@
 
                 <!-- Withdraw Modal -->
                 <div id="wd-modal" class="fixed inset-0 bg-[#071426]/90 z-[110] hidden flex justify-center items-end sm:items-center transition-all duration-300 opacity-0 backdrop-blur-sm">
-                    <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-gold)]" id="wd-modal-content">
-                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3">
+                    <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-gold)] flex flex-col max-h-[90vh]" id="wd-modal-content">
+                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 flex-shrink-0">
                             <h2 class="text-xl font-black gold-text flex items-center gap-2"><i class="fa-solid fa-vault"></i> <span data-i18n="wd_title">${t('wd_title')}</span></h2>
-                            <button onclick="closeWdModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
-                        </div>
-                        <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-cyan)]/30 mb-4 flex justify-between items-center shadow-inner">
-                            <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Your Balance</span>
-                            <span class="text-sm font-black gold-text">৳${(Number(currentUser.balance) || 0).toFixed(2)}</span>
+                            <button onclick="closeWdModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90 shadow-md"><i class="fa-solid fa-times"></i></button>
                         </div>
                         
-                        <div id="wd-notice-box" class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-gold)]/30 mb-4 text-[10px] font-bold text-[var(--accent-gold)] shadow-inner hidden"></div>
-                        
-                        <div class="flex justify-between items-center mb-3 ml-1">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide" data-i18n="sel_method">${t('sel_method')}</label>
-                            <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> পেমেন্ট নাম্বার অ্যাড করুন</button>
-                        </div>
-                        <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid">${wdMethodsHtml}</div>
-                        
-                        <div class="mb-4">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
-                            <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
-                        </div>
-                        
-                        <div class="mb-5">
-                            <div class="flex justify-between items-end mb-2 ml-1 pr-1">
-                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" data-i18n="wd_amt">${t('wd_amt')}</label>
-                                <span class="text-[9px] text-[var(--accent-gold)] font-black">Min: ৳${settings.minWd || 50}</span>
+                        <div class="overflow-y-auto hide-scroll flex-1 pr-1 pb-4">
+                            <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-cyan)]/30 mb-4 flex justify-between items-center shadow-inner">
+                                <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Your Balance</span>
+                                <span class="text-sm font-black gold-text">৳${(Number(currentUser.balance) || 0).toFixed(2)}</span>
                             </div>
-                            <input type="number" id="wd-amt" oninput="calcWd()" class="w-full input-premium rounded-xl p-3.5 font-black text-lg text-[var(--accent-gold)]" placeholder="0">
+                            
+                            <div id="wd-notice-box" class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-gold)]/30 mb-4 text-[10px] font-bold text-[var(--accent-gold)] shadow-inner hidden"></div>
+                            
+                            <div class="flex justify-between items-center mb-3 ml-1">
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide" data-i18n="sel_method">${t('sel_method')}</label>
+                                <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> পেমেন্ট নাম্বার অ্যাড করুন</button>
+                            </div>
+                            <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid">${wdMethodsHtml}</div>
+                            
+                            <div class="mb-4">
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
+                                <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
+                            </div>
+                            
+                            <div class="mb-5">
+                                <div class="flex justify-between items-end mb-2 ml-1 pr-1">
+                                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" data-i18n="wd_amt">${t('wd_amt')}</label>
+                                    <span class="text-[9px] text-[var(--accent-gold)] font-black">Min: ৳${settings.minWd || 50}</span>
+                                </div>
+                                <input type="number" id="wd-amt" oninput="calcWd()" class="w-full input-premium rounded-xl p-3.5 font-black text-lg text-[var(--accent-gold)]" placeholder="0">
+                            </div>
+                            <div id="wd-calc-res" class="hidden bg-[var(--bg-sidebar)] border border-[var(--accent-cyan)]/30 rounded-xl p-4 text-xs font-bold text-[var(--text-main)] mb-6 space-y-2 shadow-inner"></div>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="closeWdModal()" class="w-1/3 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-4 rounded-xl uppercase tracking-widest text-xs font-black border border-[var(--border-color)] hover:text-white transition shadow-sm"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+                                <button onclick="submitWd()" class="w-2/3 gold-btn py-4 rounded-xl uppercase tracking-widest text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="send_req">${t('send_req')}</span></button>
+                            </div>
                         </div>
-                        <div id="wd-calc-res" class="hidden bg-[var(--bg-sidebar)] border border-[var(--accent-cyan)]/30 rounded-xl p-4 text-xs font-bold text-[var(--text-main)] mb-6 space-y-2 shadow-inner"></div>
-                        <button onclick="submitWd()" class="w-full gold-btn py-4 rounded-xl uppercase tracking-widest text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="send_req">${t('send_req')}</span></button>
                     </div>
                 </div>
 
                 <!-- Manage Accounts Modal -->
                 <div id="manage-acc-modal" class="fixed inset-0 bg-[#071426]/95 z-[130] hidden flex justify-center items-end sm:items-center transition-all duration-300 opacity-0 backdrop-blur-sm">
-                    <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-cyan)]" id="manage-acc-content">
-                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3">
+                    <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-cyan)] flex flex-col max-h-[90vh]" id="manage-acc-content">
+                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3 flex-shrink-0">
                             <h2 class="text-base font-black text-white flex items-center gap-2"><i class="fa-solid fa-address-book text-[var(--accent-cyan)]"></i> সেভ করা নাম্বার সমূহ</h2>
-                            <button onclick="closeManageAccModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
+                            <button onclick="closeManageAccModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90 shadow-md"><i class="fa-solid fa-times"></i></button>
                         </div>
-                        <div id="manage-acc-list" class="space-y-3 max-h-[60vh] overflow-y-auto hide-scroll pr-1"></div>
+                        <div id="manage-acc-list" class="space-y-3 overflow-y-auto hide-scroll pr-1 flex-1 pb-4"></div>
+                        <div class="mt-2 flex-shrink-0">
+                            <button onclick="closeManageAccModal()" class="w-full bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3.5 rounded-xl uppercase tracking-widest text-xs font-black border border-[var(--border-color)] hover:text-white transition shadow-sm flex items-center justify-center gap-2"><i class="fa-solid fa-arrow-left"></i> Back / Close</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1664,7 +1674,7 @@
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-5 h-5 object-contain rounded-full">` : `<div class="w-5 h-5 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
                 
                 let saveBtnHtml = savedNum 
-                    ? `<button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm flex items-center gap-1.5" title="নাম্বার আপডেট করুন"><i class="fa-solid fa-pen"></i> আপডেট</button>` 
+                    ? `<button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm flex items-center gap-1.5" title="নতুন নাম্বার দিয়ে সেভ করুন"><i class="fa-solid fa-floppy-disk"></i> সেভ করুন</button>` 
                     : `<button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--success)] hover:text-[var(--bg-main)] transition active:scale-95 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-check"></i> সেভ</button>`;
 
                 return `
