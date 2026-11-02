@@ -1462,17 +1462,15 @@
                         
                         <div id="wd-notice-box" class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--accent-gold)]/30 mb-4 text-[10px] font-bold text-[var(--accent-gold)] shadow-inner hidden"></div>
                         
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-3 ml-1" data-i18n="sel_method">${t('sel_method')}</label>
-                        <div class="grid grid-cols-2 gap-2 mb-3" id="wd-methods-grid"></div>
+                        <div class="flex justify-between items-center mb-3 ml-1">
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide" data-i18n="sel_method">${t('sel_method')}</label>
+                            <button onclick="openManageAccModal()" class="text-[9px] bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] px-3 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-black shadow-sm flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-address-book"></i> নাম্বার এডিট/সেভ</button>
+                        </div>
+                        <div class="flex flex-col gap-2 mb-4" id="wd-methods-grid"></div>
                         
                         <div class="mb-4">
                             <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
-                            <div class="relative">
-                                <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 pr-[110px] font-bold text-white text-sm" placeholder="017...">
-                                <div id="wd-acc-actions" class="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
-                                    <button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 opacity-80"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>
-                                </div>
-                            </div>
+                            <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
                         </div>
                         
                         <div class="mb-5">
@@ -1484,6 +1482,17 @@
                         </div>
                         <div id="wd-calc-res" class="hidden bg-[var(--bg-sidebar)] border border-[var(--accent-cyan)]/30 rounded-xl p-4 text-xs font-bold text-[var(--text-main)] mb-6 space-y-2 shadow-inner"></div>
                         <button onclick="submitWd()" class="w-full gold-btn py-4 rounded-xl uppercase tracking-widest text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="send_req">${t('send_req')}</span></button>
+                    </div>
+                </div>
+
+                <!-- Manage Accounts Modal -->
+                <div id="manage-acc-modal" class="fixed inset-0 bg-[#071426]/95 z-[130] hidden flex justify-center items-end sm:items-center transition-all duration-300 opacity-0 backdrop-blur-sm">
+                    <div class="glass-panel w-full max-w-md sm:rounded-2xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-0 transition-transform duration-300 border-t border-[var(--accent-cyan)]" id="manage-acc-content">
+                        <div class="flex justify-between items-center mb-4 border-b border-[var(--border-color)] pb-3">
+                            <h2 class="text-base font-black text-white flex items-center gap-2"><i class="fa-solid fa-address-book text-[var(--accent-cyan)]"></i> সেভ করা নাম্বার সমূহ</h2>
+                            <button onclick="closeManageAccModal()" class="w-8 h-8 bg-[var(--bg-sidebar)] rounded-full text-[var(--text-muted)] hover:text-[var(--error)] border border-[var(--border-color)] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                        <div id="manage-acc-list" class="space-y-3 max-h-[60vh] overflow-y-auto hide-scroll pr-1"></div>
                     </div>
                 </div>
             `;
@@ -1566,17 +1575,31 @@
             
             grid.innerHTML = activeMethods.map(m => {
                 let isBinance = String(m.name || '').toLowerCase().includes('binance');
-                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-7 h-7 object-contain mb-0.5">` : `<div class="w-7 h-7 bg-[var(--bg-main)] rounded-lg text-[var(--text-muted)] flex items-center justify-center mb-0.5 border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[10px]"></i></div>`;
+                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-6 h-6 object-contain rounded-full">` : `<div class="w-6 h-6 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
                 
                 let chargeHtml = '';
                 if(isBinance) {
                     let rate = settings.binanceRate || 127;
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-0.5 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">ডলার রেট ৳${rate}</span>`;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">৳${rate}/$</span>`;
                 } else if(m.charge > 0) {
-                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold block mt-0.5 bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20">${t('charge')} ৳${m.charge}</span>`;
+                    chargeHtml = `<span class="text-[9px] text-[var(--error)] font-bold bg-[var(--error)]/10 px-1.5 py-0.5 rounded shadow-sm border border-[var(--error)]/20 whitespace-nowrap">চার্জ ৳${m.charge}</span>`;
                 }
 
-                return `<div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl py-1.5 px-2 text-center cursor-pointer flex flex-col items-center justify-center relative transition hover:-translate-y-0.5">${logoHtml}<span class="text-[11px] font-black text-white tracking-wide leading-tight">${m.name}</span>${chargeHtml}</div>`;
+                let savedNum = currentUser.savedAccounts && currentUser.savedAccounts[m.name] ? currentUser.savedAccounts[m.name] : '';
+                let savedDisplay = savedNum ? `<span class="text-[var(--accent-cyan)] text-[11px] font-mono ml-1.5">(${savedNum})</span>` : `<span class="text-[var(--text-muted)] text-[9px] ml-1.5 opacity-50">(নাম্বার নেই)</span>`;
+
+                return `
+                <div onclick="selectWd(${m.id})" id="wd-btn-${m.id}" class="input-premium rounded-xl p-3 cursor-pointer flex items-center justify-between transition hover:border-[var(--accent-cyan)]/50">
+                    <div class="flex items-center gap-3">
+                        <div id="wd-radio-${m.id}" class="w-4 h-4 rounded-full border-2 border-[var(--text-muted)] flex items-center justify-center transition-all duration-300"></div>
+                        ${logoHtml}
+                        <div class="flex items-center">
+                            <span class="text-[12px] font-black text-white tracking-wide leading-tight">${m.name}</span>
+                            ${savedDisplay}
+                        </div>
+                    </div>
+                    ${chargeHtml}
+                </div>`;
             }).join('');
             
             let noticeBox = document.getElementById('wd-notice-box');
@@ -1584,10 +1607,6 @@
             else { noticeBox.classList.add('hidden'); }
             
             document.getElementById('wd-acc').value = ''; 
-            let accActions = document.getElementById('wd-acc-actions');
-            if(accActions) {
-                accActions.innerHTML = `<button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 opacity-80"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>`;
-            }
             
             document.getElementById('wd-amt').value = ''; document.getElementById('wd-calc-res').classList.add('hidden');
             let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content');
@@ -1595,39 +1614,74 @@
         }
         function closeWdModal() { let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content'); modal.classList.add('opacity-0'); content.classList.add('translate-y-full'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
         
-        async function saveCurrentWdAccount() {
-            if(!state.selWdId) return showToast("আগে বিকাশ/নগদ/বাইনান্স মেথড সিলেক্ট করুন!", "error");
-            let m = pmMethods.find(x=>x.id===state.selWdId);
-            let val = document.getElementById('wd-acc').value.trim();
+        function openManageAccModal() {
+            let listContainer = document.getElementById('manage-acc-list');
+            let activeMethods = (pmMethods || []).filter(m => m && m.active !== false);
+            
+            listContainer.innerHTML = activeMethods.map(m => {
+                let savedNum = currentUser.savedAccounts && currentUser.savedAccounts[m.name] ? currentUser.savedAccounts[m.name] : '';
+                let logoHtml = m.logo ? `<img src="${m.logo}" class="w-5 h-5 object-contain rounded-full">` : `<div class="w-5 h-5 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
+                
+                return `
+                <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-3.5 rounded-xl shadow-sm hover:border-[var(--accent-cyan)]/40 transition">
+                    <div class="flex justify-between items-center mb-2.5">
+                        <span class="text-xs font-black text-white flex items-center gap-2">${logoHtml} ${m.name}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="manage-input-${m.id}" value="${savedNum}" placeholder="একাউন্ট নাম্বার দিন" class="flex-1 input-premium rounded-lg p-2.5 text-xs font-bold font-mono focus:border-[var(--accent-cyan)]">
+                        <button onclick="saveManageAcc(${m.id}, '${m.name}')" class="bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--success)] hover:text-white transition active:scale-95 shadow-sm">সেভ</button>
+                        ${savedNum ? `<button onclick="delManageAcc('${m.name}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-3 py-2.5 rounded-lg text-[10px] font-black hover:bg-[var(--error)] hover:text-white transition active:scale-95 shadow-sm"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+            
+            let modal = document.getElementById('manage-acc-modal');
+            let content = document.getElementById('manage-acc-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('translate-y-full'); }, 10);
+        }
+        
+        function closeManageAccModal() {
+            let modal = document.getElementById('manage-acc-modal');
+            let content = document.getElementById('manage-acc-content');
+            modal.classList.add('opacity-0'); content.classList.add('translate-y-full');
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                // Refresh main withdraw modal to show newly saved numbers
+                if(document.getElementById('wd-modal') && !document.getElementById('wd-modal').classList.contains('hidden')) {
+                    openWdModal();
+                    if(state.selWdId) selectWd(state.selWdId, true);
+                }
+            }, 300);
+        }
+
+        async function saveManageAcc(mId, mName) {
+            let val = document.getElementById(`manage-input-${mId}`).value.trim();
             if(!val) return showToast("নাম্বার খালি রাখা যাবে না!", "error");
             
             showLoading();
             try {
                 let saved = currentUser.savedAccounts || {};
-                saved[m.name] = val;
-                currentUser.savedAccounts = saved; // Update locally first for instant reflect
+                saved[mName] = val;
+                currentUser.savedAccounts = saved; 
                 await db.collection('cb_users').doc(currentUser.id).update({ savedAccounts: saved });
-                showToast(m.name + " এর নাম্বার সেভ হয়েছে!", "success");
-                selectWd(state.selWdId, true); // true = keep focus away from jumping
+                showToast(mName + " নাম্বার সেভ হয়েছে!", "success");
+                openManageAccModal(); // re-render list
             } catch(e) {
                 showToast("সেভ করতে সমস্যা হয়েছে!", "error");
             }
             hideLoading();
         }
 
-        async function deleteCurrentWdAccount() {
-            if(!state.selWdId) return;
-            let m = pmMethods.find(x=>x.id===state.selWdId);
-            
+        async function delManageAcc(mName) {
             showLoading();
             try {
                 let saved = currentUser.savedAccounts || {};
-                delete saved[m.name];
-                currentUser.savedAccounts = saved; // Update locally first
+                delete saved[mName];
+                currentUser.savedAccounts = saved; 
                 await db.collection('cb_users').doc(currentUser.id).update({ savedAccounts: saved });
-                document.getElementById('wd-acc').value = '';
                 showToast("নাম্বার ডিলিট করা হয়েছে!", "success");
-                selectWd(state.selWdId, true);
+                openManageAccModal(); // re-render list
             } catch(e) {
                 showToast("ডিলিট করতে সমস্যা হয়েছে!", "error");
             }
@@ -1638,14 +1692,28 @@
             state.selWdId = id; 
             let mSelected = null;
             pmMethods.forEach(m => { 
-                let el = document.getElementById(`wd-btn-${m.id}`); if(!el) return;
-                if(m.id === id) { mSelected = m; el.style.borderColor = 'var(--accent-gold)'; el.style.background = 'rgba(232, 199, 121, 0.05)'; el.style.boxShadow = '0 0 15px rgba(232,199,121,0.2)'; } 
-                else { el.style.borderColor = 'var(--border-color)'; el.style.background = 'rgba(7, 20, 38, 0.5)'; el.style.boxShadow = 'none'; } 
+                let el = document.getElementById(`wd-btn-${m.id}`); 
+                let rad = document.getElementById(`wd-radio-${m.id}`);
+                if(!el) return;
+                
+                if(m.id === id) { 
+                    mSelected = m; 
+                    el.style.borderColor = 'var(--accent-cyan)'; 
+                    el.style.background = 'rgba(53, 217, 242, 0.05)'; 
+                    el.style.boxShadow = '0 0 15px rgba(53,217,242,0.1)'; 
+                    if(rad) rad.innerHTML = `<div class="w-2 h-2 bg-[var(--accent-cyan)] rounded-full"></div>`;
+                    if(rad) rad.style.borderColor = 'var(--accent-cyan)';
+                } else { 
+                    el.style.borderColor = 'var(--border-color)'; 
+                    el.style.background = 'rgba(7, 20, 38, 0.5)'; 
+                    el.style.boxShadow = 'none'; 
+                    if(rad) rad.innerHTML = '';
+                    if(rad) rad.style.borderColor = 'var(--text-muted)';
+                } 
             }); 
             
             let accLabel = document.getElementById('wd-acc-label');
             let accInput = document.getElementById('wd-acc');
-            let accActions = document.getElementById('wd-acc-actions');
 
             if(mSelected && mSelected.name.toLowerCase().includes('binance')) {
                 if(accLabel) accLabel.innerText = "Binance UID / Pay ID";
@@ -1655,24 +1723,20 @@
                 if(accInput) accInput.placeholder = "017XXXXXXXX";
             }
 
-            // Load Saved Account if exists
-            if(mSelected && accActions && accInput) {
+            // Load Saved Account into input box
+            if(mSelected && accInput) {
                 let savedAcc = currentUser.savedAccounts && currentUser.savedAccounts[mSelected.name];
                 if(savedAcc) {
                     accInput.value = savedAcc;
-                    accActions.innerHTML = `
-                        <button type="button" onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--success)] text-[var(--bg-main)] px-2 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-pen"></i> আপডেট</button>
-                        <button type="button" onclick="deleteCurrentWdAccount()" class="text-[9px] bg-[var(--error)] text-white px-2 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-trash"></i></button>
-                    `;
                 } else {
                     accInput.value = '';
-                    accActions.innerHTML = `<button type="button" onclick="saveCurrentWdAccount()" class="text-[10px] bg-[var(--accent-cyan)] text-[var(--bg-main)] px-3 py-1.5 rounded-lg font-black shadow-sm flex items-center gap-1 transition active:scale-95"><i class="fa-solid fa-floppy-disk"></i> সেভ</button>`;
                 }
             }
 
             calcWd(); 
             if(!isRestore) {
-                setTimeout(() => { accLabel.scrollIntoView({ behavior: 'smooth', block: 'center' }); accInput.focus(); }, 300);
+                // Not forcing focus if they just want to tap and see amount directly, but scrolling slightly is fine
+                setTimeout(() => { accInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
             }
         }
 
