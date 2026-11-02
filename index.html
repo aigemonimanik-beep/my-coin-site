@@ -506,7 +506,7 @@
                     let cred = await auth.createUserWithEmailAndPassword(adminEmail, adminPass);
                     await db.collection('cb_users').doc(cred.user.uid).set({
                         id: cred.user.uid, name: 'Master Admin', username: 'masteradmin2026', email: adminEmail,
-                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '',
+                        tg: '', balance: 0, role: 'admin', status: 'active', profilePic: '', savedAccounts: {},
                         createdAt: new Date().toLocaleString()
                     });
                     isAdminLoggingIn = false;
@@ -565,7 +565,7 @@
 
                 await db.collection('cb_users').doc(cred.user.uid).set({
                     id: cred.user.uid, name: name, username: username, email: email,
-                    tg: '', balance: 0, role: role, status: 'active', profilePic: '',
+                    tg: '', balance: 0, role: role, status: 'active', profilePic: '', savedAccounts: {},
                     createdAt: new Date().toLocaleString(),
                     plainPass: pass
                 });
@@ -898,6 +898,12 @@
                 localStorage.setItem('cb_adminWdTab', state.adminWdTab);
                 localStorage.setItem('cb_userHistTab', state.userHistTab);
             } catch(e){}
+            
+            // PRESERVE WD MODAL STATE DURING RE-RENDERS
+            let wasWdOpen = document.getElementById('wd-modal') && !document.getElementById('wd-modal').classList.contains('hidden');
+            let curWdAcc = wasWdOpen ? document.getElementById('wd-acc').value : '';
+            let curWdAmt = wasWdOpen ? document.getElementById('wd-amt').value : '';
+            let selWdIdBackup = state.selWdId;
 
             const cont = document.getElementById('app-container');
             
@@ -958,6 +964,28 @@
                     </div>
                     <button onclick="window.location.reload()" class="mt-4 cyan-btn px-4 py-2 rounded-lg text-xs font-black">Refresh Page</button>
                 </div>`;
+            }
+            
+            // RESTORE WD MODAL STATE AFTER RE-RENDER
+            if (wasWdOpen && document.getElementById('wd-modal')) {
+                let modal = document.getElementById('wd-modal');
+                let content = document.getElementById('wd-modal-content');
+                
+                modal.classList.remove('transition-all', 'duration-300', 'hidden', 'opacity-0');
+                content.classList.remove('transition-transform', 'duration-300', 'translate-y-full');
+                
+                if (selWdIdBackup) {
+                    selectWd(selWdIdBackup, true); // true = skip focus/scroll
+                }
+                
+                if (document.getElementById('wd-acc')) document.getElementById('wd-acc').value = curWdAcc;
+                if (document.getElementById('wd-amt')) document.getElementById('wd-amt').value = curWdAmt;
+                calcWd();
+                
+                setTimeout(() => {
+                    modal.classList.add('transition-all', 'duration-300');
+                    content.classList.add('transition-transform', 'duration-300');
+                }, 50);
             }
         }
 
@@ -1438,7 +1466,10 @@
                         <div class="grid grid-cols-2 gap-2 mb-3" id="wd-methods-grid"></div>
                         
                         <div class="mb-4">
-                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" id="wd-acc-label">${t('acc_no')}</label>
+                            <div class="flex justify-between items-end mb-2 ml-1 pr-1">
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block" id="wd-acc-label">${t('acc_no')}</label>
+                                <div id="wd-acc-actions" class="hidden gap-2"></div>
+                            </div>
                             <input type="text" id="wd-acc" class="w-full input-premium rounded-xl p-3.5 font-bold text-white text-sm" placeholder="017...">
                         </div>
                         
@@ -1550,13 +1581,56 @@
             if (settings.wdNotice) { noticeBox.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${settings.wdNotice}`; noticeBox.classList.remove('hidden'); } 
             else { noticeBox.classList.add('hidden'); }
             
-            document.getElementById('wd-acc').value = ''; document.getElementById('wd-amt').value = ''; document.getElementById('wd-calc-res').classList.add('hidden');
+            document.getElementById('wd-acc').value = ''; 
+            let accActions = document.getElementById('wd-acc-actions');
+            if(accActions) { accActions.classList.add('hidden'); accActions.classList.remove('flex'); }
+            
+            document.getElementById('wd-amt').value = ''; document.getElementById('wd-calc-res').classList.add('hidden');
             let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content');
             modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('translate-y-full'); }, 10);
         }
         function closeWdModal() { let modal = document.getElementById('wd-modal'); let content = document.getElementById('wd-modal-content'); modal.classList.add('opacity-0'); content.classList.add('translate-y-full'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
         
-        function selectWd(id) { 
+        async function saveCurrentWdAccount() {
+            if(!state.selWdId) return;
+            let m = pmMethods.find(x=>x.id===state.selWdId);
+            let val = document.getElementById('wd-acc').value.trim();
+            if(!val) return showToast("নাম্বার খালি রাখা যাবে না!", "error");
+            
+            showLoading();
+            try {
+                let saved = currentUser.savedAccounts || {};
+                saved[m.name] = val;
+                currentUser.savedAccounts = saved; // Update locally first for instant reflect
+                await db.collection('cb_users').doc(currentUser.id).update({ savedAccounts: saved });
+                showToast(m.name + " এর নাম্বার সেভ হয়েছে!", "success");
+                selectWd(state.selWdId, true); // true = keep focus away from jumping
+            } catch(e) {
+                showToast("সেভ করতে সমস্যা হয়েছে!", "error");
+            }
+            hideLoading();
+        }
+
+        async function deleteCurrentWdAccount() {
+            if(!state.selWdId) return;
+            let m = pmMethods.find(x=>x.id===state.selWdId);
+            
+            showLoading();
+            try {
+                let saved = currentUser.savedAccounts || {};
+                delete saved[m.name];
+                currentUser.savedAccounts = saved; // Update locally first
+                await db.collection('cb_users').doc(currentUser.id).update({ savedAccounts: saved });
+                document.getElementById('wd-acc').value = '';
+                showToast("নাম্বার ডিলিট করা হয়েছে!", "success");
+                selectWd(state.selWdId, true);
+            } catch(e) {
+                showToast("ডিলিট করতে সমস্যা হয়েছে!", "error");
+            }
+            hideLoading();
+        }
+
+        function selectWd(id, isRestore = false) { 
             state.selWdId = id; 
             let mSelected = null;
             pmMethods.forEach(m => { 
@@ -1567,6 +1641,8 @@
             
             let accLabel = document.getElementById('wd-acc-label');
             let accInput = document.getElementById('wd-acc');
+            let accActions = document.getElementById('wd-acc-actions');
+
             if(mSelected && mSelected.name.toLowerCase().includes('binance')) {
                 if(accLabel) accLabel.innerText = "Binance UID / Pay ID";
                 if(accInput) accInput.placeholder = "e.g. 123456789";
@@ -1574,8 +1650,30 @@
                 if(accLabel) accLabel.innerText = t('acc_no');
                 if(accInput) accInput.placeholder = "017XXXXXXXX";
             }
+
+            // Load Saved Account if exists
+            if(mSelected && accActions && accInput) {
+                let savedAcc = currentUser.savedAccounts && currentUser.savedAccounts[mSelected.name];
+                if(savedAcc) {
+                    accInput.value = savedAcc;
+                    accActions.innerHTML = `
+                        <button onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--success)]/10 text-[var(--success)] hover:bg-[var(--success)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--success)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-pen"></i> আপডেট</button>
+                        <button onclick="deleteCurrentWdAccount()" class="text-[9px] bg-[var(--error)]/10 text-[var(--error)] hover:bg-[var(--error)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--error)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-trash"></i> ডিলিট</button>
+                    `;
+                    accActions.classList.remove('hidden');
+                    accActions.classList.add('flex');
+                } else {
+                    accInput.value = '';
+                    accActions.innerHTML = `<button onclick="saveCurrentWdAccount()" class="text-[9px] bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] px-2 py-1 rounded border border-[var(--accent-cyan)]/30 font-bold transition shadow-sm flex items-center gap-1"><i class="fa-solid fa-floppy-disk"></i> সেভ করুন</button>`;
+                    accActions.classList.remove('hidden');
+                    accActions.classList.add('flex');
+                }
+            }
+
             calcWd(); 
-            setTimeout(() => { accLabel.scrollIntoView({ behavior: 'smooth', block: 'center' }); accInput.focus(); }, 300);
+            if(!isRestore) {
+                setTimeout(() => { accLabel.scrollIntoView({ behavior: 'smooth', block: 'center' }); accInput.focus(); }, 300);
+            }
         }
 
         function calcWd() {
@@ -1909,7 +2007,7 @@
         }
 
         async function resetLifetimeStats() {
-            if(!confirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে না!")) return;
+            if(!confirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে শ্রেষ্ঠ!")) return;
             
             showLoading();
             try {
