@@ -722,7 +722,7 @@
 
         // --- Core Application Logic & Sync ---
         let unsubGlobal = null; let unsubUsers = null; let unsubOrders = null; let unsubTickets = null; let unsubNotifications = null;
-        let initialNotifLoad = true; let lastNotifCount = 0; let initialOrderLoad = true;
+        let initialNotifLoad = true; let lastNotifCount = 0; let initialOrderLoad = true; let initialUserLoad = true;
 
         function startDataSync(user) {
             unsubGlobal = db.collection('cb_data').doc('global_state').onSnapshot(doc => {
@@ -759,11 +759,8 @@
                 } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
             }, err => { console.log(err); });
 
-            unsubUsers = db.collection('cb_users').onSnapshot(snap => {
-                users = []; snap.forEach(d => users.push(d.data()));
-                currentUser = users.find(u => u.id === user.uid);
-                
-                if(currentUser) {
+            function checkReady() {
+                if (currentUser && !initialUserLoad && !initialOrderLoad) {
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
                     
@@ -773,6 +770,16 @@
                     document.getElementById('main-ui').style.display = 'flex';
                     renderApp(); 
                     saveToLocalCache();
+                }
+            }
+
+            unsubUsers = db.collection('cb_users').onSnapshot(snap => {
+                users = []; snap.forEach(d => users.push(d.data()));
+                currentUser = users.find(u => u.id === user.uid);
+                initialUserLoad = false;
+                
+                if(currentUser) {
+                    checkReady();
                 } else { 
                     if(isAdminUrl) {
                         autoLoginAdmin(); 
@@ -795,9 +802,10 @@
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
                     prevPendingCount = curPending;
-                    initialOrderLoad = false;
                 }
-                if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
+                
+                initialOrderLoad = false;
+                if(currentUser) { checkReady(); }
             }, err => console.log(err));
 
             unsubTickets = db.collection('cb_tickets').onSnapshot(snap => {
@@ -838,6 +846,7 @@
                 startDataSync(user); 
             } 
             else {
+                initialOrderLoad = true; initialUserLoad = true; initialNotifLoad = true;
                 try {
                     localStorage.removeItem('cb_loggedIn');
                     localStorage.removeItem('cb_cache');
@@ -1482,12 +1491,12 @@
                     let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK); // display smaller tier first
                     tiersHtml = sortedTiers.map(t => {
                         let tierText = settings.lang === 'bn' ? `🔥 ${t.minK}K+ রেট = ৳${t.price}` : `🔥 ${t.minK}K+ Rate = ৳${t.price}`;
-                        return `<div class="text-[9px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-1 px-1.5 rounded shadow-sm text-center mt-1.5 w-full">${tierText}</div>`;
+                        return `<div class="text-[8px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-0.5 px-1 rounded shadow-sm text-center mt-1 w-full">${tierText}</div>`;
                     }).join('');
                 }
 
-                return `<div ${clickAction} class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300 ${activeClass} group relative overflow-hidden">${overlayHtml}<div class="${filterClass} flex flex-col items-center w-full"><div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/5 to-transparent opacity-0 group-hover:opacity-100 transition"></div><img src="${logoSrc}" class="w-12 h-12 rounded-full object-cover shadow-[0_4px_10px_rgba(0,0,0,0.3)] mb-3 border-2 border-[var(--border-color)] z-10"><span class="text-xs font-black text-white text-center uppercase tracking-wider z-10">${c.name}</span>
-                <div class="mt-2 flex flex-col gap-1 w-full px-1 z-10">
+                return `<div ${clickAction} class="glass-panel rounded-2xl p-3 flex flex-col items-center justify-center transition-all duration-300 ${activeClass} group relative overflow-hidden">${overlayHtml}<div class="${filterClass} flex flex-col items-center w-full"><div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/5 to-transparent opacity-0 group-hover:opacity-100 transition"></div><img src="${logoSrc}" class="w-10 h-10 rounded-full object-cover shadow-[0_4px_10px_rgba(0,0,0,0.3)] mb-2 border-2 border-[var(--border-color)] z-10"><span class="text-[11px] font-black text-white text-center uppercase tracking-wider z-10 leading-tight">${c.name}</span>
+                <div class="mt-1.5 flex flex-col gap-1 w-full px-0.5 z-10">
                     <div class="text-[9px] font-black text-[var(--accent-cyan)] bg-[var(--bg-sidebar)] py-1 rounded border border-[var(--border-color)] shadow-sm text-center">
                         ${t('rate')} 1K = ৳${c.price}
                     </div>
@@ -2178,6 +2187,20 @@
                 <div class="bg-[var(--error)]/10 text-[var(--error)] text-xl font-black px-4 py-2 rounded-xl border border-[var(--error)]/30 drop-shadow-md">${totalPending}</div>
             </div>`;
             
+            let siteStatusHtml = `
+            <div class="glass-panel p-4 rounded-2xl mb-5 shadow-sm border-l-4 ${settings.maintenanceMode ? 'border-l-[var(--error)] bg-[var(--error)]/5' : 'border-l-[var(--success)] bg-[var(--success)]/5'} flex justify-between items-center transition">
+                <div>
+                    <h3 class="text-xs font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-globe ${settings.maintenanceMode ? 'text-[var(--error)]' : 'text-[var(--success)]'}"></i> 
+                        Site Status: <span class="${settings.maintenanceMode ? 'text-[var(--error)]' : 'text-[var(--success)]'}">${settings.maintenanceMode ? 'OFFLINE' : 'ONLINE'}</span>
+                    </h3>
+                    <p class="text-[9px] text-[var(--text-muted)] mt-1 font-bold">${settings.maintenanceMode ? 'ইউজাররা সাইটে ঢুকতে পারছে না' : 'সাইট স্বাভাবিকভাবে চলছে'}</p>
+                </div>
+                <button onclick="toggleMaintenanceQuick()" class="${settings.maintenanceMode ? 'bg-[var(--success)] hover:bg-[#0e8c5d]' : 'bg-[var(--error)] hover:bg-red-600'} text-white px-3 py-2 rounded-lg text-[10px] font-black shadow-sm flex items-center gap-1.5 active:scale-95 transition border border-transparent">
+                    <i class="fa-solid fa-power-off"></i> ${settings.maintenanceMode ? 'TURN ON' : 'TURN OFF'}
+                </button>
+            </div>`;
+            
             let trackBoxHtml = `
             <div class="glass-panel p-4 rounded-2xl mb-5 shadow-sm border-t-2 border-[var(--accent-cyan)]">
                 <h3 class="text-xs font-black text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-[var(--accent-cyan)]"></i> Track Order by ID</h3>
@@ -2221,7 +2244,7 @@
                 </button>
             </div>`;
 
-            return pendingBoardHtml + trackBoxHtml + actionBtnsHtml + shortcutBtns;
+            return pendingBoardHtml + siteStatusHtml + trackBoxHtml + actionBtnsHtml + shortcutBtns;
         }
 
         // --- Admin History Modal & Delete Functions ---
@@ -3122,6 +3145,29 @@
             renderApp();
         }
         function removeCoinTier(idx) { state.editCoinTiers.splice(idx, 1); renderApp(); }
+
+        async function toggleMaintenanceQuick() {
+            if (settings.maintenanceMode) {
+                if(await customConfirm("আপনি কি ওয়েবসাইটটি আবার সবার জন্য চালু (LIVE) করতে চান?")) {
+                    settings.maintenanceMode = false;
+                    await db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
+                    showToast("ওয়েবসাইট চালু করা হয়েছে!", "success");
+                    renderApp();
+                }
+            } else {
+                let msg = await customPrompt("ওয়েবসাইট বন্ধ রাখার কারণ লিখুন (যা ইউজাররা দেখবে):");
+                if(msg !== null) { 
+                    settings.maintenanceMode = true;
+                    settings.maintenanceMsg = msg || 'আপডেটের কাজ চলছে। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন।';
+                    await db.collection('cb_data').doc('global_state').update({ 
+                        'settings.maintenanceMode': true,
+                        'settings.maintenanceMsg': settings.maintenanceMsg
+                    });
+                    showToast("ওয়েবসাইট বন্ধ করা হয়েছে!", "error");
+                    renderApp();
+                }
+            }
+        }
 
         function saveMaintMsg() {
             settings.maintenanceMsg = document.getElementById('set-maint-msg').value;
