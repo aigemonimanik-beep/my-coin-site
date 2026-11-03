@@ -421,11 +421,14 @@
     <!-- Notification Dropdown Modal -->
     <div id="notif-modal" class="fixed inset-0 bg-[#071426]/80 z-[80] hidden flex justify-end p-4 pt-16 backdrop-blur-sm" onclick="if(event.target===this) toggleNotifications()">
         <div class="glass-panel w-full max-w-[300px] max-h-[70vh] rounded-2xl p-4 flex flex-col shadow-2xl mr-2 border border-[var(--accent-cyan)]/30">
-            <div class="flex justify-between items-center mb-3 border-b border-[var(--border-color)] pb-2">
+            <div class="flex justify-between items-center mb-3 border-b border-[var(--border-color)] pb-2 flex-shrink-0">
                 <h3 class="font-black text-white text-sm"><i class="fa-solid fa-bell text-[var(--accent-gold)]"></i> <span data-i18n="notifs">Notifications</span></h3>
                 <button onclick="toggleNotifications()" class="text-[var(--text-muted)] hover:text-white bg-[var(--bg-sidebar)] w-6 h-6 rounded-full flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-times text-xs"></i></button>
             </div>
-            <div id="notif-list" class="overflow-y-auto hide-scroll flex-1 space-y-2"></div>
+            <div id="notif-list" class="overflow-y-auto hide-scroll flex-1 space-y-2 pb-2"></div>
+            <div class="mt-2 pt-2 border-t border-[var(--border-color)] flex-shrink-0">
+                <button onclick="clearAllNotifications()" class="w-full bg-[var(--error)]/10 text-[var(--error)] py-2.5 rounded-xl uppercase tracking-widest text-[10px] font-black border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white transition shadow-sm flex items-center justify-center gap-2 active:scale-95"><i class="fa-solid fa-trash-can"></i> Clear Notifications</button>
+            </div>
         </div>
     </div>
 
@@ -858,6 +861,31 @@
             } else { modal.classList.add('hidden'); }
         }
 
+        async function clearAllNotifications() {
+            if (!currentUser) return;
+            let myNotifs = notifications.filter(n => n.userId === currentUser.id);
+            if (myNotifs.length === 0) return showToast("ডিলিট করার মতো কোনো নোটিফিকেশন নেই!", "error");
+            
+            if (confirm("আপনি কি আপনার সব নোটিফিকেশন মুছে ফেলতে চান?")) {
+                let modal = document.getElementById('notif-modal');
+                modal.classList.add('hidden');
+                
+                showLoading();
+                try {
+                    let batch = db.batch();
+                    myNotifs.forEach(n => {
+                        batch.delete(db.collection('cb_notifications').doc(n.id));
+                    });
+                    await batch.commit();
+                    hideLoading();
+                    showToast("সব নোটিফিকেশন ক্লিয়ার করা হয়েছে!");
+                } catch (e) {
+                    hideLoading();
+                    showToast("Error clearing notifications", "error");
+                }
+            }
+        }
+
         function switchView(view) {
             state.view = view; renderApp(); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1171,7 +1199,6 @@
                     let amt = isPending || isRejected ? o.receive : (o.paidAmount || o.receive);
                     let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--success)]');
                     let sign = isRejected ? '' : '+ ';
-                    let delBtn = (!isPending) ? `<button onclick="hideUserOrder('${o.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-1.5 py-0.5 rounded hover:bg-[var(--error)] hover:text-white transition shadow-sm ml-1" title="হিস্ট্রি ডিলিট করুন"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
                     return `
                     <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition mb-2">
                         <div class="flex flex-col">
@@ -1183,7 +1210,6 @@
                             <span class="text-sm font-black ${color}">${sign}৳${amt}</span>
                             <div class="flex items-center mt-1">
                                 <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
-                                ${delBtn}
                             </div>
                         </div>
                     </div>
@@ -1212,7 +1238,6 @@
                                 let isRejected = o.status === 'rejected';
                                 let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--error)]');
                                 let sign = isRejected ? '' : '- ';
-                                let delBtn = (!isPending) ? `<button onclick="hideUserOrder('${o.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 px-1.5 py-0.5 rounded hover:bg-[var(--error)] hover:text-white transition shadow-sm ml-1" title="হিস্ট্রি ডিলিট করুন"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
                                 return `
                                 <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition mb-2">
                                     <div class="flex flex-col">
@@ -1224,7 +1249,6 @@
                                         <span class="text-sm font-black ${color}">${sign}৳${o.total}</span>
                                         <div class="flex items-center mt-1">
                                             <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
-                                            ${delBtn}
                                         </div>
                                     </div>
                                 </div>
