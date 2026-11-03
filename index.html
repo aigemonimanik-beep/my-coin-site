@@ -25,6 +25,26 @@
             --accent-cyan: #35D9F2; --success: #16C784; --error: #FF647C;
         }
 
+        /* 4 Color Themes */
+        body.theme-purple {
+            --bg-main: #12091c; --bg-card: #201335; --bg-sidebar: #170d27;
+            --border-color: #3b2568; 
+            --accent-gold: #d8b4fe; --accent-gold-dark: #a855f7;
+            --accent-cyan: #22d3ee; 
+        }
+        body.theme-green {
+            --bg-main: #021a11; --bg-card: #052e1e; --bg-sidebar: #042417;
+            --border-color: #065f3a; 
+            --accent-gold: #fcd34d; --accent-gold-dark: #d97706;
+            --accent-cyan: #10b981; 
+        }
+        body.theme-red {
+            --bg-main: #1c0909; --bg-card: #2f1212; --bg-sidebar: #240c0c;
+            --border-color: #5c1f1f; 
+            --accent-gold: #fca5a5; --accent-gold-dark: #ef4444;
+            --accent-cyan: #fb7185; 
+        }
+
         html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
         
@@ -88,6 +108,25 @@
         #main-ui { display: none !important; }
     </style>
     <script>
+        // Theme Manager
+        const themeList = ['theme-default', 'theme-purple', 'theme-green', 'theme-red'];
+        let currentThemeIdx = 0;
+        try {
+            let savedT = localStorage.getItem('cb_theme');
+            if (savedT && themeList.includes(savedT)) {
+                currentThemeIdx = themeList.indexOf(savedT);
+                if (currentThemeIdx !== 0) document.body.classList.add(themeList[currentThemeIdx]);
+            }
+        } catch(e){}
+
+        function cycleTheme() {
+            if(currentThemeIdx !== 0) document.body.classList.remove(themeList[currentThemeIdx]);
+            currentThemeIdx = (currentThemeIdx + 1) % themeList.length;
+            if (currentThemeIdx !== 0) document.body.classList.add(themeList[currentThemeIdx]);
+            try { localStorage.setItem('cb_theme', themeList[currentThemeIdx]); } catch(e){}
+            if(typeof showToast === 'function') showToast("Theme Changed!");
+        }
+
         let _isAdm = window.location.href.includes('?admin') || window.location.href.includes('&admin');
         let _isLog = false;
         try { _isLog = localStorage.getItem('cb_loggedIn') === 'true'; } catch(e) {}
@@ -356,6 +395,11 @@
             </div>
             
             <div class="flex items-center gap-2 ml-auto">
+                <!-- Theme Switcher -->
+                <button onclick="cycleTheme()" class="bg-[var(--bg-sidebar)] w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-cyan)] hover:border-[var(--accent-cyan)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center shadow-sm active:scale-95" title="Change Theme">
+                    <i class="fa-solid fa-palette text-sm"></i>
+                </button>
+
                 <!-- Notification Bell -->
                 <div class="relative cursor-pointer flex-shrink-0" onclick="toggleNotifications()">
                     <button class="bg-[var(--bg-sidebar)] w-10 h-10 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center shadow-sm active:scale-95">
@@ -558,27 +602,39 @@
                 if(doc.exists) {
                     let data = doc.data();
                     let s = data.settings || DEFAULT_SETTINGS;
+                    settings = s; // Sync global settings immediately
                     updateAuthUIDynamically(s);
                     if(typeof applyAppScale === 'function') applyAppScale(s.appScale);
+
+                    // Block login screen for normal users if under maintenance
+                    if (!isAdminUrl) {
+                        let loginForm = document.getElementById('form-login');
+                        let regForm = document.getElementById('form-register');
+                        let regLink = document.getElementById('reg-link-text');
+                        let subtitle = document.getElementById('auth-subtitle');
+                        
+                        if (s.maintenanceMode && (!currentUser || currentUser.role !== 'admin')) {
+                            if (loginForm) loginForm.style.display = 'none';
+                            if (regForm) regForm.style.display = 'none';
+                            if (regLink) regLink.style.display = 'none';
+                            if (subtitle) subtitle.innerHTML = `<span class="text-[var(--error)] font-black text-sm uppercase tracking-widest"><i class="fa-solid fa-tools animate-bounce mb-2 mt-2 text-3xl block"></i> সিস্টেম বন্ধ আছে</span><span class="text-xs text-[var(--text-muted)] font-bold block mt-3">${s.maintenanceMsg || 'আপডেটের কাজ চলছে। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন।'}</span>`;
+                        } else {
+                            if (subtitle && subtitle.innerHTML.includes('সিস্টেম বন্ধ আছে')) {
+                                subtitle.innerText = "Login to your account";
+                                if (loginForm && !loginForm.classList.contains('hidden')) loginForm.style.display = 'block';
+                                if (regForm && !regForm.classList.contains('hidden')) regForm.style.display = 'block';
+                                if (regLink) regLink.style.display = 'block';
+                            }
+                        }
+                    }
+
+                    // Re-render instantly if a user is already inside the app
+                    if(currentUser && dataLoaded) {
+                        renderApp();
+                    }
                 }
             }, err => console.warn("Auth UI Sync Error:", err));
         };
-
-        function updateAuthUIDynamically(s) {
-            let titleEl = document.getElementById('nav-title-auth');
-            if(titleEl) titleEl.innerText = s.name || 'Coin Bazar';
-            
-            let iconEl = document.getElementById('auth-logo-icon');
-            let imgEl = document.getElementById('auth-logo-img');
-            
-            if(s.logo) {
-                if(iconEl) iconEl.classList.add('hidden');
-                if(imgEl) { imgEl.src = s.logo; imgEl.classList.remove('hidden'); }
-            } else {
-                if(iconEl) iconEl.classList.remove('hidden');
-                if(imgEl) { imgEl.classList.add('hidden'); imgEl.src = ''; }
-            }
-        }
 
         function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
         function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
@@ -1052,7 +1108,7 @@
                 cont.innerHTML = `<div class="glass-panel p-8 rounded-3xl text-center mt-10 border-2 border-[var(--error)] shadow-[0_0_30px_rgba(255,100,124,0.1)]"><i class="fa-solid fa-user-lock text-6xl text-[var(--error)] mb-4"></i><h2 class="text-xl font-black text-white mb-2 uppercase">Account Suspended</h2><p class="text-sm text-[var(--text-muted)] mb-6">Your account has been temporarily blocked. You cannot perform any transactions at this time.</p><button onclick="switchView('support')" class="cyan-btn px-6 py-2.5 rounded-xl font-black text-sm w-full"><i class="fa-solid fa-headset"></i> ${t('contact_sup')}</button></div>`;
                 return;
             }
-            if (settings.maintenanceMode && currentUser.role !== 'admin' && state.view !== 'admin') {
+            if (settings.maintenanceMode && currentUser.role !== 'admin') {
                 hideUserHeaderElements();
                 cont.innerHTML = `
                 <div class="flex flex-col items-center justify-center min-h-[70vh] px-4">
@@ -1609,8 +1665,8 @@
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mt-1">@${currentUser.username}</p>
                         </div>
                     </div>
-                    <div class="relative z-10 mt-6 pt-5 border-t border-[var(--border-color)] flex justify-center">
-                        <button onclick="openWdModal()" class="gold-btn px-6 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(232,199,121,0.3)] uppercase tracking-widest transition-all"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">${t('wd')}</span></button>
+                    <div class="relative z-10 mt-5 pt-4 border-t border-[var(--border-color)] flex justify-center">
+                        <button onclick="openWdModal()" class="gold-btn px-4 py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[0_4px_15px_rgba(232,199,121,0.2)] uppercase tracking-wide transition-all mx-auto w-max"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span data-i18n="wd">${t('wd')}</span></button>
                     </div>
                 </div>
 
