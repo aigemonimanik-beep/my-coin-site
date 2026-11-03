@@ -478,6 +478,18 @@
         </div>
     </div>
 
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-[#071426]/90 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 relative shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-[var(--accent-gold)] text-center">
+            <div class="w-16 h-16 bg-[var(--accent-gold)]/20 rounded-full flex items-center justify-center mx-auto mb-4 border-[2px] border-[var(--accent-gold)]">
+                <i class="fa-solid fa-circle-info text-3xl text-[var(--accent-gold)]"></i>
+            </div>
+            <h3 class="font-black text-white text-lg mb-2">Notice</h3>
+            <p id="custom-alert-msg" class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed whitespace-pre-wrap"></p>
+            <button id="custom-alert-btn-ok" class="w-full bg-[var(--accent-gold)] hover:bg-[var(--accent-gold-dark)] text-[#071426] font-black text-[13px] py-3.5 rounded-xl transition-all shadow-md active:scale-95">OK</button>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[400] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
@@ -515,6 +527,18 @@
                 document.getElementById('custom-prompt-btn-no').onclick = () => {
                     modal.classList.add('hidden');
                     resolve(null);
+                };
+            });
+        }
+
+        function customAlert(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-alert-modal');
+                document.getElementById('custom-alert-msg').innerText = message;
+                modal.classList.remove('hidden');
+                document.getElementById('custom-alert-btn-ok').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(true);
                 };
             });
         }
@@ -1427,11 +1451,15 @@
             let coinHtml = (coins || []).filter(c => c).map(c => {
                 let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${String(c.name || 'CB').substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
-                if(c.active) { 
+                if(c.active !== false) { 
                     activeClass = state.selCoinId === c.id ? 'active-coin' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:-translate-y-1 cursor-pointer'; 
                     clickAction = `onclick="selectCoin(${c.id})"`; filterClass = ''; 
                 } else { 
-                    activeClass = 'border-[var(--border-color)] border-dashed cursor-not-allowed'; clickAction = ''; filterClass = 'opacity-50 grayscale'; overlayHtml = `<div class="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-[2px]"><span class="bg-[var(--error)] text-white text-[10px] px-2 py-1 rounded font-black shadow-lg uppercase tracking-wider">CLOSED</span></div>`; 
+                    let safeMsg = (c.inactiveMsg || 'এই কয়েনটি সাময়িকভাবে বন্ধ আছে।').replace(/'/g, "\\'");
+                    activeClass = 'border-[var(--border-color)] border-dashed cursor-pointer hover:border-[var(--error)]/50'; 
+                    clickAction = `onclick="customAlert('${safeMsg}')"`; 
+                    filterClass = 'opacity-50 grayscale'; 
+                    overlayHtml = `<div class="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-[2px] pointer-events-none"><span class="bg-[var(--error)] text-white text-[10px] px-2 py-1 rounded font-black shadow-lg uppercase tracking-wider">CLOSED</span></div>`; 
                 }
                 
                 let tiersHtml = '';
@@ -2911,7 +2939,16 @@
                     </div>
                 </div>
 
-                <div class="mb-4 flex items-center justify-between bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm"><div><label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5" data-i18n="logo">${t('logo')}</label><input type="file" id="c-logo" class="text-[9px] text-[var(--accent-cyan)] w-[140px] font-bold"></div><label class="text-[11px] text-white flex items-center gap-2 font-black cursor-pointer bg-[var(--bg-main)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-sm"><input type="checkbox" id="c-active" class="w-3.5 h-3.5 accent-[var(--success)]" ${editC?(editC.active?'checked':''):'checked'}> ${t('active')}</label></div>
+                <div class="mb-4 flex flex-col gap-3 bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div><label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5" data-i18n="logo">${t('logo')}</label><input type="file" id="c-logo" class="text-[9px] text-[var(--accent-cyan)] w-[140px] font-bold"></div>
+                        <label class="text-[11px] text-white flex items-center gap-2 font-black cursor-pointer bg-[var(--bg-main)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-sm"><input type="checkbox" id="c-active" class="w-3.5 h-3.5 accent-[var(--success)]" ${editC?(editC.active!==false?'checked':''):'checked'}> ${t('active')}</label>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-[var(--text-muted)] block uppercase mb-1.5">কয়েন বন্ধ রাখার কারণ (যদি অফ রাখেন)</label>
+                        <input type="text" id="c-inactive-msg" value="${editC && editC.inactiveMsg ? editC.inactiveMsg : ''}" placeholder="e.g. This coin is currently closed for maintenance." class="w-full input-premium p-2.5 rounded-lg text-xs">
+                    </div>
+                </div>
                 <button onclick="saveCoin()" class="w-full cyan-btn py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest flex justify-center items-center gap-2 shadow-sm"><i class="fa-solid fa-check-circle"></i> ${editC?t('update'):t('add')}</button>
                 ${editC?`<button onclick="state.editCoinId=null; state.editCoinTiers=[]; renderApp()" class="w-full mt-2 bg-[var(--bg-sidebar)] text-[var(--text-muted)] py-3 rounded-xl text-[11px] font-black border border-[var(--border-color)] hover:text-white uppercase transition shadow-sm">${t('cancel_btn')}</button>`:''}
             </div>`;
@@ -3102,12 +3139,13 @@
             let n = document.getElementById('c-name').value; let u = document.getElementById('c-uname').value;
             let p = parseFloat(document.getElementById('c-price').value); let min = parseFloat(document.getElementById('c-min').value); let max = parseFloat(document.getElementById('c-max').value);
             let active = document.getElementById('c-active').checked;
+            let inactiveMsg = document.getElementById('c-inactive-msg').value.trim();
             if(!n || !u || isNaN(p) || isNaN(min) || isNaN(max)) return showToast("Fill all details!", "error");
             let logo = state.editCoinId ? coins.find(x=>x.id===state.editCoinId).logo : '';
             let f = document.getElementById('c-logo'); if(f.files.length > 0) logo = await getBase64(f.files[0]);
             let newCoins = [...coins];
-            if(state.editCoinId) { let index = newCoins.findIndex(x=>x.id===state.editCoinId); newCoins[index] = { ...newCoins[index], name:n, username:u, price:p, min:min, max:max, tiers: state.editCoinTiers, logo:logo, active:active }; state.editCoinId = null; } 
-            else { newCoins.push({ id: Date.now(), name: n, username: u, price: p, min: min, max: max, tiers: state.editCoinTiers, logo: logo, active: active }); }
+            if(state.editCoinId) { let index = newCoins.findIndex(x=>x.id===state.editCoinId); newCoins[index] = { ...newCoins[index], name:n, username:u, price:p, min:min, max:max, tiers: state.editCoinTiers, logo:logo, active:active, inactiveMsg:inactiveMsg }; state.editCoinId = null; } 
+            else { newCoins.push({ id: Date.now(), name: n, username: u, price: p, min: min, max: max, tiers: state.editCoinTiers, logo: logo, active: active, inactiveMsg: inactiveMsg }); }
             state.editCoinTiers = [];
             db.collection('cb_data').doc('global_state').update({ 'coins': newCoins }); 
             showToast("Coin Saved!");
