@@ -736,11 +736,6 @@
                         let localLang = localStorage.getItem('cb_lang');
                         if(localLang) settings.lang = localLang;
                     } catch(e) {}
-                    
-                    if(settings.maintenanceMode === true && isAdminUrl && currentUser && currentUser.role === 'admin') {
-                        settings.maintenanceMode = false;
-                        db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': false });
-                    }
 
                     coins = data.coins || []; 
                     pmMethods = data.pmMethods || [];
@@ -760,7 +755,7 @@
             }, err => { console.log(err); });
 
             function checkReady() {
-                if (currentUser && !initialUserLoad && !initialOrderLoad) {
+                if (currentUser) {
                     dataLoaded = true; hideLoading();
                     updateMobileMenuProfile();
                     
@@ -792,8 +787,11 @@
             }, err => { showToast("Error loading user data", "error"); });
 
             unsubOrders = db.collection('cb_orders').onSnapshot(snap => {
-                orders = []; snap.forEach(d => orders.push(d.data()));
-                orders.sort((a,b) => new Date(b.time) - new Date(a.time));
+                let tempOrders = []; 
+                snap.forEach(d => tempOrders.push(d.data()));
+                tempOrders.sort((a,b) => new Date(b.time) - new Date(a.time));
+                
+                orders = tempOrders;
                 
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
@@ -805,7 +803,7 @@
                 }
                 
                 initialOrderLoad = false;
-                if(currentUser) { checkReady(); }
+                if(currentUser) { checkReady(); renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
 
             unsubTickets = db.collection('cb_tickets').onSnapshot(snap => {
