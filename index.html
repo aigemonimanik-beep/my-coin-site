@@ -166,7 +166,7 @@
                 today_live: 'আজকের লাইভ হিসেব', arch_hist: 'আর্কাইভ করা হিস্ট্রি', reset_arch: 'আজকের ডাটা আর্কাইভ করুন',
                 exp_data: 'এক্সেল ফাইলে ডাটা ডাউনলোড করুন', active_on: 'চালু', active_off: 'বন্ধ', cancel_btn: 'বাতিল', search_ph: 'নাম, ইউজারনেম বা ID দিয়ে খুঁজুন...',
                 wd_cur_bal: 'মোট কত টাকা আছে মূল ব্যালেন্স', wd_req_amt: 'মোট কত টাকা উত্তোলন করছেন', wd_chg: 'সেন্ড মানি চার্জ', wd_rcv: 'মোট কত টাকা পাবেন', wd_rem: 'আর মোট টাকা অবশিষ্ট থাকবে',
-                active_pend: 'চলমান পেন্ডিং অর্ডার', view_proof: 'প্রুফ দেখুন', edit_prof: 'প্রোফাইল এডিট করুন', full_name: 'আপনার পুরো নাম', uname_login: 'লগইন ইউজারনেম', save_prof: 'প্রোফাইল সেভ করুন', acc_sec: 'অ্যাকাউন্ট সিকিউরিটি', curr_pass: 'বর্তমান পাসওয়ার্ড', new_pass: 'নতুন পাসওয়ার্ড', conf_new_pass: 'নতুন পাসওয়ার্ড কনফার্ম করুন', update_pass: 'পাসওয়ার্ড আপডেট করুন', my_dash: 'আমার ড্যাশবোর্ড', download: 'ডাউনলোড', reset: 'রিসেট', tot_recv: 'মোট পেমেন্ট পেয়েছেন', tot_wd: 'মোট উত্তোলন করেছেন', search_ord: 'অর্ডার ID দিয়ে খুঁজুন...', sell_hist: 'সেল হিস্ট্রি', wd_hist: 'উত্তোলন হিস্ট্রি', pend_sells: 'পেন্ডিং সেলস', pend_wds: 'পেন্ডিং উত্তোলন', coin_stats: 'কয়েন বিক্রির হিসেব (পেইড)', tot_paid: 'মোট পেইড', received: 'রিসিভড', det_sell_hist: 'বিস্তারিত সেল হিস্ট্রি'
+                active_pend: 'চলমান পেন্ডিং অর্ডার', view_proof: 'প্রুফ দেখুন', edit_prof: 'প্রোফাইল এডিট করুন', full_name: 'আপনার পুরো নাম', uname_login: 'Username (For Login)', save_prof: 'Save Profile', acc_sec: 'Account Security', curr_pass: 'Current Password', new_pass: 'New Password', conf_new_pass: 'Confirm New Password', update_pass: 'Update Password', my_dash: 'My Dashboard', download: 'ডাউনলোড', reset: 'রিসেট', tot_recv: 'Total Received', tot_wd: 'Total Withdrawn', search_ord: 'Search by Order ID...', sell_hist: 'Sell History', wd_hist: 'Withdraw History', pend_sells: 'Pending Sells', pend_wds: 'Pending Wds', coin_stats: 'Coin-wise Stats (Paid)', tot_paid: 'Total Paid', received: 'Received', det_sell_hist: 'Detailed Sell History'
             }
         };
 
@@ -427,7 +427,7 @@
             </div>
             <div id="notif-list" class="overflow-y-auto hide-scroll flex-1 space-y-2 pb-2"></div>
             <div class="mt-2 pt-2 border-t border-[var(--border-color)] flex-shrink-0">
-                <button onclick="clearAllNotifications()" class="w-full bg-[var(--error)]/10 text-[var(--error)] py-2.5 rounded-xl uppercase tracking-widest text-[10px] font-black border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white transition shadow-sm flex items-center justify-center gap-2 active:scale-95"><i class="fa-solid fa-trash-can"></i> Clear Notifications</button>
+                <button onclick="clearAllNotifications()" class="w-full bg-[var(--error)]/10 text-[var(--error)] py-2.5 rounded-xl uppercase tracking-widest text-[10px] font-black border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white transition shadow-sm flex items-center justify-center gap-2 active:scale-95"><i class="fa-solid fa-trash-can"></i> Clear All Notifications</button>
             </div>
         </div>
     </div>
@@ -450,10 +450,75 @@
         </div>
     </div>
 
+    <!-- Custom Confirm Modal -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-[#071426]/90 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 relative shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-[var(--border-color)] text-center">
+            <div class="w-16 h-16 bg-[var(--error)]/20 rounded-full flex items-center justify-center mx-auto mb-4 border-[2px] border-[var(--error)]">
+                <i class="fa-solid fa-triangle-exclamation text-3xl text-[var(--error)]"></i>
+            </div>
+            <h3 class="font-black text-white text-lg mb-2">নিশ্চিত করুন (Confirm)</h3>
+            <p id="custom-confirm-msg" class="text-xs text-[var(--text-muted)] mb-6 leading-relaxed whitespace-pre-wrap"></p>
+            <div class="flex gap-3">
+                <button id="custom-confirm-btn-no" class="flex-1 bg-[var(--bg-sidebar)] hover:bg-[var(--bg-card)] text-white font-black text-[13px] py-3.5 rounded-xl transition-all border border-[var(--border-color)] shadow-sm active:scale-95">CANCEL</button>
+                <button id="custom-confirm-btn-yes" class="flex-1 bg-[var(--error)] hover:bg-red-600 text-white font-black text-[13px] py-3.5 rounded-xl transition-all shadow-md active:scale-95">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Prompt Modal -->
+    <div id="custom-prompt-modal" class="fixed inset-0 bg-[#071426]/90 z-[300] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 relative shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-[var(--border-color)] text-center">
+            <h3 class="font-black text-[var(--error)] text-lg mb-2 flex items-center justify-center gap-2"><i class="fa-solid fa-shield-halved"></i> সিকিউরিটি চেক</h3>
+            <p id="custom-prompt-msg" class="text-xs text-[var(--text-muted)] mb-4 leading-relaxed whitespace-pre-wrap"></p>
+            <input type="text" id="custom-prompt-input" class="w-full input-premium p-3 rounded-xl text-center font-black mb-6 text-[var(--error)] border focus:border-[var(--error)]" placeholder="Type here...">
+            <div class="flex gap-3">
+                <button id="custom-prompt-btn-no" class="flex-1 bg-[var(--bg-sidebar)] hover:bg-[var(--bg-card)] text-white font-black text-[13px] py-3.5 rounded-xl transition-all border border-[var(--border-color)] shadow-sm active:scale-95">CANCEL</button>
+                <button id="custom-prompt-btn-yes" class="flex-1 bg-[var(--error)] hover:bg-red-600 text-white font-black text-[13px] py-3.5 rounded-xl transition-all shadow-md active:scale-95">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
-    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[400] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
     <script>
+        // ================= CUSTOM CONFIRM & PROMPT LOGIC =================
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-confirm-modal');
+                document.getElementById('custom-confirm-msg').innerText = message;
+                modal.classList.remove('hidden');
+
+                document.getElementById('custom-confirm-btn-yes').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(true);
+                };
+                document.getElementById('custom-confirm-btn-no').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(false);
+                };
+            });
+        }
+
+        function customPrompt(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-prompt-modal');
+                document.getElementById('custom-prompt-msg').innerText = message;
+                const input = document.getElementById('custom-prompt-input');
+                input.value = '';
+                modal.classList.remove('hidden');
+
+                document.getElementById('custom-prompt-btn-yes').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(input.value);
+                };
+                document.getElementById('custom-prompt-btn-no').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(null);
+                };
+            });
+        }
+
         // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
         window.onload = () => {
             if (isAdminUrl) {
@@ -866,7 +931,7 @@
             let myNotifs = notifications.filter(n => n.userId === currentUser.id);
             if (myNotifs.length === 0) return showToast("ডিলিট করার মতো কোনো নোটিফিকেশন নেই!", "error");
             
-            if (confirm("আপনি কি আপনার সব নোটিফিকেশন মুছে ফেলতে চান?")) {
+            if (await customConfirm("আপনি কি আপনার সব নোটিফিকেশন মুছে ফেলতে চান?")) {
                 let modal = document.getElementById('notif-modal');
                 modal.classList.add('hidden');
                 
@@ -1280,7 +1345,7 @@
                 </div>
                 
                 <div class="mb-4 relative shadow-sm">
-                    <input type="text" value="${state.userOrderSearch || ''}" oninput="state.userOrderSearch=this.value; renderApp()" placeholder="${t('search_ord')}" class="w-full input-premium p-3 rounded-xl text-xs font-bold pl-11 border focus:border-[var(--accent-cyan)]">
+                    <input type="text" value="${state.userOrderSearch || ''}" oninput="handleUserHistorySearch(this.value)" placeholder="${t('search_ord')}" class="w-full input-premium p-3 rounded-xl text-xs font-bold pl-11 border focus:border-[var(--accent-cyan)]">
                     <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i>
                 </div>
 
@@ -1293,7 +1358,7 @@
         }
 
         async function resetUserHistory() {
-            if(confirm("আপনার সমস্ত কমপ্লিট হওয়া (Approved/Rejected) হিস্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?")) {
+            if(await customConfirm("আপনার সমস্ত কমপ্লিট হওয়া (Approved/Rejected) হিস্ট্রি মুছে যাবে। আপনি কি নিশ্চিত?")) {
                 showLoading();
                 try {
                     let batch = db.batch();
@@ -1334,29 +1399,31 @@
 
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF" + data.map(e => e.map(item => `"${item}"`).join(",")).join("\n");
             let encodedUri = encodeURI(csvContent); 
-            let link = document.createElement("a"); 
-            link.setAttribute("href", encodedUri); 
-            link.setAttribute("download", `My_Transactions_${currentUser.username}.csv`);
-            document.body.appendChild(link); 
-            link.click(); 
-            document.body.removeChild(link); 
-            showToast("File Downloaded!");
-        }
+        let link = document.createElement("a"); 
+        link.setAttribute("href", encodedUri); 
+        link.setAttribute("download", `My_Transactions_${currentUser.username}.csv`);
+        document.body.appendChild(link); 
+        link.click(); 
+        document.body.removeChild(link); 
+        showToast("File Downloaded!");
+    }
 
-        async function hideUserOrder(id) {
-            if(confirm("আপনি কি নিশ্চিত যে এই হিস্ট্রি মুছতে চান? (এটি শুধু আপনার লিস্ট থেকে মুছে যাবে, এডমিন প্যানেলে হিসেব থেকে যাবে)")) {
-                try {
-                    await db.collection('cb_orders').doc(id).update({ hiddenByUser: true });
-                    showToast("হিস্ট্রি মুছে ফেলা হয়েছে!");
-                    renderApp();
-                } catch(e) {
-                    showToast("Error deleting history", "error");
-                }
+    function handleUserHistorySearch(val) {
+        state.userOrderSearch = val;
+        let q = val.toLowerCase().trim();
+        if (q) {
+            let myOrders = orders.filter(o => o.userId === currentUser.id && !o.hiddenByUser);
+            let matched = myOrders.find(o => o.id.toLowerCase().includes(q));
+            if (matched) {
+                if (matched.type === 'sell') state.userHistTab = 'sells';
+                else if (matched.type === 'wd') state.userHistTab = 'wds';
             }
         }
+        renderApp();
+    }
 
-        // ================= HOME VIEW =================
-        function renderHome() {
+    // ================= HOME VIEW =================
+    function renderHome() {
             let coinHtml = (coins || []).filter(c => c).map(c => {
                 let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${String(c.name || 'CB').substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
@@ -2193,7 +2260,7 @@
         }
 
         async function resetLifetimeStats() {
-            if(!confirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে শ্রেষ্ঠ!")) return;
+            if(!(await customConfirm("সতর্কতা: আপনি কি নিশ্চিত যে লাইফটাইম হিসেব (সব এপ্রুভড এবং রিজেক্টেড ডাটা) চিরতরে মুছে ফেলতে চান? এটি আর ফেরত পাওয়া যাবে শ্রেষ্ঠ!"))) return;
             
             showLoading();
             try {
@@ -2221,9 +2288,9 @@
             }
         }
 
-        function deleteHistoryItem(id, type) {
+        async function deleteHistoryItem(id, type) {
             let msg = type === 'users' ? "আপনি কি নিশ্চিত যে এই ইউজারকে ডাটাবেস থেকে চিরতরে ডিলিট করতে চান?" : "আপনি কি নিশ্চিত যে এই ট্রানজেকশন হিস্ট্রি চিরতরে ডিলিট করতে চান?";
-            if(!confirm(msg)) return;
+            if(!(await customConfirm(msg))) return;
             
             try {
                 if(type === 'users') {
@@ -2393,7 +2460,7 @@
                 <div class="glass-panel p-4 rounded-xl mb-5 border-t-2 border-[var(--accent-gold)] shadow-lg">
                     <h3 class="text-xs font-black gold-text mb-3 border-b border-[var(--border-color)] pb-2 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> ${t('today_live')}</h3>
                     ${sumHtml || '<p class="text-[10px] text-[var(--text-muted)] mb-2 italic">No buys today.</p>'}
-                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}K</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
+                    <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex justify-between items-center"><span class="text-xs font-black text-white">TOTAL</span><div class="text-right"><div class="text-sm text-[var(--accent-cyan)] font-black">${totalK}</div><div class="text-base text-[var(--success)] font-black">Paid: ৳${totalPaid}</div></div></div>
                     <button onclick="archiveDaily()" class="w-full mt-5 bg-red-500/10 text-red-500 py-3 rounded-xl text-[10px] font-black border border-red-500/30 hover:bg-red-500 hover:text-white hover:shadow-[0_4px_15px_rgba(255,100,124,0.4)] transition-all duration-300 active:scale-95 flex justify-center items-center gap-2 tracking-wider"><i class="fa-solid fa-box-archive"></i> ${t('reset_arch')}</button>
                 </div>
                 <h3 class="text-xs font-black text-[var(--text-muted)] mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> ${t('arch_hist')}</h3>
@@ -2402,8 +2469,8 @@
             return subTabHtml + searchBox + contentHtml;
         }
 
-        function deleteArchive(idx) {
-            if(confirm("আপনি কি নিশ্চিত যে এই পুরাতন হিসেবটি ডিলিট করতে চান? এটি আর ফেরত পাওয়া যাবে না।")) {
+        async function deleteArchive(idx) {
+            if(await customConfirm("আপনি কি নিশ্চিত যে এই পুরাতন হিসেবটি ডিলিট করতে চান? এটি আর ফেরত পাওয়া যাবে না।")) {
                 let newArchive = [...dailyArchives];
                 newArchive.splice(idx, 1);
                 dailyArchives = newArchive;
@@ -2413,10 +2480,10 @@
             }
         }
 
-        function archiveDaily() {
+        async function archiveDaily() {
             let todayOrders = (orders || []).filter(o => o && o.type === 'sell' && o.status === 'approved' && !o.archived);
             if(todayOrders.length === 0) return showToast("Nothing to archive today!", "error");
-            if(confirm("Are you sure? This will reset today's live summary and save it to history.")) {
+            if(await customConfirm("Are you sure? This will reset today's live summary and save it to history.")) {
                 let sum = { date: new Date().toLocaleDateString(), totalK: 0, totalPaid: 0 };
                 const batch = db.batch();
                 todayOrders.forEach(o => { 
@@ -2637,33 +2704,33 @@
             }
         }
 
-        function deleteSingleUser(uid) {
+        async function deleteSingleUser(uid) {
             let msg = "সতর্কতা: আপনি কি নিশ্চিত যে এই ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।";
-            if(confirm(msg)) {
+            if(await customConfirm(msg)) {
                 processUserDeletion([uid]);
             }
         }
 
-        function deleteSelectedUsers() {
+        async function deleteSelectedUsers() {
             let selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
             if(selected.length === 0) return showToast("কোনো ইউজার সিলেক্ট করা হয়নি!", "error");
             
             let msg = `সতর্কতা: আপনি কি নিশ্চিত যে সিলেক্ট করা ${selected.length} জন ইউজারকে ডিলিট করতে চান?\n\nএই ইউজারদের সমস্ত ব্যালেন্স, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা চিরতরে মুছে যাবে যা আর ফেরত পাওয়া সম্ভব নয়।`;
-            if(confirm(msg)) {
+            if(await customConfirm(msg)) {
                 processUserDeletion(selected);
             }
         }
 
-        function deleteAllUsersConfirm() {
+        async function deleteAllUsersConfirm() {
             let uids = users.filter(u => u.email !== "masteradmin2026@coinbazar.app").map(u => u.id);
             if(uids.length === 0) return showToast("ডিলিট করার মতো কোনো ইউজার নেই!", "error");
 
             let msg = `মারাত্মক সতর্কতা: আপনি কি নিশ্চিত যে মাস্টার-অ্যাডমিন ছাড়া ডাটাবেসের সমস্ত (${uids.length} জন) ইউজারকে একসাথে ডিলিট করতে চান?\n\nসবার সমস্ত ব্যালেন্স, সেল, উইথড্র, অর্ডার হিস্ট্রি, টিকিট এবং ডাটা সম্পূর্ণভাবে মুছে যাবে! এই কাজটির পর আর কিছুই রিকভার করা সম্ভব নয়।`;
-            if(confirm(msg)) {
-                let doubleCheck = prompt("যদি আপনি সত্যিই সব ইউজার ডিলিট করতে চান, তবে বক্সে 'DELETE ALL' লিখে OK করুন।");
+            if(await customConfirm(msg)) {
+                let doubleCheck = await customPrompt("যদি আপনি সত্যিই সব ইউজার ডিলিট করতে চান, তবে বক্সে 'DELETE ALL' লিখে CONFIRM করুন।");
                 if (doubleCheck === 'DELETE ALL') {
                     processUserDeletion(uids);
-                } else {
+                } else if(doubleCheck !== null) {
                     showToast("ভুল টেক্সট! ডিলিট বাতিল করা হয়েছে।", "error");
                 }
             }
@@ -2743,10 +2810,10 @@
             }
         }
 
-        function toggleAdminRole(uid) {
+        async function toggleAdminRole(uid) {
             let u = users.find(x=>x.id===uid);
             let newRole = u.role === 'admin' ? 'user' : 'admin';
-            if(confirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
+            if(await customConfirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
                 u.role = newRole;
                 db.collection('cb_users').doc(u.id).update({ role: newRole });
                 showToast(`User is now ${newRole}`);
