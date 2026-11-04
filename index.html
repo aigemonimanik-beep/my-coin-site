@@ -622,14 +622,28 @@
             }
         }
 
+        function updateMainUIDynamically(s) {
+            let navTitle = document.getElementById('nav-title');
+            let navLogo = document.getElementById('nav-logo');
+            let marquee = document.getElementById('live-notice');
+            
+            if (navTitle) navTitle.innerText = s.name || 'Coin Bazar';
+            if (navLogo) {
+                navLogo.src = s.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB';
+                navLogo.classList.remove('hidden');
+            }
+            if (marquee) marquee.innerText = s.notice || '';
+        }
+
+        // 🔥 ব্রাউজার স্ক্রিন দেখানোর আগেই ক্যাশ থেকে লোগো ও নাম ইনস্ট্যান্ট বসিয়ে দেবে (No delay) 🔥
+        updateAuthUIDynamically(settings);
+        updateMainUIDynamically(settings);
+
         window.onload = () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
                 document.getElementById('reg-link-text').style.display = 'none';
             }
-
-            // Apply Auth UI (Logo & Title) from Cache instantly
-            updateAuthUIDynamically(settings);
             
             // Listen to real-time changes from Database for Auth UI
             db.collection('cb_data').doc('global_state').onSnapshot(doc => {
@@ -638,6 +652,7 @@
                     let s = data.settings || DEFAULT_SETTINGS;
                     settings = s; // Sync global settings immediately
                     updateAuthUIDynamically(s);
+                    updateMainUIDynamically(s);
                     if(typeof applyAppScale === 'function') applyAppScale(s.appScale);
 
                     // Block login screen for normal users if under maintenance
