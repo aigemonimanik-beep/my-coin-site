@@ -1210,6 +1210,9 @@
         function renderUserProfile() {
             let dp = currentUser.profilePic || `https://placehold.co/150x150/122B45/35D9F2?text=${currentUser.name.substring(0,1).toUpperCase()}`;
             return `
+            <div class="mb-2 mt-1">
+                <button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs font-bold shadow-sm active:scale-95"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">${t('back')}</span></button>
+            </div>
             <div class="glass-panel p-6 rounded-3xl mb-6 relative border-t-4 border-t-[var(--accent-cyan)] text-center mt-2 shadow-xl">
                 <div class="profile-img-wrap mb-4" onclick="document.getElementById('prof-img-upload').click()">
                     <img id="prof-img-preview" src="${dp}">
@@ -1439,7 +1442,10 @@
 
             return `
                 <div class="flex items-center justify-between mb-4 mt-2">
-                    <h2 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[var(--accent-cyan)]"></i> ${t('my_dash')}</h2>
+                    <div class="flex items-center gap-2">
+                        <button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--border-color)] active:scale-95 shadow-sm"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2 class="text-lg font-black text-white flex items-center gap-1.5"><i class="fa-solid fa-chart-pie text-[var(--accent-cyan)]"></i> ${t('my_dash')}</h2>
+                    </div>
                     <div class="flex gap-2">
                         <button onclick="exportUserCSV()" class="bg-[var(--bg-sidebar)] text-[var(--accent-cyan)] hover:text-white hover:bg-[var(--accent-cyan)] px-3 py-1.5 rounded-lg border border-[var(--accent-cyan)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-file-csv"></i> ${t('download')}</button>
                         <button onclick="resetUserHistory()" class="bg-[var(--error)]/10 text-[var(--error)] hover:text-white hover:bg-[var(--error)] px-3 py-1.5 rounded-lg border border-[var(--error)]/30 text-[10px] font-black shadow-sm transition"><i class="fa-solid fa-trash-can"></i> All Reset</button>
@@ -2194,7 +2200,10 @@
             return `
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
                     <button onclick="toggleLang()" class="absolute top-4 right-4 bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] px-3 py-1.5 rounded-lg text-[10px] font-black shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition-all active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-language"></i> EN/BN</button>
-                    <h2 class="text-xl font-black text-white mb-5 flex items-center gap-3"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">${t('admin_ctrl')}</span></h2>
+                    <div class="flex items-center gap-3 mb-5 pr-20">
+                        ${state.adminTab !== 'dash' ? `<button onclick="state.adminTab='dash'; renderApp()" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] w-9 h-9 rounded-full border border-[var(--border-color)] flex shrink-0 items-center justify-center active:scale-90 shadow-sm"><i class="fa-solid fa-arrow-left"></i></button>` : ''}
+                        <h2 class="text-xl font-black text-white flex items-center gap-2"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">${t('admin_ctrl')}</span></h2>
+                    </div>
                     ${tabHtml}
                     ${contentHtml}
                 </div>
