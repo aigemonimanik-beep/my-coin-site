@@ -603,6 +603,25 @@
         }
 
         // ================= PRE-AUTH SETUP & AUTO ADMIN LOGIC =================
+        function updateAuthUIDynamically(s) {
+            let titleEl = document.getElementById('nav-title-auth');
+            let iconEl = document.getElementById('auth-logo-icon');
+            let imgEl = document.getElementById('auth-logo-img');
+            
+            if (titleEl) titleEl.innerText = s.name || 'Coin Bazar';
+            
+            if (s.logo) {
+                if (iconEl) iconEl.classList.add('hidden');
+                if (imgEl) {
+                    imgEl.src = s.logo;
+                    imgEl.classList.remove('hidden');
+                }
+            } else {
+                if (imgEl) imgEl.classList.add('hidden');
+                if (iconEl) iconEl.classList.remove('hidden');
+            }
+        }
+
         window.onload = () => {
             if (isAdminUrl) {
                 document.getElementById('form-login').classList.add('hidden'); 
