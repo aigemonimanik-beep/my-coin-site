@@ -799,7 +799,7 @@
             unsubGlobal = db.collection('cb_data').doc('global_state').onSnapshot(doc => {
                 if (doc.exists) {
                     let data = doc.data();
-                    settings = data.settings || DEFAULT_SETTINGS; 
+                    if (data.settings) settings = data.settings; 
                     if(typeof applyAppScale === 'function') applyAppScale(settings.appScale);
                     
                     // Prioritize user's local language preference safely
@@ -808,8 +808,12 @@
                         if(localLang) settings.lang = localLang;
                     } catch(e) {}
 
-                    coins = data.coins || []; 
-                    pmMethods = data.pmMethods || [];
+                    if (data.coins && data.coins.length > 0) coins = data.coins; 
+                    else if (!doc.metadata.fromCache && data.coins) coins = data.coins;
+
+                    if (data.pmMethods && data.pmMethods.length > 0) pmMethods = data.pmMethods;
+                    else if (!doc.metadata.fromCache && data.pmMethods) pmMethods = data.pmMethods;
+
                     // Ensure the 5 default payment methods exist if pmMethods is empty
                     if(pmMethods.length === 0) {
                         pmMethods = [
@@ -820,9 +824,11 @@
                             { id: 5, name: 'Binance', logo: '', charge: 0, active: true }
                         ];
                     }
-                    dailyArchives = data.dailyArchives || [];
+                    if(data.dailyArchives) dailyArchives = data.dailyArchives;
                     if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
-                } else { db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); }
+                } else { 
+                    if(!doc.metadata.fromCache) db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); 
+                }
             }, err => { console.log(err); });
 
             function checkReady() {
@@ -840,8 +846,17 @@
             }
 
             unsubUsers = db.collection('cb_users').onSnapshot(snap => {
-                users = []; snap.forEach(d => users.push(d.data()));
-                currentUser = users.find(u => u.id === user.uid);
+                let tempUsers = []; snap.forEach(d => tempUsers.push(d.data()));
+                
+                // PREVENT CACHE WIPE ON FAST RENDER
+                if (snap.metadata.fromCache && tempUsers.length === 0 && users.length > 0) {
+                    // Ignore empty local database read, trust localStorage until network data arrives
+                } else {
+                    users = tempUsers;
+                    let found = users.find(u => u.id === user.uid);
+                    if(found) currentUser = found;
+                }
+                
                 initialUserLoad = false;
                 
                 if(currentUser) {
@@ -862,7 +877,12 @@
                 snap.forEach(d => tempOrders.push(d.data()));
                 tempOrders.sort((a,b) => new Date(b.time) - new Date(a.time));
                 
-                orders = tempOrders;
+                // PREVENT CACHE WIPE ON FAST RENDER
+                if (snap.metadata.fromCache && tempOrders.length === 0 && orders.length > 0) {
+                    // Do not wipe orders cache while waiting for Firebase network sync
+                } else {
+                    orders = tempOrders;
+                }
                 
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
@@ -878,14 +898,20 @@
             }, err => console.log(err));
 
             unsubTickets = db.collection('cb_tickets').onSnapshot(snap => {
-                tickets = []; snap.forEach(d => tickets.push(d.data()));
+                let tempTickets = []; snap.forEach(d => tempTickets.push(d.data()));
+                if (!(snap.metadata.fromCache && tempTickets.length === 0 && tickets.length > 0)) {
+                    tickets = tempTickets;
+                }
                 if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
             }, err => console.log(err));
 
             unsubNotifications = db.collection('cb_notifications').onSnapshot(snap => {
                 let newNotifs = []; snap.forEach(d => newNotifs.push(d.data()));
                 newNotifs.sort((a,b) => new Date(b.time) - new Date(a.time));
-                notifications = newNotifs;
+                
+                if (!(snap.metadata.fromCache && newNotifs.length === 0 && notifications.length > 0)) {
+                    notifications = newNotifs;
+                }
                 
                 if(currentUser && dataLoaded) {
                     if(!initialNotifLoad) {
