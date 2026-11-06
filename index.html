@@ -1085,8 +1085,18 @@
             content.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
+                
+                // উত্তোলনের পেজটি (Modal) খোলা থাকলে এখন স্মুথলি বন্ধ করবে
+                let wdMod = document.getElementById('wd-modal');
+                if(wdMod && !wdMod.classList.contains('hidden')) {
+                    let wdContent = document.getElementById('wd-modal-content');
+                    wdMod.classList.add('opacity-0');
+                    if(wdContent) wdContent.classList.add('translate-y-full');
+                    setTimeout(() => { wdMod.classList.add('hidden'); }, 300);
+                }
+
                 window.isActionInProgress = false; // Release the lock
-                switchView('home'); // Now it safely renders
+                switchView('home'); // Now it safely renders and smoothly scrolls to top
             }, 300);
         }
 
@@ -2012,7 +2022,6 @@
                 state.selCoinId = null; 
                 
                 hideLoading();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
                 
                 let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
                 showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
@@ -2239,11 +2248,7 @@
                 let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
                 await db.collection('cb_orders').doc(newWd.id).set(newWd);
                 
-                let wdMod = document.getElementById('wd-modal');
-                if(wdMod) { wdMod.classList.add('hidden', 'opacity-0'); }
-                
                 hideLoading();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
                 
                 let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
                 showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
