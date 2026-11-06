@@ -1142,7 +1142,11 @@
             } catch(e){}
             
             // PRESERVE WD MODAL STATE DURING RE-RENDERS
-            let wasWdOpen = document.getElementById('wd-modal') && !document.getElementById('wd-modal').classList.contains('hidden');
+            let wdModalEl = document.getElementById('wd-modal');
+            let wasWdOpen = wdModalEl && 
+                            !wdModalEl.classList.contains('hidden') && 
+                            !wdModalEl.classList.contains('opacity-0');
+            
             let curWdAcc = wasWdOpen ? document.getElementById('wd-acc').value : '';
             let curWdAmt = wasWdOpen ? document.getElementById('wd-amt').value : '';
             let selWdIdBackup = state.selWdId;
@@ -1243,8 +1247,12 @@
                 }, 50);
             }
             
-            // Restore scroll position to prevent jumping
-            window.scrollTo(0, currentScrollPos);
+            // Restore scroll position to prevent jumping or force scroll to top
+            if (window.forceScrollTop) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo(0, currentScrollPos);
+            }
         }
 
         function hideUserHeaderElements() {
@@ -1968,6 +1976,9 @@
             state.selCoinId = null; 
             hideLoading();
             
+            window.forceScrollTop = true;
+            setTimeout(() => { window.forceScrollTop = false; }, 1000);
+            
             let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
             showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
         }
@@ -2188,6 +2199,9 @@
                 
                 closeWdModal(); 
                 hideLoading();
+                
+                window.forceScrollTop = true;
+                setTimeout(() => { window.forceScrollTop = false; }, 1000);
                 
                 let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
                 showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
