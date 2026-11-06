@@ -549,6 +549,12 @@
         </div>
     </div>
 
+    <!-- Global Loading Overlay -->
+    <div id="global-loading" class="fixed inset-0 bg-[#071426]/90 z-[9999] hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity">
+        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-[var(--accent-cyan)] mb-4 drop-shadow-[0_0_15px_rgba(53,217,242,0.5)]"></i>
+        <p class="text-sm font-black text-[var(--accent-gold)] tracking-widest uppercase mt-2 animate-pulse" id="loading-text">Processing...</p>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[400] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
@@ -681,8 +687,27 @@
             }, err => console.warn("Auth UI Sync Error:", err));
         };
 
-        function showLoading() { document.getElementById('auth-loading').style.display = 'flex'; }
-        function hideLoading() { document.getElementById('auth-loading').style.display = 'none'; }
+        function showLoading(msg = "Processing...") { 
+            let gl = document.getElementById('global-loading');
+            if(gl) {
+                let lt = document.getElementById('loading-text');
+                if(lt) lt.innerText = msg;
+                gl.classList.remove('hidden');
+                gl.style.display = 'flex';
+            }
+            let al = document.getElementById('auth-loading');
+            if(al) al.style.display = 'flex'; 
+        }
+
+        function hideLoading() { 
+            let gl = document.getElementById('global-loading');
+            if(gl) {
+                gl.classList.add('hidden');
+                gl.style.display = 'none';
+            }
+            let al = document.getElementById('auth-loading');
+            if(al) al.style.display = 'none'; 
+        }
 
         async function autoLoginAdmin() {
             if(isAdminLoggingIn) return;
@@ -824,6 +849,8 @@
         // --- Core Application Logic & Sync ---
         let unsubGlobal = null; let unsubUsers = null; let unsubOrders = null; let unsubTickets = null; let unsubNotifications = null;
         let initialNotifLoad = true; let lastNotifCount = 0; let initialOrderLoad = true; let initialUserLoad = true;
+        
+        window.isActionInProgress = false; // Prevents UI jumping during submissions
 
         function startDataSync(user) {
             unsubGlobal = db.collection('cb_data').doc('global_state').onSnapshot(doc => {
@@ -853,7 +880,10 @@
                         ];
                     }
                     if(data.dailyArchives) dailyArchives = data.dailyArchives;
-                    if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
+                    if(currentUser && dataLoaded) { 
+                        if(!window.isActionInProgress) renderApp(); 
+                        saveToLocalCache(); 
+                    }
                 } else { 
                     if(!doc.metadata.fromCache) db.collection('cb_data').doc('global_state').set({ settings: DEFAULT_SETTINGS, coins: [], pmMethods: [] }); 
                 }
@@ -867,7 +897,7 @@
                     document.getElementById('instant-routing').innerHTML = '';
                     document.getElementById('auth-wrapper').style.display = 'none'; 
                     document.getElementById('main-ui').style.display = 'flex';
-                    renderApp(); 
+                    if(!window.isActionInProgress) renderApp(); 
                     saveToLocalCache();
                 }
             }
@@ -919,7 +949,11 @@
                 }
                 
                 initialOrderLoad = false;
-                if(currentUser) { checkReady(); renderApp(); saveToLocalCache(); }
+                if(currentUser) { 
+                    checkReady(); 
+                    if(!window.isActionInProgress) renderApp(); 
+                    saveToLocalCache(); 
+                }
             }, err => console.log(err));
 
             unsubTickets = db.collection('cb_tickets').onSnapshot(snap => {
@@ -927,7 +961,10 @@
                 if (!(snap.metadata.fromCache && tempTickets.length === 0 && tickets.length > 0)) {
                     tickets = tempTickets;
                 }
-                if(currentUser && dataLoaded) { renderApp(); saveToLocalCache(); }
+                if(currentUser && dataLoaded) { 
+                    if(!window.isActionInProgress) renderApp(); 
+                    saveToLocalCache(); 
+                }
             }, err => console.log(err));
 
             unsubNotifications = db.collection('cb_notifications').onSnapshot(snap => {
@@ -944,7 +981,9 @@
                         if(latestNotif && notifications.length > lastNotifCount) showPushNotification(latestNotif.title, latestNotif.message);
                     }
                     lastNotifCount = notifications.length; initialNotifLoad = false;
-                    updateNotifBadge(); renderApp(); saveToLocalCache();
+                    updateNotifBadge(); 
+                    if(!window.isActionInProgress) renderApp(); 
+                    saveToLocalCache();
                 }
             }, err => console.log(err));
         }
@@ -1046,7 +1085,8 @@
             content.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
-                // No forced renderApp here to prevent UI jumping
+                window.isActionInProgress = false; // Release the lock
+                switchView('home'); // Now it safely renders
             }, 300);
         }
 
@@ -1245,13 +1285,6 @@
                     modal.classList.add('transition-all', 'duration-300');
                     content.classList.add('transition-transform', 'duration-300');
                 }, 50);
-            }
-            
-            // Restore scroll position to prevent jumping or force scroll to top
-            if (window.forceScrollTop) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                window.scrollTo(0, currentScrollPos);
             }
         }
 
@@ -1959,7 +1992,9 @@
             if(k < c.min || k > c.max) return showToast("Invalid amount limit", "error");
             if(fileInput.files.length === 0) return showToast("Upload screenshot!", "error");
             
-            showLoading();
+            window.isActionInProgress = true;
+            showLoading("অর্ডার প্রসেস হচ্ছে...");
+            
             let ssData = null;
             try { ssData = await getBase64(fileInput.files[0]); } catch(e) {}
             
@@ -1971,16 +2006,21 @@
             }
             let receive = k * activePrice;
             
-            let newOrder = { id: generateId('ORD'), type: 'sell', userId: currentUser.id, tgUsername: tg, coinId: c.id, coinName: c.name, k: k, receive: receive, userSs: ssData, status: 'pending', time: new Date().toLocaleString() };
-            await db.collection('cb_orders').doc(newOrder.id).set(newOrder);
-            state.selCoinId = null; 
-            hideLoading();
-            
-            window.forceScrollTop = true;
-            setTimeout(() => { window.forceScrollTop = false; }, 1000);
-            
-            let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
-            showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
+            try {
+                let newOrder = { id: generateId('ORD'), type: 'sell', userId: currentUser.id, tgUsername: tg, coinId: c.id, coinName: c.name, k: k, receive: receive, userSs: ssData, status: 'pending', time: new Date().toLocaleString() };
+                await db.collection('cb_orders').doc(newOrder.id).set(newOrder);
+                state.selCoinId = null; 
+                
+                hideLoading();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
+                showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
+            } catch(e) {
+                window.isActionInProgress = false;
+                hideLoading();
+                showToast("Request failed", "error");
+            }
         }
 
         function openWdModal() {
@@ -2191,22 +2231,25 @@
             let receive = amt - charge; 
             let receiveUsd = isBinance ? receive / (settings.binanceRate || 127) : null;
             
-            showLoading();
+            window.isActionInProgress = true;
+            showLoading("রিকোয়েস্ট প্রসেস হচ্ছে...");
+
             try {
                 await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
                 let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
                 await db.collection('cb_orders').doc(newWd.id).set(newWd);
                 
-                closeWdModal(); 
-                hideLoading();
+                let wdMod = document.getElementById('wd-modal');
+                if(wdMod) { wdMod.classList.add('hidden', 'opacity-0'); }
                 
-                window.forceScrollTop = true;
-                setTimeout(() => { window.forceScrollTop = false; }, 1000);
+                hideLoading();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 
                 let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
                 showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
             } catch (err) {
                 hideLoading();
+                window.isActionInProgress = false;
                 showToast("Request failed", "error");
             }
         }
