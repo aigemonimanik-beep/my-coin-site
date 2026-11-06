@@ -7,6 +7,28 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Coin Bazar | Premium</title>
+    
+    <!-- PWA Manifest & App Install Logic -->
+    <script>
+        const manifestStr = JSON.stringify({
+            "name": "Coin Bazar Premium",
+            "short_name": "Coin Bazar",
+            "start_url": window.location.pathname,
+            "display": "standalone",
+            "background_color": "#071426",
+            "theme_color": "#071426",
+            "icons": [
+                { "src": "https://placehold.co/192x192/122B45/E8C779?text=CB", "sizes": "192x192", "type": "image/png" },
+                { "src": "https://placehold.co/512x512/122B45/E8C779?text=CB", "sizes": "512x512", "type": "image/png" }
+            ]
+        });
+        const manifestBlob = new Blob([manifestStr], {type: 'application/json'});
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = URL.createObjectURL(manifestBlob);
+        document.head.appendChild(manifestLink);
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -14,9 +36,18 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+    
+    <!-- Confetti Animation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- html2pdf for Receipts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Tone.js for Premium Audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;600;800;900&family=Poppins:wght@300;400;600;800;900&display=swap');
         
         :root {
             --bg-main: #071426; --bg-card: #122B45; --bg-sidebar: #091B30;
@@ -46,7 +77,7 @@
         }
 
         html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', 'Noto Sans Bengali', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: all 0.3s ease; margin: 0; padding: 0; }
         
         .glass-panel { background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
         .gold-text { background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -139,13 +170,15 @@
     </script>
 
     <script>
+        // এখানে আপনার নতুন ফায়ারবেস (Firebase) কনফিগারেশন বসান:
         const firebaseConfig = {
-            apiKey: "AIzaSyATYpTioZRY612OywkjbNbaccKRhxDYaAg",
-            authDomain: "nscoinshop.firebaseapp.com",
-            projectId: "nscoinshop",
-            storageBucket: "nscoinshop.firebasestorage.app",
-            messagingSenderId: "497930950808",
-            appId: "1:497930950808:web:74ebbe981dd1b1797cd8ed"
+            apiKey: "AIzaSyD2bjTccAy_8Cmy0y8ELqXx3Hlq76qnPLE",
+            authDomain: "mycoinbazar-1bc49.firebaseapp.com",
+            projectId: "mycoinbazar-1bc49",
+            storageBucket: "mycoinbazar-1bc49.firebasestorage.app",
+            messagingSenderId: "550287421845",
+            appId: "1:550287421845:web:333412320b8c382a0f469c",
+            measurementId: "G-VZX3FTLF77"
         };
         
         // Fix for Error: Prevent Firebase from initializing twice on reload
@@ -169,6 +202,7 @@
         }
         
         const auth = firebase.auth();
+        const messaging = firebase.messaging();
 
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             .catch((error) => console.error("Auth persistence error:", error));
@@ -246,7 +280,20 @@
         };
 
         let prevPendingCount = 0;
-        const notifAudio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+        
+        // NEW: 100% Guaranteed Web Audio API Beeper (No external file needed)
+        let audioCtx = null;
+        let beepInterval = null;
+        let stopNotifTimeout = null;
+
+        function initWebAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
 
         // URL Check for Admin
         const isAdminUrl = window.location.href.includes('?admin') || window.location.href.includes('&admin');
@@ -336,10 +383,21 @@
     <div id="auth-wrapper" class="min-h-screen items-center justify-center p-4 relative z-[100] bg-[var(--bg-main)] hidden">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_rgba(53,217,242,0.1)]">
             
-            <div id="auth-loading" class="absolute inset-0 bg-[#071426]/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm hidden">
-                <i class="fa-solid fa-spinner fa-spin text-4xl text-[var(--accent-cyan)] mb-3"></i>
-                <p class="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase mt-2">Processing...</p>
-                <p id="admin-auto-login-msg" class="text-[9px] text-[var(--text-muted)] mt-2 hidden">Authenticating Admin...</p>
+            <div id="auth-loading" class="fixed inset-0 bg-[#071426]/95 z-[250] flex-col p-4 hidden">
+                <div class="max-w-md w-full mx-auto animate-pulse flex flex-col gap-4 mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="w-12 h-12 bg-[#122B45] rounded-full shadow-inner"></div>
+                        <div class="w-24 h-8 bg-[#122B45] rounded-xl shadow-inner"></div>
+                    </div>
+                    <div class="w-full h-32 bg-[#122B45] rounded-2xl shadow-inner"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="w-full h-24 bg-[#122B45] rounded-2xl shadow-inner"></div>
+                        <div class="w-full h-24 bg-[#122B45] rounded-2xl shadow-inner"></div>
+                    </div>
+                    <div class="w-full h-12 bg-[#122B45] rounded-xl mt-2 shadow-inner"></div>
+                    <div class="w-full h-48 bg-[#122B45] rounded-2xl shadow-inner mt-2"></div>
+                </div>
+                <p id="admin-auto-login-msg" class="text-[9px] text-[var(--text-muted)] mt-2 hidden text-center w-full">Authenticating Admin...</p>
             </div>
 
             <div class="text-center mb-8">
@@ -452,8 +510,10 @@
                 <!-- Core Navigation -->
                 <button onclick="handleMenuNav('home')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-house w-5 text-center text-[var(--accent-cyan)]"></i> Home Dashboard</button>
                 <button onclick="state.selCoinId=null; handleMenuNav('home'); setTimeout(()=>document.getElementById('coin-select-section').scrollIntoView({behavior: 'smooth', block: 'start'}), 300)" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-coins w-5 text-center text-[var(--accent-gold)]"></i> Sell Coin</button>
+                <button onclick="toggleMobileMenu(); openWdModal();" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-money-bill-transfer w-5 text-center text-[var(--error)]"></i> Withdraw Funds</button>
                 <button onclick="handleMenuNav('history')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-chart-pie w-5 text-center text-[var(--success)]"></i> Dashboard & History</button>
                 <button onclick="handleMenuNav('profile')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-user-gear w-5 text-center text-[#9b59b6]"></i> My Profile</button>
+                <button onclick="handleMenuNav('support')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-headset w-5 text-center text-[var(--accent-cyan)]"></i> Live Chat / Support</button>
                 
                 <div class="my-2 border-t border-[var(--border-color)]"></div>
                 
@@ -552,7 +612,131 @@
     <!-- Toast -->
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 glass-panel text-white px-6 py-3 rounded-xl font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[400] border-l-4 border-l-[var(--accent-cyan)] text-sm whitespace-nowrap text-center"></div>
 
+    <!-- Admin Alarm Mode Overlay -->
+    <div id="alarm-mode-overlay" class="fixed inset-0 bg-black z-[9999] hidden flex-col items-center justify-center text-center cursor-pointer" onclick="stopAlarmMode()">
+        <i class="fa-solid fa-bell text-6xl text-[var(--accent-gold)] animate-pulse mb-6"></i>
+        <h2 class="text-2xl font-black text-white mb-2 tracking-widest uppercase">Alarm Mode Active</h2>
+        <p class="text-sm text-[#A8B8CC] font-bold mb-8 max-w-[80%] mx-auto leading-relaxed">আপনার ফোন এখন স্লিপ হবে না। নতুন রিকোয়েস্ট আসলে সাথে সাথে অ্যালার্ম বাজবে!<br><br><span class="text-[#35D9F2]">ফিরে যেতে স্ক্রিনে ক্লিক করুন</span></p>
+        <div class="text-[var(--accent-cyan)] font-mono text-2xl font-black border border-[var(--accent-cyan)]/30 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(53,217,242,0.2)] bg-[#071426]" id="alarm-clock">00:00:00</div>
+    </div>
+
+    <!-- Hidden Receipt Template for PDF Generation -->
+    <div id="receipt-template" class="fixed top-[-9999px] left-[-9999px] bg-white text-black p-8 w-[600px] font-sans z-[-1000]">
+        <div class="border-b-2 border-gray-300 pb-4 mb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black text-gray-800">Coin Bazar</h1>
+                <p class="text-xs text-gray-500 font-bold">Official Transaction Receipt</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-gray-600">ID: <span id="rec-id" class="font-mono"></span></p>
+                <p class="text-sm text-gray-500 font-bold" id="rec-date"></p>
+            </div>
+        </div>
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-700 border-b border-gray-200 pb-1 mb-3 uppercase tracking-wider">Transaction Details</h3>
+            <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+                <div class="flex flex-col"><span class="font-bold text-gray-400 uppercase text-[10px]">Type</span> <span id="rec-type" class="font-black text-gray-800 text-base"></span></div>
+                <div class="flex flex-col"><span class="font-bold text-gray-400 uppercase text-[10px]">Status</span> <span class="font-black text-green-600 text-base flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> SUCCESSFUL</span></div>
+                <div class="flex flex-col"><span class="font-bold text-gray-400 uppercase text-[10px]">Account</span> <span id="rec-user" class="font-black text-gray-800 text-base"></span></div>
+                <div class="flex flex-col"><span class="font-bold text-gray-400 uppercase text-[10px]">Item / Method</span> <span id="rec-item" class="font-black text-gray-800 text-base"></span></div>
+            </div>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm mt-8">
+            <div class="flex justify-between items-center">
+                <span class="text-lg font-black text-gray-600 uppercase">Total Value</span>
+                <span class="text-3xl font-black text-gray-900 drop-shadow-sm" id="rec-amount"></span>
+            </div>
+        </div>
+        <div class="mt-12 pt-4 border-t border-dashed border-gray-300 text-center text-xs text-gray-400 font-bold">
+            <p>This is a system generated digital receipt and does not require a physical signature.</p>
+            <p class="mt-1">Thank you for trading with Coin Bazar Premium.</p>
+        </div>
+    </div>
+
     <script>
+        // ================= PREMIUM AUDIO SYSTEM =================
+        let isAudioInit = false;
+        async function initAudio() {
+            if(!isAudioInit) {
+                try {
+                    await Tone.start();
+                    isAudioInit = true;
+                } catch(e) {}
+            }
+        }
+        
+        let synthClick, synthSuccess, synthError;
+        try {
+            synthClick = new Tone.MembraneSynth({ pitchDecay: 0.05, octaves: 4, oscillator: { type: 'sine' }, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
+            synthSuccess = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 1 } }).toDestination();
+            synthError = new Tone.Synth({ oscillator: { type: 'fmsquare', modulationType: 'sawtooth', harmonicity: 0.5 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 } }).toDestination();
+        } catch(e) { console.warn("Tone.js setup failed"); }
+
+        function playClickSound() {
+            if(!isAudioInit || !synthClick) return;
+            try { synthClick.triggerAttackRelease("C5", "32n", "+0", 0.05); } catch(e){}
+        }
+        function playSuccessSound() {
+            if(!isAudioInit || !synthSuccess) return;
+            try { synthSuccess.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", "+0", 0.1); } catch(e){}
+        }
+        function playErrorSound() {
+            if(!isAudioInit || !synthError) return;
+            try { synthError.triggerAttackRelease("C3", "8n", "+0", 0.1); } catch(e){}
+        }
+        
+        // Global click listener for UI audio initialization ONLY
+        document.addEventListener('click', (e) => {
+            initAudio(); // initialize on first user interaction
+            initWebAudio(); // Unlock background beeper context
+            stopNotifSound(); // Stop ringing if user clicks anywhere
+        });
+
+        // ================= PDF RECEIPT GENERATOR =================
+        function downloadReceipt(orderId) {
+            let o = orders.find(x => x.id === orderId);
+            if(!o) return showToast("Order not found!", "error");
+            
+            showLoading();
+            
+            document.getElementById('rec-id').innerText = o.id;
+            document.getElementById('rec-date').innerText = o.time;
+            document.getElementById('rec-type').innerText = o.type === 'sell' ? 'Coin Sell' : 'Fund Withdrawal';
+            document.getElementById('rec-user').innerText = currentUser.name + ' (@' + currentUser.username + ')';
+            
+            if(o.type === 'sell') {
+                document.getElementById('rec-item').innerText = `${o.k}K ${o.coinName}`;
+                document.getElementById('rec-amount').innerText = `৳${(o.paidAmount || o.receive).toFixed(2)}`;
+            } else {
+                document.getElementById('rec-item').innerText = `${o.methodName} (${o.acc})`;
+                document.getElementById('rec-amount').innerText = `৳${parseFloat(o.total).toFixed(2)}`;
+            }
+
+            let opt = {
+                margin:       0.3,
+                filename:     `Receipt_${o.id}.pdf`,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            let element = document.getElementById('receipt-template');
+            element.classList.remove('hidden');
+            element.style.display = 'block';
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('hidden');
+                element.style.display = '';
+                hideLoading();
+                showToast("Receipt Downloaded!", "success");
+            }).catch(err => {
+                element.classList.add('hidden');
+                element.style.display = '';
+                hideLoading();
+                showToast("Failed to generate PDF", "error");
+            });
+        }
+
         // ================= CUSTOM CONFIRM & PROMPT LOGIC =================
         function customConfirm(message) {
             return new Promise((resolve) => {
@@ -812,18 +996,134 @@
 
         function requestNotificationPermission() {
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        setupFCMToken();
+                    }
+                });
+            } else if (Notification.permission === 'granted') {
+                setupFCMToken();
             }
         }
+        
+        async function setupFCMToken() {
+            try {
+                // VAPID Key: ফায়ারবেস কনসোল থেকে Key বের করে নিচে বসাবেন
+                const currentToken = await messaging.getToken({ vapidKey: "BA0nH3cRdYtAtRK_dBNrJEss7FU7hM21JWQlC-duIRRfj4IVXyTqDPXxJK-e5SJjdQMIVfaTyhEUtKX_HiDYf3M" });
+                if (currentToken && currentUser) {
+                    await db.collection('cb_users').doc(currentUser.id).update({ fcmToken: currentToken });
+                }
+            } catch (err) {
+                console.log('Error getting FCM token:', err);
+            }
+        }
+
+        messaging.onMessage((payload) => {
+            showPushNotification(payload.notification.title, payload.notification.body);
+        });
+
+        // ================= TELEGRAM BOT INTEGRATION =================
+        const tgBotToken = "8824774872:AAFBv8x52w4nNsWluYcYFISQfm2Es3xqL3o";
+        const tgChatId = "7169508726";
+
+        function sendTelegramAlert(message) {
+            if(!tgBotToken || !tgChatId) return;
+            const url = `https://api.telegram.org/bot${tgBotToken}/sendMessage`;
+            
+            // লাইভ ওয়েবসাইটের অ্যাডমিন লিংক তৈরি করা হচ্ছে
+            let hostUrl = window.location.href.split('?')[0].split('#')[0];
+            if (hostUrl.startsWith('file:')) hostUrl = "https://aigemonimanik-beep.github.io/";
+            const adminUrl = hostUrl.includes('?') ? hostUrl + "&admin" : hostUrl + "?admin";
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: tgChatId, 
+                    text: message, 
+                    parse_mode: "HTML",
+                    reply_markup: {
+                        inline_keyboard: [[{ text: "💻 Open Admin Panel", url: adminUrl }]]
+                    }
+                })
+            }).catch(err => console.error("Telegram error:", err));
+        }
+
         function showPushNotification(title, body) {
             showToast(`🔔 ${title}: ${body}`, 'success');
+            
+            // Play notification sounds based on event
+            if (title.toLowerCase().includes('approved') || title.toLowerCase().includes('paid')) {
+                playSuccessSound(); // For Users when approved
+            } else {
+                playNotifSound(); // For Admins on new requests (Continuous Ringing)
+            }
+
             if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("Coin Bazar | " + title, { body: body, icon: settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB' });
+                let notif = new Notification("Coin Bazar | " + title, { 
+                    body: body, 
+                    icon: settings.logo || 'https://placehold.co/100x100/122B45/E8C779?text=CB',
+                    requireInteraction: true, // আপনি নিজে না কাটা পর্যন্ত নোটিফিকেশন স্ক্রিন থেকে যাবে না
+                    vibrate: [1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000] // ফোন একটানা জোরে ভাইব্রেট করবে
+                });
+                
+                // নোটিফিকেশনে ক্লিক করলে সরাসরি ওয়েবসাইটে নিয়ে আসবে এবং রিংটোন থামবে
+                notif.onclick = function(event) {
+                    event.preventDefault();
+                    window.focus(); 
+                    stopNotifSound();
+                    this.close();
+                };
             }
         }
         function playNotifSound() {
-            try { notifAudio.play().catch(e=>console.log("Audio play blocked by browser")); } catch(e){}
+            initWebAudio();
+            if (beepInterval) return; // Already ringing
+            
+            // Create a loud digital alarm sound directly from the browser
+            const playBeep = () => {
+                if(!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch tone
+                osc.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.1); // Two-tone effect
+                
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime); // LOUD volume
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            };
+
+            playBeep(); // Play immediately
+            beepInterval = setInterval(playBeep, 800); // Repeat every 0.8 seconds (like a phone ringing)
+            
+            // Auto stop logic
+            if (stopNotifTimeout) clearTimeout(stopNotifTimeout);
+            let duration = settings.ringDuration !== undefined ? parseInt(settings.ringDuration) : 0;
+            if (duration > 0) {
+                stopNotifTimeout = setTimeout(stopNotifSound, duration * 1000);
+            }
         }
+        function stopNotifSound() {
+            if (beepInterval) {
+                clearInterval(beepInterval);
+                beepInterval = null;
+            }
+            if (stopNotifTimeout) {
+                clearTimeout(stopNotifTimeout);
+                stopNotifTimeout = null;
+            }
+        }
+
+        // অ্যাডমিন স্ক্রিনে আসলে বা যেকোনো জায়গায় ক্লিক করলেই রিংটোন অটোমেটিক থেমে যাবে
+        window.addEventListener('focus', stopNotifSound);
+        document.addEventListener('click', stopNotifSound);
+        document.addEventListener('touchstart', stopNotifSound);
 
         // --- Core Application Logic & Sync ---
         let unsubGlobal = null; let unsubUsers = null; let unsubOrders = null; let unsubTickets = null; let unsubNotifications = null;
@@ -921,7 +1221,6 @@
                 if(currentUser && currentUser.role === 'admin') {
                     let curPending = orders.filter(o => o.status === 'pending' || (o.type === 'wd' && o.status === 'processing')).length;
                     if(!initialOrderLoad && curPending > prevPendingCount) { 
-                        playNotifSound(); 
                         showPushNotification("New Request Alert", "You have new pending requests!");
                     }
                     prevPendingCount = curPending;
@@ -1038,6 +1337,9 @@
 
         // ================= SUCCESS MODAL LOGIC =================
         function showSuccessModal(msg) {
+            // Magic Confetti Effect!
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#E8C779', '#35D9F2', '#16C784'] });
+            
             document.getElementById('success-modal-msg').innerText = msg;
             let modal = document.getElementById('success-modal');
             let content = document.getElementById('success-modal-content');
@@ -1057,7 +1359,8 @@
             content.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
-                switchView('home'); 
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                renderApp(); 
             }, 300);
         }
 
@@ -1440,6 +1743,9 @@
                     let amt = isPending || isRejected ? o.receive : (o.paidAmount || o.receive);
                     let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--success)]');
                     let sign = isRejected ? '' : '+ ';
+                    
+                    let receiptBtn = o.status === 'approved' ? `<button onclick="downloadReceipt('${o.id}')" class="text-[8px] bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 px-1.5 py-0.5 rounded mt-1.5 shadow-sm hover:bg-[var(--accent-cyan)] hover:text-[var(--bg-main)] transition flex items-center gap-1.5 font-black uppercase"><i class="fa-solid fa-file-pdf"></i> Receipt</button>` : '';
+
                     return `
                     <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-cyan)]/50 transition mb-2">
                         <div class="flex flex-col">
@@ -1452,6 +1758,7 @@
                             <div class="flex items-center mt-1">
                                 <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
                             </div>
+                            ${receiptBtn}
                         </div>
                     </div>
                     `;
@@ -1479,6 +1786,9 @@
                                 let isRejected = o.status === 'rejected';
                                 let color = isRejected ? 'text-[var(--text-muted)] line-through' : (isPending ? 'text-[var(--accent-gold)]' : 'text-[var(--error)]');
                                 let sign = isRejected ? '' : '- ';
+                                
+                                let receiptBtn = o.status === 'approved' ? `<button onclick="downloadReceipt('${o.id}')" class="text-[8px] bg-[var(--accent-gold)]/10 text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 px-1.5 py-0.5 rounded mt-1.5 shadow-sm hover:bg-[var(--accent-gold)] hover:text-[var(--bg-main)] transition flex items-center gap-1.5 font-black uppercase"><i class="fa-solid fa-file-pdf"></i> Receipt</button>` : '';
+
                                 return `
                                 <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] flex justify-between items-center hover:border-[var(--accent-gold)]/50 transition mb-2">
                                     <div class="flex flex-col">
@@ -1491,6 +1801,7 @@
                                         <div class="flex items-center mt-1">
                                             <span class="status-badge ${o.status} px-1.5 py-0.5 rounded text-[8px] font-black uppercase">${o.status}</span>
                                         </div>
+                                        ${receiptBtn}
                                     </div>
                                 </div>
                                 `;
@@ -1627,15 +1938,15 @@
                 let logoSrc = c.logo || `https://placehold.co/100x100/122B45/35D9F2?text=${String(c.name || 'CB').substring(0,2)}`;
                 let activeClass, clickAction, filterClass, overlayHtml = '';
                 if(c.active !== false) { 
-                    activeClass = state.selCoinId === c.id ? 'active-coin' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/50 hover:-translate-y-1 cursor-pointer'; 
+                    activeClass = state.selCoinId === c.id ? 'border-[var(--accent-gold)] bg-[var(--accent-gold)]/5 shadow-[0_0_15px_rgba(232,199,121,0.2)] transform scale-[1.02]' : 'border-[var(--border-color)] hover:border-[var(--accent-cyan)]/40 hover:-translate-y-1 cursor-pointer bg-[var(--bg-sidebar)]'; 
                     clickAction = `onclick="selectCoin(${c.id})"`; filterClass = ''; 
                 } else { 
                     let safeMsg = (c.inactiveMsg || 'এই কয়েনটি সাময়িকভাবে বন্ধ আছে।').replace(/'/g, "\\'");
                     let displayMsg = c.inactiveMsg || 'বন্ধ আছে';
-                    activeClass = 'border-[var(--error)]/40 border-dashed cursor-not-allowed bg-[var(--error)]/5'; 
+                    activeClass = 'border-[var(--error)]/30 border-dashed cursor-not-allowed bg-[var(--error)]/5 opacity-70'; 
                     clickAction = `onclick="customAlert('${safeMsg}')"`; 
-                    filterClass = 'opacity-30 grayscale'; 
-                    overlayHtml = `<div class="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-[2px] bg-[#071426]/60 p-2 text-center rounded-2xl transition-all duration-300 pointer-events-none">
+                    filterClass = 'grayscale'; 
+                    overlayHtml = `<div class="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-[1px] bg-[#071426]/50 p-2 text-center rounded-2xl transition-all duration-300 pointer-events-none">
                         <span class="bg-[var(--error)] text-white text-[10px] px-2 py-1 rounded font-black shadow-lg uppercase tracking-wider mb-2">CLOSED</span>
                         <span class="text-[9px] font-black text-white bg-[var(--error)]/90 border border-[var(--error)] px-2 py-1.5 rounded-lg w-[90%] leading-tight shadow-md">${displayMsg}</span>
                     </div>`; 
@@ -1643,24 +1954,38 @@
                 
                 let tiersHtml = '';
                 if(c.tiers && c.tiers.length > 0) {
-                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK); // display smaller tier first
-                    tiersHtml = sortedTiers.map(t => {
-                        let tierText = settings.lang === 'bn' ? `🔥 ${t.minK}K+ রেট = ৳${t.price}` : `🔥 ${t.minK}K+ Rate = ৳${t.price}`;
-                        return `<div class="text-[8px] font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] py-0.5 px-1 rounded shadow-sm text-center mt-1 w-full">${tierText}</div>`;
-                    }).join('');
+                    let sortedTiers = [...c.tiers].sort((a,b) => a.minK - b.minK);
+                    tiersHtml = `<div class="w-full mt-1.5 flex flex-col gap-1">` + sortedTiers.map(t => {
+                        return `<div class="flex justify-between items-center bg-gradient-to-r from-[var(--accent-gold)]/10 to-transparent border border-[var(--accent-gold)]/20 px-2 py-1 rounded-lg text-[9px] shadow-sm">
+                            <span class="font-black text-[var(--accent-gold)]"><i class="fa-solid fa-fire text-[8px] mr-1"></i>${t.minK}K+</span>
+                            <span class="font-black text-white">৳${t.price}</span>
+                        </div>`;
+                    }).join('') + `</div>`;
                 }
 
-                return `<div ${clickAction} class="glass-panel rounded-2xl p-3 flex flex-col items-center justify-center transition-all duration-300 ${activeClass} group relative overflow-hidden">${overlayHtml}<div class="${filterClass} flex flex-col items-center w-full"><div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/5 to-transparent opacity-0 group-hover:opacity-100 transition"></div><img src="${logoSrc}" class="w-10 h-10 rounded-full object-cover shadow-[0_4px_10px_rgba(0,0,0,0.3)] mb-2 border-2 border-[var(--border-color)] z-10"><span class="text-[11px] font-black text-white text-center uppercase tracking-wider z-10 leading-tight">${c.name}</span>
-                <div class="mt-1.5 flex flex-col gap-1 w-full px-0.5 z-10">
-                    <div class="text-[9px] font-black text-[var(--accent-cyan)] bg-[var(--bg-sidebar)] py-1 rounded border border-[var(--border-color)] shadow-sm text-center">
-                        ${t('rate')} 1K = ৳${c.price}
+                return `<div ${clickAction} class="rounded-2xl p-3 flex flex-col items-center transition-all duration-300 ${activeClass} group relative overflow-hidden border shadow-sm hover:shadow-md">
+                    ${overlayHtml}
+                    <div class="${filterClass} w-full flex flex-col items-center relative z-10">
+                        <div class="relative mb-2">
+                            <div class="absolute inset-0 bg-[var(--accent-cyan)] rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                            <img src="${logoSrc}" class="w-12 h-12 rounded-full object-cover border-2 border-[var(--bg-main)] shadow-md relative z-10">
+                        </div>
+                        <span class="text-[12px] font-black text-white text-center uppercase tracking-wider mb-2 leading-tight">${c.name}</span>
+                        
+                        <div class="w-full bg-[var(--bg-main)] rounded-xl p-2 border border-[var(--border-color)] shadow-inner flex flex-col gap-1.5">
+                            <div class="flex justify-between items-center text-[9px]">
+                                <span class="text-[var(--text-muted)] font-bold">Rate:</span>
+                                <span class="text-[var(--accent-cyan)] font-black text-[10px]">৳${c.price}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[9px] border-t border-[var(--border-color)]/50 pt-1.5">
+                                <span class="text-[var(--text-muted)] font-bold">Limit:</span>
+                                <span class="text-white font-bold">${c.min}K - ${c.max}K</span>
+                            </div>
+                        </div>
+                        
+                        ${tiersHtml}
                     </div>
-                    <div class="text-[8px] font-bold text-[var(--text-muted)] bg-[var(--bg-main)] py-1 rounded border border-[var(--border-color)] shadow-sm text-center">
-                        ${t('limit')} ${c.min}K - ${c.max}K
-                    </div>
-                    ${tiersHtml}
-                </div>
-                </div></div>`;
+                </div>`;
             }).join('');
 
             let selC = coins.find(x => x.id === state.selCoinId);
@@ -1978,6 +2303,10 @@
             state.selCoinId = null; 
             hideLoading();
             
+            // টেলিগ্রামে মেসেজ পাঠানো হচ্ছে (ID এক ক্লিকে কপি হবে)
+            sendTelegramAlert(`🚨 <b>New Sell Request!</b>\n\n🆔 ID: <code>${newOrder.id}</code>\n👤 User: <code>${currentUser.name}</code> (@${currentUser.username})\n🪙 Coin: ${k}K ${c.name}\n💰 Value: ৳${receive}\n\n<i>(Tap ID to copy, then Track Order)</i>`);
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
             showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
         }
@@ -2197,6 +2526,10 @@
             let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
             await db.collection('cb_orders').doc(newWd.id).set(newWd);
             closeWdModal(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // টেলিগ্রামে মেসেজ পাঠানো হচ্ছে (ID ও Number এক ক্লিকে কপি হবে)
+            sendTelegramAlert(`🚨 <b>New Withdraw Request!</b>\n\n🆔 ID: <code>${newWd.id}</code>\n👤 User: <code>${currentUser.name}</code> (@${currentUser.username})\n🏦 Method: ${m.name}\n📞 Acc: <code>${acc}</code>\n💸 Amount: ৳${amt}\n\n<i>(Tap ID or Acc to copy)</i>`);
             
             let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
             showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
@@ -2217,6 +2550,7 @@
                 { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
                 { id: 'manual', icon: 'fa-users', label: t('users') },
+                { id: 'support', icon: 'fa-headset', label: 'Live Chat' },
                 { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
 
@@ -2225,6 +2559,7 @@
                 { id: 'sells', icon: 'fa-coins', label: t('sells') },
                 { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') },
                 { id: 'manual', icon: 'fa-users', label: t('users') },
+                { id: 'support', icon: 'fa-headset', label: 'Live Chat' },
                 { id: 'set', icon: 'fa-cog', label: t('set') }
             ];
             
@@ -2255,6 +2590,7 @@
             let contentHtml = '';
             if(state.adminTab === 'dash') contentHtml = renderAdminDash(); else if(state.adminTab === 'sells') contentHtml = renderAdminSells();
             else if(state.adminTab === 'wds') contentHtml = renderAdminWds(); else if(state.adminTab === 'manual') contentHtml = renderAdminManual();
+            else if(state.adminTab === 'support') contentHtml = renderAdminSupport();
             else if(state.adminTab === 'set') contentHtml = renderAdminSettings();
 
             return `
@@ -2358,7 +2694,7 @@
                         <i class="fa-solid fa-globe ${settings.maintenanceMode ? 'text-[var(--error)]' : 'text-[var(--success)]'}"></i> 
                         Site Status: <span class="${settings.maintenanceMode ? 'text-[var(--error)]' : 'text-[var(--success)]'}">${settings.maintenanceMode ? 'OFFLINE' : 'ONLINE'}</span>
                     </h3>
-                    <p class="text-[9px] text-[var(--text-muted)] mt-1 font-bold">${settings.maintenanceMode ? 'ইউজাররা সাইটে ঢুকতে পারছে না' : 'সাইট স্বাভাবিকভাবে চলছে'}</p>
+                    <p class="text-[9px] text-[var(--text-muted)] mt-1 font-bold">${settings.maintenanceMode ? 'ইউজাররা সাইটে ঢুকতে পারছে মাতৃ না' : 'সাইট স্বাভাবিকভাবে চলছে'}</p>
                 </div>
                 <button onclick="toggleMaintenanceQuick()" class="${settings.maintenanceMode ? 'bg-[var(--success)] hover:bg-[#0e8c5d]' : 'bg-[var(--error)] hover:bg-red-600'} text-white px-3 py-2 rounded-lg text-[10px] font-black shadow-sm flex items-center gap-1.5 active:scale-95 transition border border-transparent">
                     <i class="fa-solid fa-power-off"></i> ${settings.maintenanceMode ? 'TURN ON' : 'TURN OFF'}
@@ -2372,6 +2708,13 @@
                     <input type="text" id="admin-track-id" placeholder="Paste ID (e.g., ORD-XXXXXX or WD-XXXXXX)" class="w-full input-premium p-3 rounded-xl text-xs font-bold focus:border-[var(--accent-cyan)]">
                     <button onclick="trackOrderGlobal()" class="cyan-btn px-4 py-3 rounded-xl text-xs font-black shadow-sm flex items-center justify-center gap-2"><i class="fa-solid fa-search"></i></button>
                 </div>
+            </div>`;
+
+            let alarmBtnHtml = `
+            <div class="glass-panel p-4 rounded-2xl mb-5 shadow-lg border border-[var(--accent-gold)] bg-[var(--accent-gold)]/5 flex flex-col items-center text-center">
+                <h3 class="text-sm font-black text-[var(--accent-gold)] mb-1 flex items-center gap-2"><i class="fa-solid fa-bell"></i> 100% Guaranteed Notification</h3>
+                <p class="text-[9px] text-[var(--text-muted)] mb-3 font-bold">ফোন স্ক্রিন অফ হয়ে গেলে ব্রাউজার নোটিফিকেশন দেয় না। গ্যারান্টি সহ রিংটোন বাজাতে নিচের মোডটি অন করে ফোন পকেটে রাখুন।</p>
+                <button onclick="startAlarmMode()" class="w-full gold-btn py-3.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-md flex items-center justify-center gap-2 active:scale-95"><i class="fa-solid fa-power-off"></i> Start Alarm Mode</button>
             </div>`;
 
             let actionBtnsHtml = `
@@ -2392,15 +2735,20 @@
                 </button>
             </div>`;
 
+            let openTickets = (tickets || []).filter(t => t.status === 'open').length;
+
             let shortcutBtns = `
             <div class="grid grid-cols-2 gap-3 mb-2 mt-4 pt-4 border-t border-[var(--border-color)]">
                 <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp();" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[var(--accent-gold)] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
                     <i class="fa-solid fa-calendar-day text-[var(--accent-gold)] text-2xl drop-shadow-md"></i>
                     <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Today's<br>Summary</span>
                 </button>
-                <button onclick="state.adminTab='sells'; state.adminSellTab='daily'; renderApp(); setTimeout(()=>window.scrollTo({top:9999, behavior:'smooth'}), 100);" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[#9b59b6] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
-                    <i class="fa-solid fa-box-archive text-[#9b59b6] text-2xl drop-shadow-md"></i>
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Old<br>History</span>
+                <button onclick="state.adminTab='support'; renderApp();" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[#9b59b6] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2">
+                    <div class="relative inline-block">
+                        <i class="fa-solid fa-headset text-[#9b59b6] text-2xl drop-shadow-md"></i>
+                        ${openTickets > 0 ? `<span class="absolute -top-2 -right-3 bg-[var(--error)] text-white text-[10px] px-1.5 py-0.5 rounded-full font-black shadow-md border-2 border-[var(--bg-card)]">${openTickets}</span>` : ''}
+                    </div>
+                    <span class="text-[10px] font-black text-white uppercase tracking-widest leading-tight">Live<br>Chat</span>
                 </button>
                 <button onclick="openLifetimeStats()" class="glass-panel p-3 rounded-2xl text-center border-t-2 border-[var(--accent-cyan)] hover:-translate-y-1 transition-all duration-300 shadow-sm active:scale-95 flex flex-col items-center justify-center gap-2 col-span-2">
                     <i class="fa-solid fa-chart-line text-[var(--accent-cyan)] text-2xl drop-shadow-md"></i>
@@ -2408,7 +2756,7 @@
                 </button>
             </div>`;
 
-            return pendingBoardHtml + siteStatusHtml + trackBoxHtml + actionBtnsHtml + shortcutBtns;
+            return pendingBoardHtml + siteStatusHtml + trackBoxHtml + alarmBtnHtml + actionBtnsHtml + shortcutBtns;
         }
 
         // --- Admin History Modal & Delete Functions ---
@@ -2746,6 +3094,10 @@
             db.collection('cb_orders').doc(o.id).update({ status: 'approved', paidAmount: amt });
             addNotification(u.id, "Coin Sell Approved", `Added ৳${amt} to your balance for ${o.k}K ${o.coinName}.`, "success");
             closeApproveModal(); showToast(`Added ৳${amt}`);
+            
+            // Magic Confetti Effect! (Removed)
+            // confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 3000, colors: ['#16C784', '#E8C779'] });
+            
             renderApp();
         }
         function rejectSell(id) { 
@@ -2839,6 +3191,9 @@
             closeWdApproveModal();
             hideLoading();
             showToast("Marked as Paid!"); 
+            
+            // Magic Confetti Effect! (Removed)
+            // confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 3000, colors: ['#35D9F2', '#16C784'] });
         }
 
         // --- ADVANCED USER MANAGEMENT SYSTEM ---
@@ -3016,6 +3371,7 @@
                 </div>
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
                 <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('add')}</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('sub')}</button></div>
+                <button onclick="messageUserFromProfile('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border border-[#9b59b6] bg-[#9b59b6]/10 text-[#9b59b6] hover:bg-[#9b59b6] hover:text-white uppercase tracking-wider mb-2 transition shadow-sm"><i class="fa-solid fa-comment-dots"></i> Message User (Live Chat)</button>
                 <button onclick="toggleBlock('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.status==='blocked'?'bg-[var(--bg-main)] text-[var(--success)] border-[var(--success)]':'btn-modern-danger'}"><i class="fa-solid ${u.status==='blocked'?'fa-unlock':'fa-lock'}"></i> ${u.status==='blocked'?t('unblock'):t('block')}</button>
                 `;
             } else {
@@ -3040,6 +3396,24 @@
                     ${contentHtml}
                 `;
             }
+        }
+
+        async function messageUserFromProfile(uid) {
+            closeUserManage();
+            state.adminTab = 'support';
+            state.activeTicketId = uid;
+            
+            // Check if ticket exists, if not create one instantly
+            let tk = tickets.find(x => x.id === uid);
+            if (!tk) {
+                let u = users.find(x => x.id === uid);
+                if(u) {
+                    tk = { id: uid, userId: uid, userName: u.name, subject: 'Live Chat Support', status: 'open', time: new Date().toLocaleString(), messages: [], lastUpdated: Date.now() };
+                    await db.collection('cb_tickets').doc(uid).set(tk);
+                }
+            }
+            
+            renderApp();
         }
 
         async function toggleAdminRole(uid) {
@@ -3078,7 +3452,6 @@
         }
 
         function renderAdminSupport() {
-            // Function maintained minimally as requested, even though it's hidden from the menu
             if(state.activeTicketId) return renderActiveTicket(state.activeTicketId, 'admin');
             
             let html = tickets.sort((a,b) => (b.lastUpdated||0) - (a.lastUpdated||0)).map(tk => {
@@ -3089,7 +3462,7 @@
                 
                 return `
                 <div onclick="state.activeTicketId='${tk.id}'; renderApp()" class="glass-panel p-3 rounded-xl mb-3 cursor-pointer hover:border-[var(--accent-cyan)] transition flex items-center gap-3 shadow-sm hover:-translate-y-0.5">
-                    <img src="${dp}" class="w-12 h-12 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-sm">
+                    <img src="${dp}" onclick="event.stopPropagation(); openUserManage('${tk.userId}')" title="Click to view profile" class="w-12 h-12 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-sm hover:scale-110 transition z-10">
                     <div class="flex-1 overflow-hidden">
                         <div class="flex justify-between items-center mb-1"><h4 class="font-black text-sm text-white">${u.name}</h4>${badge}</div>
                         <p class="text-[10px] text-[var(--text-muted)] font-mono mb-1">@${u.username}</p>
@@ -3098,7 +3471,7 @@
                 </div>`;
             }).join('');
             
-            return html || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active user chats found.</p>`;
+            return `<div class="mb-4 flex items-center justify-between"><h2 class="text-lg font-black text-white"><i class="fa-solid fa-headset text-[var(--accent-cyan)]"></i> User Live Chats</h2></div>` + (html || `<p class="text-center text-[var(--text-muted)] text-[10px] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No active user chats found.</p>`);
         }
 
         function renderAdminSettings() {
@@ -3194,6 +3567,14 @@
                         <div><div class="text-[11px] font-black text-white">UI Zoom / Size (%)</div><div class="text-[9px] text-[var(--text-muted)] mt-1">Scale the entire app size (Default: 100)</div></div>
                         <div class="flex items-center gap-2">
                             <input type="number" id="set-app-scale" value="${settings.appScale || 100}" onchange="updateAppScale(this.value)" class="w-16 input-premium p-1.5 rounded-lg text-xs font-bold text-center border focus:border-[var(--accent-cyan)] shadow-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-[var(--bg-sidebar)] border border-[var(--border-color)] p-4 rounded-xl flex justify-between items-center shadow-sm mt-3">
+                        <div><div class="text-[11px] font-black text-white">Ring/Vibrate Duration</div><div class="text-[9px] text-[var(--text-muted)] mt-1">কত সেকেন্ড অ্যালার্ম বাজবে (0 = একটানা)</div></div>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="set-ring-duration" value="${settings.ringDuration || 0}" onchange="updateRingDuration(this.value)" class="w-16 input-premium p-1.5 rounded-lg text-xs font-bold text-center border focus:border-[var(--accent-cyan)] shadow-sm">
+                            <span class="text-xs text-[var(--text-muted)] font-bold">Sec</span>
                         </div>
                     </div>
 
@@ -3340,6 +3721,15 @@
         }
 
         function toggleAllowDel(val) { settings.allowUserDeletion = val; db.collection('cb_data').doc('global_state').update({ 'settings.allowUserDeletion': val }); showToast(val ? "User Deletion: ENABLED" : "User Deletion: DISABLED"); renderApp(); }
+        
+        function updateRingDuration(val) {
+            let duration = parseInt(val) || 0;
+            if(duration < 0) duration = 0;
+            settings.ringDuration = duration;
+            db.collection('cb_data').doc('global_state').update({ 'settings.ringDuration': duration });
+            showToast(duration === 0 ? "Ring Setting: Continuous" : `Ring Setting: ${duration} Seconds`);
+        }
+
         function toggleMaintenance(val) { settings.maintenanceMode = val; db.collection('cb_data').doc('global_state').update({ 'settings.maintenanceMode': val }); showToast(val ? "Maintenance Mode ON" : "Maintenance Mode OFF"); renderApp(); }
         function toggleReqTg(val) { settings.requireTelegram = val; db.collection('cb_data').doc('global_state').update({ 'settings.requireTelegram': val }); showToast(val ? "Telegram Required: ON" : "Telegram Required: OFF"); }
 
@@ -3484,7 +3874,7 @@
             if(role === 'admin') {
                 let u = users.find(x => x.id === tk.userId) || { name: tk.userName, username: 'unknown', profilePic: '' };
                 let dp = u.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${u.name.substring(0,1).toUpperCase()}`;
-                headerInfo = `<div class="flex items-center gap-3"><img src="${dp}" class="w-10 h-10 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-sm"><div><h2 class="text-sm font-black text-white">${u.name}</h2><p class="text-[9px] text-[var(--accent-cyan)] font-mono">@${u.username}</p></div></div><button onclick="markAdminChatDone('${tk.id}')" class="ml-auto bg-[var(--bg-main)] text-[var(--success)] hover:bg-[var(--success)] hover:text-white px-3 py-1.5 rounded-lg border border-[var(--success)]/30 text-[10px] font-black transition"><i class="fa-solid fa-check-double"></i> Mark Done</button>`;
+                headerInfo = `<div class="flex items-center gap-3 cursor-pointer group" onclick="openUserManage('${tk.userId}')" title="View User Profile"><img src="${dp}" class="w-10 h-10 rounded-full border-2 border-[var(--accent-gold)] object-cover shadow-sm group-hover:scale-110 transition"><div><h2 class="text-sm font-black text-white group-hover:text-[var(--accent-cyan)] transition">${u.name} <i class="fa-solid fa-up-right-from-square text-[10px] opacity-50 ml-1"></i></h2><p class="text-[9px] text-[var(--accent-cyan)] font-mono">@${u.username}</p></div></div><button onclick="markAdminChatDone('${tk.id}')" class="ml-auto bg-[var(--bg-main)] text-[var(--success)] hover:bg-[var(--success)] hover:text-white px-3 py-1.5 rounded-lg border border-[var(--success)]/30 text-[10px] font-black transition"><i class="fa-solid fa-check-double"></i> Mark Done</button>`;
             } else {
                 headerInfo = `<h2 class="text-lg font-black text-white"><i class="fa-solid fa-headset text-[var(--accent-cyan)]"></i> Support Center</h2>`;
             }
@@ -3519,6 +3909,48 @@
                 state.activeTicketId = null;
                 renderApp();
             }
+        }
+
+        // ================= ADMIN ALARM MODE (100% GUARANTEE TRICK) =================
+        let wakeLock = null;
+        let alarmClockInterval = null;
+        
+        async function startAlarmMode() {
+            try {
+                initWebAudio(); // Unlock audio context firmly!
+                
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+                
+                let overlay = document.getElementById('alarm-mode-overlay');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+                
+                try { document.documentElement.requestFullscreen(); } catch(e){}
+                
+                showToast("Alarm Mode is Active!", "success");
+                
+                alarmClockInterval = setInterval(() => {
+                    let now = new Date();
+                    document.getElementById('alarm-clock').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }, 1000);
+                
+            } catch (err) {
+                showToast("Browser prevented Screen Lock. Keep screen ON manually.", "error");
+            }
+        }
+        
+        function stopAlarmMode() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => wakeLock = null).catch(()=>{});
+            }
+            let overlay = document.getElementById('alarm-mode-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            
+            try { document.exitFullscreen(); } catch(e){}
+            if(alarmClockInterval) clearInterval(alarmClockInterval);
         }
     </script>
 </body>
