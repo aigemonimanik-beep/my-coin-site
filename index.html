@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -1989,7 +1990,7 @@
         function selectCoin(id) { 
             let c = coins.find(x=>x.id===id); if(!c || !c.active) return;
             state.selCoinId = id; renderApp(); 
-            document.getElementById('sell-form-box').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { document.getElementById('sell-k').focus(); }, 300); 
+            document.getElementById('sell-form-box').scrollIntoView({ behavior: 'smooth', block: 'center' }); 
         }
         function copyText(txt) { navigator.clipboard.writeText(txt); showToast(t('copied')); }
         
