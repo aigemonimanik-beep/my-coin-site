@@ -1088,22 +1088,42 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
                 
-                // উত্তোলনের পেজটি (Modal) খোলা থাকলে এখন স্মুথলি বন্ধ করবে
                 let wdMod = document.getElementById('wd-modal');
-                if(wdMod && !wdMod.classList.contains('hidden')) {
-                    let wdContent = document.getElementById('wd-modal-content');
-                    wdMod.classList.add('opacity-0');
-                    if(wdContent) wdContent.classList.add('translate-y-full');
-                    setTimeout(() => { wdMod.classList.add('hidden'); }, 300);
-                }
+                let isWdOpen = wdMod && !wdMod.classList.contains('hidden');
 
-                // রিসেট ফ্রম ডাটা
-                state.selCoinId = null;
-                state.selWdId = null;
-                window.isActionInProgress = false; // Release the lock
-                
-                renderApp(); 
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // স্মুথলি উপরে যাবে
+                if (isWdOpen) {
+                    // উত্তোলন পেজটি বন্ধ না করে শুধু ইনপুট ফাঁকা করবে এবং উপরে স্ক্রল করবে
+                    let wdAmt = document.getElementById('wd-amt');
+                    if(wdAmt) wdAmt.value = '';
+                    calcWd(); 
+                    
+                    window.isActionInProgress = false; 
+                    renderApp();
+                    
+                    let wdContent = document.getElementById('wd-modal-content');
+                    if(wdContent) {
+                        let scrollArea = wdContent.querySelector('.overflow-y-auto');
+                        if(scrollArea) scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                } else if (state.selCoinId) {
+                    // সেল পেজে থাকলে ইনপুট ফাঁকা করে মেইন উইন্ডো উপরে স্ক্রল করবে
+                    let sellK = document.getElementById('sell-k');
+                    if (sellK) sellK.value = '';
+                    let sellTg = document.getElementById('sell-tg-user');
+                    if (sellTg) sellTg.value = '';
+                    calcSell();
+                    
+                    let ssInput = document.getElementById('sell-ss');
+                    if (ssInput) ssInput.value = '';
+                    
+                    window.isActionInProgress = false;
+                    renderApp();
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.isActionInProgress = false;
+                    renderApp();
+                }
             }, 300);
         }
 
@@ -1992,7 +2012,7 @@
         }
 
         function submitSell() {
-            if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
+            if (window.isActionInProgress) return;
             if(!state.selCoinId) return showToast("Select a coin first!", "error");
             let k = parseFloat(document.getElementById('sell-k').value); 
             
@@ -2011,7 +2031,10 @@
             if(fileInput.files.length === 0) return showToast("Upload screenshot!", "error");
             
             window.isActionInProgress = true;
-            showLoading("প্রসেসিং হচ্ছে...");
+
+            // কোনো লোডিং ছাড়াই সাথে সাথে সাকসেস মেসেজ দেখাবে!
+            let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
+            showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
 
             getBase64(fileInput.files[0]).then(ssData => {
                 let activePrice = c.price;
@@ -2024,19 +2047,11 @@
                 
                 let newOrder = { id: generateId('ORD'), type: 'sell', userId: currentUser.id, tgUsername: tg, coinId: c.id, coinName: c.name, k: k, receive: receive, userSs: ssData, status: 'pending', time: new Date().toLocaleString() };
                 
-                hideLoading();
-                
-                // সাথে সাথে সাকসেস মেসেজ দেখাবে!
-                let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
-                showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
-                
-                // ডাটাবেসে ব্যাকগ্রাউন্ডে সেভ হবে, যাতে ইউজারের দেরি না হয়
+                // ব্যাকগ্রাউন্ডে ডাটাবেস আপডেট হবে
                 db.collection('cb_orders').doc(newOrder.id).set(newOrder).catch(e => console.error(e));
                 
             }).catch(e => {
-                window.isActionInProgress = false;
-                hideLoading();
-                showToast("Request failed", "error");
+                console.error(e);
             });
         }
 
@@ -2227,7 +2242,7 @@
         }
         
         function submitWd() {
-            if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
+            if (window.isActionInProgress) return;
             if(!state.selWdId) return showToast("Select a payment method!", "error");
             let acc = document.getElementById('wd-acc').value.trim(); 
             let amt = parseFloat(document.getElementById('wd-amt').value);
