@@ -1230,6 +1230,9 @@
                 content.classList.remove('transition-transform', 'duration-300', 'translate-y-full');
                 
                 if (selWdIdBackup) {
+                    selectWd(selWdIdBackup, true); // true = skip focus/scroll
+                }
+                
                 if (document.getElementById('wd-acc')) document.getElementById('wd-acc').value = curWdAcc;
                 if (document.getElementById('wd-amt')) document.getElementById('wd-amt').value = curWdAmt;
                 calcWd();
