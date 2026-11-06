@@ -242,7 +242,8 @@
             tempApproveId: null, activeTicketId: null, userSearchQuery: '',
             adminUserTab: 'info', activeManageUserId: null,
             editCoinTiers: [], adminOrderSearch: '', wdApproveId: null,
-            adminHistoryType: null, userHistTab: 'sells', userOrderSearch: ''
+            adminHistoryType: null, userHistTab: 'sells', userOrderSearch: '',
+            adminUserFilter: 'all'
         };
 
         let prevPendingCount = 0;
@@ -448,6 +449,8 @@
                         <p class="text-[10px] text-[var(--accent-cyan)] font-mono" id="menu-uname">@username</p>
                     </div>
                 </div>
+
+                <div id="staff-panel-btn-container"></div>
 
                 <!-- Core Navigation -->
                 <button onclick="handleMenuNav('home')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--text-muted)] hover:bg-[var(--bg-sidebar)] hover:text-white flex items-center gap-3 transition"><i class="fa-solid fa-house w-5 text-center text-[var(--accent-cyan)]"></i> Home Dashboard</button>
@@ -1079,6 +1082,15 @@
             document.getElementById('menu-name').innerText = currentUser.name || 'User';
             document.getElementById('menu-uname').innerText = '@' + (currentUser.username || 'unknown');
             document.getElementById('menu-dp').src = currentUser.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${(currentUser.name || 'U').substring(0,1).toUpperCase()}`;
+            
+            let staffBtnContainer = document.getElementById('staff-panel-btn-container');
+            if (staffBtnContainer) {
+                if (currentUser.role !== 'user') {
+                    staffBtnContainer.innerHTML = `<button onclick="handleMenuNav('admin')" class="w-full text-left p-3 rounded-xl text-xs font-black text-[var(--bg-main)] bg-gradient-to-r from-[var(--accent-gold)] to-[var(--accent-gold-dark)] flex items-center gap-3 transition shadow-md mb-3"><i class="fa-solid fa-user-shield w-5 text-center"></i> Staff / Admin Panel</button>`;
+                } else {
+                    staffBtnContainer.innerHTML = '';
+                }
+            }
         }
 
         // ================= SUCCESS MODAL LOGIC =================
@@ -1314,7 +1326,7 @@
                 if(state.view === 'home') cont.innerHTML = renderHome();
                 else if(state.view === 'history') cont.innerHTML = renderUserHistory();
                 else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
-                else if(state.view === 'admin' && currentUser.role === 'admin') cont.innerHTML = renderAdmin();
+                else if(state.view === 'admin' && (currentUser.role === 'admin' || currentUser.role.startsWith('staff'))) cont.innerHTML = renderAdmin();
                 else if(state.view === 'support') cont.innerHTML = renderSupport();
                 else if(state.view === 'faq') cont.innerHTML = renderFaq();
                 
@@ -2347,21 +2359,30 @@
         }
 
         function renderAdmin() {
-            let tabs = [
-                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
-                { id: 'sells', icon: 'fa-coins', label: t('sells') },
-                { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
-                { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'set', icon: 'fa-cog', label: t('set') }
-            ];
+            let tabs = [];
+            if (currentUser.role === 'admin') {
+                tabs = [
+                    { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
+                    { id: 'sells', icon: 'fa-coins', label: t('sells') },
+                    { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }, 
+                    { id: 'manual', icon: 'fa-users', label: t('users') },
+                    { id: 'set', icon: 'fa-cog', label: t('set') }
+                ];
+            } else if (currentUser.role === 'staff_sells') {
+                tabs = [ { id: 'sells', icon: 'fa-coins', label: t('sells') } ];
+                if(state.adminTab !== 'sells') state.adminTab = 'sells';
+            } else if (currentUser.role === 'staff_wds') {
+                tabs = [ { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') } ];
+                if(state.adminTab !== 'wds') state.adminTab = 'wds';
+            } else if (currentUser.role === 'staff_both') {
+                tabs = [ 
+                    { id: 'sells', icon: 'fa-coins', label: t('sells') },
+                    { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') }
+                ];
+                if(state.adminTab !== 'sells' && state.adminTab !== 'wds') state.adminTab = 'sells';
+            }
 
-            let menuTabs = [
-                { id: 'dash', icon: 'fa-chart-pie', label: t('stats') }, 
-                { id: 'sells', icon: 'fa-coins', label: t('sells') },
-                { id: 'wds', icon: 'fa-money-bill-transfer', label: t('wds') },
-                { id: 'manual', icon: 'fa-users', label: t('users') },
-                { id: 'set', icon: 'fa-cog', label: t('set') }
-            ];
+            let menuTabs = tabs;
             
             let sellPending = orders.filter(o => o.type === 'sell' && o.status === 'pending').length;
             let wdPending = orders.filter(o => o.type === 'wd' && (o.status === 'pending' || o.status === 'processing')).length;
@@ -2396,8 +2417,8 @@
                 <div class="glass-panel rounded-3xl p-5 mb-5 border-t-4 border-t-[var(--accent-gold)] relative shadow-2xl mt-2">
                     <button onclick="toggleLang()" class="absolute top-4 right-4 bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-card)] border border-[var(--accent-cyan)]/40 text-[var(--accent-cyan)] px-3 py-1.5 rounded-lg text-[10px] font-black shadow-sm hover:bg-[var(--accent-cyan)] hover:text-white transition-all active:scale-95 flex items-center gap-1.5"><i class="fa-solid fa-language"></i> EN/BN</button>
                     <div class="flex items-center gap-3 mb-5 pr-20">
-                        ${state.adminTab !== 'dash' ? `<button onclick="state.adminTab='dash'; renderApp()" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] w-9 h-9 rounded-full border border-[var(--border-color)] flex shrink-0 items-center justify-center active:scale-90 shadow-sm"><i class="fa-solid fa-arrow-left"></i></button>` : ''}
-                        <h2 class="text-xl font-black text-white flex items-center gap-2"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span data-i18n="admin_ctrl">${t('admin_ctrl')}</span></h2>
+                        ${state.adminTab !== 'dash' && currentUser.role === 'admin' ? `<button onclick="state.adminTab='dash'; renderApp()" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] w-9 h-9 rounded-full border border-[var(--border-color)] flex shrink-0 items-center justify-center active:scale-90 shadow-sm"><i class="fa-solid fa-arrow-left"></i></button>` : ''}
+                        <h2 class="text-xl font-black text-white flex items-center gap-2"><i class="fa-solid fa-chess-king gold-text text-2xl drop-shadow-lg"></i> <span>${currentUser.role === 'admin' ? t('admin_ctrl') : 'Staff Panel'}</span></h2>
                     </div>
                     ${tabHtml}
                     ${contentHtml}
@@ -2979,7 +3000,14 @@
         function renderAdminManual() {
             let searchBox = `<div class="mb-5 relative shadow-sm"><input type="text" id="user-search-input" value="${state.userSearchQuery || ''}" oninput="state.userSearchQuery=this.value.toLowerCase(); document.getElementById('admin-user-list').innerHTML=renderUserList()" placeholder="${t('search_ph')}" class="w-full input-premium p-3.5 rounded-xl text-[11px] font-bold pl-11 border focus:border-[var(--accent-cyan)]"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm"></i></div>`;
             
-            let batchActions = settings.allowUserDeletion ? `
+            let userTabs = `
+            <div class="flex gap-2 mb-4">
+                <button onclick="state.adminUserFilter='all'; renderApp()" class="flex-1 py-2 rounded-xl text-[11px] font-black transition ${state.adminUserFilter==='all' ? 'bg-[var(--accent-cyan)] text-[var(--bg-main)] shadow-md' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border border-[var(--border-color)]'}"><i class="fa-solid fa-users"></i> All Users</button>
+                <button onclick="state.adminUserFilter='staff'; renderApp()" class="flex-1 py-2 rounded-xl text-[11px] font-black transition ${state.adminUserFilter==='staff' ? 'bg-[var(--accent-gold)] text-[var(--bg-main)] shadow-md' : 'bg-[var(--bg-sidebar)] text-[var(--text-muted)] border border-[var(--border-color)]'}"><i class="fa-solid fa-user-shield"></i> Staff & Admins</button>
+            </div>
+            `;
+
+            let batchActions = settings.allowUserDeletion && state.adminUserFilter === 'all' ? `
             <div class="flex justify-between items-center mb-3 bg-[var(--bg-sidebar)] p-2.5 rounded-xl border border-[var(--border-color)] shadow-sm">
                 <div class="flex items-center gap-2">
                     <input type="checkbox" id="select-all-users" onchange="toggleSelectAllUsers(this)" class="w-3.5 h-3.5 accent-[var(--error)] rounded cursor-pointer ml-1">
@@ -2991,13 +3019,17 @@
                 </div>
             </div>` : '';
 
-            return searchBox + batchActions + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
+            return searchBox + userTabs + batchActions + `<div class="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 ml-1 flex justify-between"><span># Serial & Details</span><span>Action</span></div>` + `<div id="admin-user-list">${renderUserList()}</div>`;
         }
 
         function renderUserList() {
             let q = state.userSearchQuery || '';
             let filtered = (users || []).filter(u => u && ((u.name||'').toLowerCase().includes(q) || (u.username||'').toLowerCase().includes(q) || (u.id||'').toLowerCase().includes(q)));
             
+            if (state.adminUserFilter === 'staff') {
+                filtered = filtered.filter(u => u.role && u.role !== 'user');
+            }
+
             let safeFiltered = filtered.filter(u => u.email !== "masteradmin2026@coinbazar.app");
 
             if(safeFiltered.length === 0) return `<p class="text-center text-[10px] text-[var(--text-muted)] py-6 border border-dashed border-[var(--border-color)] rounded-xl">No users found.</p>`;
@@ -3005,8 +3037,14 @@
             return safeFiltered.map((u, index) => {
                 let dp = u.profilePic || `https://placehold.co/100x100/122B45/35D9F2?text=${u.name.substring(0,1).toUpperCase()}`;
                 
-                let checkBtn = settings.allowUserDeletion ? `<input type="checkbox" value="${u.id}" class="user-checkbox w-3.5 h-3.5 accent-[var(--error)] rounded cursor-pointer">` : '';
-                let delBtn = settings.allowUserDeletion ? `<button onclick="deleteSingleUser('${u.id}')" class="bg-[var(--bg-main)] text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white w-6 h-6 rounded flex items-center justify-center transition shadow-sm" title="Delete User"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
+                let checkBtn = settings.allowUserDeletion && state.adminUserFilter === 'all' ? `<input type="checkbox" value="${u.id}" class="user-checkbox w-3.5 h-3.5 accent-[var(--error)] rounded cursor-pointer">` : '';
+                let delBtn = settings.allowUserDeletion && state.adminUserFilter === 'all' ? `<button onclick="deleteSingleUser('${u.id}')" class="bg-[var(--bg-main)] text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white w-6 h-6 rounded flex items-center justify-center transition shadow-sm" title="Delete User"><i class="fa-solid fa-trash text-[8px]"></i></button>` : '';
+
+                let roleBadge = '';
+                if(u.role === 'admin') roleBadge = `<span class="text-[8px] bg-red-500/20 text-red-500 border border-red-500/30 px-1.5 py-0.5 rounded ml-1 font-black">ADMIN</span>`;
+                else if(u.role && u.role.startsWith('staff')) roleBadge = `<span class="text-[8px] bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 px-1.5 py-0.5 rounded ml-1 uppercase font-black">${u.role.replace('_', ' ')}</span>`;
+
+                let kickBtn = (currentUser.role === 'admin' && u.role && u.role !== 'user') ? `<button onclick="kickStaff('${u.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white px-3 py-1.5 rounded-lg text-[9px] font-black shadow-sm transition active:scale-95"><i class="fa-solid fa-user-xmark"></i> Kick</button>` : '';
 
                 return `
                 <div class="glass-panel p-3 rounded-xl mb-3 flex items-center justify-between border-l-4 ${u.status==='blocked'?'border-l-[var(--error)]':'border-l-[var(--accent-cyan)]'} hover:shadow-md transition hover:-translate-y-0.5">
@@ -3015,17 +3053,37 @@
                         <div class="w-6 h-6 bg-[var(--bg-main)] text-[var(--accent-gold)] flex items-center justify-center rounded text-[10px] font-black shadow-inner border border-[var(--border-color)]">${index+1}</div>
                         <img src="${dp}" class="w-10 h-10 rounded-full border border-[var(--border-color)] object-cover shadow-sm">
                         <div>
-                            <h4 class="font-black text-xs text-white">${u.name} ${u.status==='blocked'?'<span class="text-[8px] bg-[var(--error)] text-white px-1.5 py-0.5 rounded ml-1">BLOCKED</span>':''}</h4>
+                            <h4 class="font-black text-xs text-white">${u.name} ${u.status==='blocked'?'<span class="text-[8px] bg-[var(--error)] text-white px-1.5 py-0.5 rounded ml-1">BLOCKED</span>':''}${roleBadge}</h4>
                             <p class="text-[10px] text-[var(--accent-cyan)] font-mono mb-0.5">@${u.username}</p>
                         </div>
                     </div>
-                    <div class="flex gap-1.5">
-                        ${delBtn}
-                        <button onclick="openUserManage('${u.id}')" class="cyan-btn px-3 py-2 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
+                    <div class="flex flex-col gap-1.5 items-end">
+                        <div class="flex gap-1.5">
+                            ${delBtn}
+                            <button onclick="openUserManage('${u.id}')" class="cyan-btn px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
+                        </div>
+                        ${kickBtn}
                     </div>
                 </div>
             `;
             }).join('');
+        }
+
+        async function kickStaff(uid) {
+            if (currentUser.role !== 'admin') return showToast("Only Master Admin can kick staff!", "error");
+            if(await customConfirm("আপনি কি নিশ্চিত যে এই ইউজারকে কিক (Kick) করে নরমাল ইউজার বানাতে চান? তার স্টাফ প্যানেলের অ্যাক্সেস চলে যাবে।")) {
+                showLoading();
+                try {
+                    await db.collection('cb_users').doc(uid).update({ role: 'user' });
+                    let u = users.find(x => x.id === uid);
+                    if(u) u.role = 'user';
+                    showToast("User Kicked Successfully! (Access Removed)", "success");
+                    renderApp();
+                } catch(e) { 
+                    showToast("Error updating role", "error"); 
+                }
+                hideLoading();
+            }
         }
 
         // --- USER DELETION LOGIC ---
@@ -3147,6 +3205,19 @@
                     <h4 class="text-[10px] font-black text-white border-b border-[var(--border-color)] pb-2 mb-2 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-[var(--accent-gold)]"></i> Coins Sold Breakdown</h4>
                     <div class="flex flex-wrap gap-2">${breakdown}</div>
                 </div>
+                
+                <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3 mt-4"><i class="fa-solid fa-user-tie"></i> Staff / Role Access</h4>
+                <div class="flex gap-2 mb-4">
+                    <select id="role-select-${u.id}" class="flex-1 input-premium p-2.5 rounded-lg text-xs font-bold text-white">
+                        <option value="user" ${u.role==='user'?'selected':''}>User (No Access)</option>
+                        <option value="staff_sells" ${u.role==='staff_sells'?'selected':''}>Staff (Coin Sells Only)</option>
+                        <option value="staff_wds" ${u.role==='staff_wds'?'selected':''}>Staff (Withdraws Only)</option>
+                        <option value="staff_both" ${u.role==='staff_both'?'selected':''}>Staff (Sells & Wds)</option>
+                        <option value="admin" ${u.role==='admin'?'selected':''}>Master Admin</option>
+                    </select>
+                    <button onclick="updateUserRole('${u.id}')" class="bg-[var(--accent-gold)] text-[var(--bg-main)] px-4 rounded-lg font-black text-[10px] shadow-sm hover:opacity-90 active:scale-95">SAVE</button>
+                </div>
+
                 <h4 class="text-[10px] font-black text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] pb-1 mb-3"><i class="fa-solid fa-shield-halved"></i> Account Actions</h4>
                 <div class="flex gap-2 mb-3"><input type="number" id="m-amt-${u.id}" placeholder="Amount" class="w-1/2 input-premium p-2 rounded-lg text-xs font-bold text-center"><button onclick="modManualBal('${u.id}', 'add')" class="btn-modern-success flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('add')}</button><button onclick="modManualBal('${u.id}', 'deduct')" class="btn-modern-danger flex-1 rounded-lg font-black text-[10px] shadow-sm">${t('sub')}</button></div>
                 <button onclick="toggleBlock('${u.id}')" class="w-full py-2.5 rounded-lg text-[11px] font-black border uppercase tracking-wider mb-2 transition shadow-sm ${u.status==='blocked'?'bg-[var(--bg-main)] text-[var(--success)] border-[var(--success)]':'btn-modern-danger'}"><i class="fa-solid ${u.status==='blocked'?'fa-unlock':'fa-lock'}"></i> ${u.status==='blocked'?t('unblock'):t('block')}</button>
@@ -3175,14 +3246,25 @@
             }
         }
 
-        async function toggleAdminRole(uid) {
+        async function updateUserRole(uid) {
+            if (currentUser.role !== 'admin') return showToast("Only Master Admin can change roles!", "error");
+            let newRole = document.getElementById(`role-select-${uid}`).value;
             let u = users.find(x=>x.id===uid);
-            let newRole = u.role === 'admin' ? 'user' : 'admin';
-            if(await customConfirm(`Are you sure you want to make this user an ${newRole.toUpperCase()}?`)) {
-                u.role = newRole;
-                db.collection('cb_users').doc(u.id).update({ role: newRole });
-                showToast(`User is now ${newRole}`);
-                updateUserManageModal();
+            
+            if(u.email === "masteradmin2026@coinbazar.app" && newRole !== 'admin') return showToast("Master Admin role cannot be changed!", "error");
+            if(u.id === currentUser.id) return showToast("You cannot change your own role here!", "error");
+            
+            if(await customConfirm(`Are you sure you want to change this user's role?`)) {
+                showLoading();
+                try {
+                    u.role = newRole;
+                    await db.collection('cb_users').doc(u.id).update({ role: newRole });
+                    showToast(`Role updated successfully!`);
+                    updateUserManageModal();
+                } catch(e) {
+                    showToast("Error updating role", "error");
+                }
+                hideLoading();
             }
         }
 
