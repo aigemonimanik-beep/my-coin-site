@@ -891,7 +891,8 @@
 
             function checkReady() {
                 if (currentUser) {
-                    dataLoaded = true; hideLoading();
+                    dataLoaded = true; 
+                    if (!window.isActionInProgress) hideLoading();
                     updateMobileMenuProfile();
                     
                     document.getElementById('instant-routing').innerHTML = '';
@@ -1985,6 +1986,7 @@
         }
 
         async function submitSell() {
+            if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
             if(!state.selCoinId) return showToast("Select a coin first!", "error");
             let k = parseFloat(document.getElementById('sell-k').value); 
             
@@ -2219,6 +2221,7 @@
         }
         
         async function submitWd() {
+            if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
             if(!state.selWdId) return showToast("Select a payment method!", "error");
             let acc = document.getElementById('wd-acc').value.trim(); 
             let amt = parseFloat(document.getElementById('wd-amt').value);
