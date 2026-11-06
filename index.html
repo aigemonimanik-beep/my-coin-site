@@ -1084,6 +1084,7 @@
             modal.classList.add('opacity-0');
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
+            
             setTimeout(() => {
                 modal.classList.add('hidden');
                 
@@ -1096,8 +1097,13 @@
                     setTimeout(() => { wdMod.classList.add('hidden'); }, 300);
                 }
 
+                // রিসেট ফ্রম ডাটা
+                state.selCoinId = null;
+                state.selWdId = null;
                 window.isActionInProgress = false; // Release the lock
-                switchView('home'); // Now it safely renders and smoothly scrolls to top
+                
+                renderApp(); 
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // স্মুথলি উপরে যাবে
             }, 300);
         }
 
@@ -1985,7 +1991,7 @@
             box.classList.remove('hidden'); btn.disabled = false;
         }
 
-        async function submitSell() {
+        function submitSell() {
             if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
             if(!state.selCoinId) return showToast("Select a coin first!", "error");
             let k = parseFloat(document.getElementById('sell-k').value); 
@@ -2005,33 +2011,33 @@
             if(fileInput.files.length === 0) return showToast("Upload screenshot!", "error");
             
             window.isActionInProgress = true;
-            showLoading("অর্ডার প্রসেস হচ্ছে...");
-            
-            let ssData = null;
-            try { ssData = await getBase64(fileInput.files[0]); } catch(e) {}
-            
-            let activePrice = c.price;
-            if(c.tiers && c.tiers.length > 0) {
-                let sortedTiers = [...c.tiers].sort((a,b) => b.minK - a.minK);
-                let matched = sortedTiers.find(t => k >= t.minK);
-                if(matched) { activePrice = matched.price; }
-            }
-            let receive = k * activePrice;
-            
-            try {
+            showLoading("প্রসেসিং হচ্ছে...");
+
+            getBase64(fileInput.files[0]).then(ssData => {
+                let activePrice = c.price;
+                if(c.tiers && c.tiers.length > 0) {
+                    let sortedTiers = [...c.tiers].sort((a,b) => b.minK - a.minK);
+                    let matched = sortedTiers.find(t => k >= t.minK);
+                    if(matched) { activePrice = matched.price; }
+                }
+                let receive = k * activePrice;
+                
                 let newOrder = { id: generateId('ORD'), type: 'sell', userId: currentUser.id, tgUsername: tg, coinId: c.id, coinName: c.name, k: k, receive: receive, userSs: ssData, status: 'pending', time: new Date().toLocaleString() };
-                await db.collection('cb_orders').doc(newOrder.id).set(newOrder);
-                state.selCoinId = null; 
                 
                 hideLoading();
                 
+                // সাথে সাথে সাকসেস মেসেজ দেখাবে!
                 let defaultMsg = "আপনার রিকোয়েস্ট সফলভাবে এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে ব্যালেন্স এড করে দিবেন।";
                 showSuccessModal(settings.sellSuccessMsg || defaultMsg); 
-            } catch(e) {
+                
+                // ডাটাবেসে ব্যাকগ্রাউন্ডে সেভ হবে, যাতে ইউজারের দেরি না হয়
+                db.collection('cb_orders').doc(newOrder.id).set(newOrder).catch(e => console.error(e));
+                
+            }).catch(e => {
                 window.isActionInProgress = false;
                 hideLoading();
                 showToast("Request failed", "error");
-            }
+            });
         }
 
         function openWdModal() {
@@ -2220,7 +2226,7 @@
             box.classList.remove('hidden');
         }
         
-        async function submitWd() {
+        function submitWd() {
             if (window.isActionInProgress) return; // ডাবল-ক্লিক বন্ধ করা হলো
             if(!state.selWdId) return showToast("Select a payment method!", "error");
             let acc = document.getElementById('wd-acc').value.trim(); 
@@ -2244,22 +2250,22 @@
             let receiveUsd = isBinance ? receive / (settings.binanceRate || 127) : null;
             
             window.isActionInProgress = true;
-            showLoading("রিকোয়েস্ট প্রসেস হচ্ছে...");
-
-            try {
-                await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance - amt });
-                let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
-                await db.collection('cb_orders').doc(newWd.id).set(newWd);
-                
-                hideLoading();
-                
-                let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
-                showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
-            } catch (err) {
-                hideLoading();
-                window.isActionInProgress = false;
-                showToast("Request failed", "error");
-            }
+            
+            // কোনো লোডিং ছাড়াই সাথে সাথে সাকসেস মেসেজ দেখাবে!
+            let defaultMsg = "আপনার উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে। এডমিন চেক করে পেমেন্ট করে দিবেন।";
+            showSuccessModal(settings.wdSuccessMsg || defaultMsg); 
+            
+            // ডাটাবেসের কাজ ব্যাকগ্রাউন্ডে হবে, ইউজারের ফর্ম গায়েব হবে না
+            (async () => {
+                try {
+                    currentUser.balance -= amt;
+                    await db.collection('cb_users').doc(currentUser.id).update({ balance: currentUser.balance });
+                    let newWd = { id: generateId('WD'), type: 'wd', userId: currentUser.id, methodName: m.name, acc: acc, total: amt, receive: receive, receiveUsd: receiveUsd, charge: charge, status: 'pending', time: new Date().toLocaleString() };
+                    await db.collection('cb_orders').doc(newWd.id).set(newWd);
+                } catch (err) {
+                    console.error(err);
+                }
+            })();
         }
 
         function viewImg(src) { document.getElementById('modal-img-src').src = src; document.getElementById('img-modal').classList.remove('hidden'); }
