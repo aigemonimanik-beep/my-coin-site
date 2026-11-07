@@ -368,14 +368,6 @@
                     </div>
                 </div>
                 <button onclick="handleLogin()" class="w-full cyan-btn py-3.5 rounded-xl text-sm mt-2 flex items-center justify-center gap-2 uppercase tracking-widest"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
-                
-                <div class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-[var(--border-color)] after:mt-0.5 after:flex-1 after:border-t after:border-[var(--border-color)]">
-                    <p class="mx-4 mb-0 text-center text-[10px] font-bold text-[var(--text-muted)] uppercase">অথবা</p>
-                </div>
-                <button type="button" onclick="handleGoogleAuth()" class="w-full bg-white text-[#071426] py-3 rounded-xl text-sm font-black flex items-center justify-center gap-3 shadow-md hover:bg-gray-200 transition active:scale-95">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Google দিয়ে কন্টিনিউ
-                </button>
-
                 <p id="reg-link-text" class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Don't have an account? <button onclick="switchAuth('register')" class="text-[var(--accent-gold)] hover:underline ml-1">Register Now</button></p>
             </div>
 
@@ -404,46 +396,7 @@
                     </div>
                 </div>
                 <button onclick="handleRegister()" class="w-full gold-btn py-3.5 rounded-xl text-sm mt-2 flex items-center justify-center gap-2 uppercase tracking-widest"><i class="fa-solid fa-user-plus"></i> Create Account</button>
-                
-                <div class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-[var(--border-color)] after:mt-0.5 after:flex-1 after:border-t after:border-[var(--border-color)]">
-                    <p class="mx-4 mb-0 text-center text-[10px] font-bold text-[var(--text-muted)] uppercase">অথবা</p>
-                </div>
-                <button type="button" onclick="handleGoogleAuth()" class="w-full bg-white text-[#071426] py-3 rounded-xl text-sm font-black flex items-center justify-center gap-3 shadow-md hover:bg-gray-200 transition active:scale-95">
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Google দিয়ে রেজিষ্ট্রেশন
-                </button>
-
                 <p class="text-center text-[11px] text-[var(--text-muted)] font-bold mt-4">Already have an account? <button onclick="switchAuth('login')" class="text-[var(--accent-cyan)] hover:underline ml-1">Login</button></p>
-            </div>
-
-            <!-- Google Complete Profile Form -->
-            <div id="form-google-complete" class="space-y-4 hidden">
-                <div class="text-center mb-4">
-                    <span class="text-[10px] bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] px-3 py-1.5 rounded-full border border-[var(--accent-cyan)]/30 font-bold tracking-wide" id="g-reg-email-display"></span>
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-1.5 ml-1">Full Name</label>
-                    <input type="text" id="g-reg-name" class="w-full input-premium rounded-xl p-3 text-sm font-bold">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-1.5 ml-1">Username (For Login)</label>
-                    <input type="text" id="g-reg-username" class="w-full input-premium rounded-xl p-3 text-sm font-bold" placeholder="e.g. akash123">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-1.5 ml-1">Set Password</label>
-                    <div class="password-container">
-                        <input type="password" id="g-reg-pass" class="w-full input-premium rounded-xl p-3 pr-10 text-sm font-bold" placeholder="••••••••">
-                        <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('g-reg-pass', this)"></i>
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-1.5 ml-1">Confirm Password</label>
-                    <div class="password-container">
-                        <input type="password" id="g-reg-cpass" class="w-full input-premium rounded-xl p-3 pr-10 text-sm font-bold" placeholder="••••••••">
-                        <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('g-reg-cpass', this)"></i>
-                    </div>
-                </div>
-                <button onclick="completeGoogleRegister()" class="w-full gold-btn py-3.5 rounded-xl text-sm mt-4 flex items-center justify-center gap-2 uppercase tracking-widest shadow-lg"><i class="fa-solid fa-user-check"></i> Complete Profile</button>
-                <button onclick="cancelGoogleAuth()" class="w-full mt-3 text-[11px] text-[var(--error)] font-bold hover:underline transition">Cancel & Go Back</button>
             </div>
         </div>
     </div>
@@ -815,107 +768,13 @@
         }
 
         let isRegistering = false;
-        let isGoogleRegistering = false;
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
 
         function switchAuth(type) {
             document.getElementById('form-login').classList.add('hidden');
             document.getElementById('form-register').classList.add('hidden');
-            let gForm = document.getElementById('form-google-complete');
-            if(gForm) gForm.classList.add('hidden');
 
             if(type === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = isAdminUrl ? "Admin Portal Login" : "Login to your account"; }
             if(type === 'register') { document.getElementById('form-register').classList.remove('hidden'); document.getElementById('auth-subtitle').innerText = "Create a new account"; }
-        }
-
-        async function handleGoogleAuth() {
-            showLoading("Google অ্যাকাউন্ট চেক করা হচ্ছে...");
-            isGoogleRegistering = true;
-            try {
-                let result = await auth.signInWithPopup(googleProvider);
-                let user = result.user;
-                
-                // Check if user exists in our Firestore Database
-                let doc = await db.collection('cb_users').doc(user.uid).get();
-                
-                if (doc.exists) {
-                    // Old user, proceed to login
-                    isGoogleRegistering = false;
-                    try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
-                    requestNotificationPermission(); 
-                    startDataSync(user);
-                } else {
-                    // New User - Ask for Username and Password
-                    hideLoading();
-                    document.getElementById('form-login').classList.add('hidden');
-                    document.getElementById('form-register').classList.add('hidden');
-                    document.getElementById('form-google-complete').classList.remove('hidden');
-                    
-                    document.getElementById('g-reg-name').value = user.displayName || '';
-                    document.getElementById('g-reg-email-display').innerText = user.email;
-                    document.getElementById('auth-subtitle').innerText = "প্রোফাইলটি সম্পূর্ণ করুন";
-                }
-            } catch (e) {
-                isGoogleRegistering = false;
-                hideLoading();
-                if(e.code !== 'auth/popup-closed-by-user') {
-                    showToast("Google Sign-In Failed!", "error");
-                }
-            }
-        }
-
-        async function completeGoogleRegister() {
-            let name = document.getElementById('g-reg-name').value.trim();
-            let username = document.getElementById('g-reg-username').value.trim().toLowerCase();
-            let pass = document.getElementById('g-reg-pass').value;
-            let cpass = document.getElementById('g-reg-cpass').value;
-
-            if(!name || !username || !pass || !cpass) return showToast("সবগুলো তথ্য সঠিকভাবে দিন!", "error");
-            if(/\s/.test(username)) return showToast("ইউজারনেমে স্পেস দেওয়া যাবে না!", "error");
-            if(username.includes('@')) return showToast("ইউজারনেমে স্পেশাল ক্যারেক্টার দেওয়া যাবে না!", "error");
-            if(pass !== cpass) return showToast("পাসওয়ার্ড মিলেনি!", "error");
-            if(pass.length < 6) return showToast("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।", "error");
-
-            showLoading();
-            try {
-                let user = auth.currentUser;
-                
-                // Check if username is already taken by someone else
-                const snap = await db.collection('cb_users').where('username', '==', username).get();
-                if(!snap.empty) {
-                    hideLoading();
-                    return showToast("এই ইউজারনেইমটি ইতিমধ্যে ব্যবহার করা হয়েছে! অন্য একটি দিন।", "error");
-                }
-
-                let usersSnap = await db.collection('cb_users').get();
-                let isFirstUser = usersSnap.empty;
-                let role = isFirstUser ? 'admin' : 'user';
-
-                await db.collection('cb_users').doc(user.uid).set({
-                    id: user.uid, name: name, username: username, email: user.email,
-                    tg: '', balance: 0, role: role, status: 'active', profilePic: user.photoURL || '', savedAccounts: {},
-                    createdAt: new Date().toLocaleString(),
-                    plainPass: pass
-                });
-                
-                isGoogleRegistering = false;
-                hideLoading();
-                showToast("অ্যাকাউন্ট তৈরি সফল হয়েছে!", "success");
-                
-                // Complete Login
-                try { localStorage.setItem('cb_loggedIn', 'true'); } catch(e) {}
-                requestNotificationPermission();
-                startDataSync(user);
-            } catch (e) {
-                hideLoading();
-                showToast(e.message, "error");
-            }
-        }
-
-        async function cancelGoogleAuth() {
-            isGoogleRegistering = false;
-            await auth.signOut();
-            switchAuth('login');
         }
 
         async function handleRegister() {
@@ -1163,7 +1022,7 @@
         }
 
         auth.onAuthStateChanged(user => {
-            if (isRegistering || isGoogleRegistering) return;
+            if (isRegistering) return;
             if (user) { 
                 if (isAdminUrl && user.email !== "masteradmin2026@coinbazar.app") {
                     auth.signOut();
@@ -2135,12 +1994,12 @@
                     <button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs font-bold active:scale-95 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="back">${t('back')}</span></button>
                 </div>
 
-                <!-- Big Coin Highlight Banner -->
-                <div class="glass-panel rounded-3xl p-6 mb-6 shadow-xl border-t-4 border-t-[var(--accent-cyan)] flex flex-col items-center justify-center text-center relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/10 to-transparent pointer-events-none"></div>
-                    <img src="${selC.logo || 'https://placehold.co/100'}" class="w-20 h-20 rounded-full object-cover border-4 border-[var(--accent-gold)] shadow-[0_0_20px_rgba(232,199,121,0.3)] mb-3 relative z-10">
-                    <h2 class="text-2xl font-black text-white uppercase tracking-wider relative z-10">${selC.name}</h2>
-                    <p class="text-[10px] text-[var(--accent-cyan)] font-bold mt-1 bg-[var(--bg-main)] px-3 py-1 rounded-full border border-[var(--accent-cyan)]/30 shadow-sm relative z-10">আপনি এই কয়েনটি বিক্রি করতে সিলেক্ট করেছেন</p>
+                <!-- Small Coin Highlight Banner -->
+                <div class="glass-panel rounded-2xl p-4 mb-5 shadow-md border-t-2 border-t-[var(--accent-cyan)] flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-cyan)]/5 to-transparent pointer-events-none"></div>
+                    <img src="${selC.logo || 'https://placehold.co/100'}" class="w-12 h-12 rounded-full object-cover border-2 border-[var(--accent-gold)] shadow-[0_0_10px_rgba(232,199,121,0.2)] mb-2 relative z-10">
+                    <h2 class="text-base font-black text-white uppercase tracking-wider relative z-10">${selC.name}</h2>
+                    <p class="text-[9px] text-[var(--accent-cyan)] font-bold mt-1 bg-[var(--bg-main)] px-2 py-0.5 rounded-full border border-[var(--accent-cyan)]/30 shadow-sm relative z-10">আপনি এই কয়েনটি সিলেক্ট করেছেন</p>
                 </div>
 
                 <div class="glass-panel rounded-3xl p-5 mb-8 shadow-xl border-t-2 border-[var(--accent-cyan)]">
