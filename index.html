@@ -1318,6 +1318,7 @@
             try {
                 if(state.view === 'home') cont.innerHTML = renderHome();
                 else if(state.view === 'sell') cont.innerHTML = renderSell();
+                else if(state.view === 'withdraw') cont.innerHTML = renderWithdraw();
                 else if(state.view === 'history') cont.innerHTML = renderUserHistory();
                 else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
                 else if(state.view === 'admin' && (currentUser.role === 'admin' || currentUser.role.startsWith('staff'))) cont.innerHTML = renderAdmin();
@@ -1990,17 +1991,6 @@
                     <img src="${selC.logo || 'https://placehold.co/100'}" class="w-20 h-20 rounded-full object-cover border-4 border-[var(--accent-gold)] shadow-[0_0_20px_rgba(232,199,121,0.3)] mb-3 relative z-10">
                     <h2 class="text-2xl font-black text-white uppercase tracking-wider relative z-10">${selC.name}</h2>
                     <p class="text-[10px] text-[var(--accent-cyan)] font-bold mt-1 bg-[var(--bg-main)] px-3 py-1 rounded-full border border-[var(--accent-cyan)]/30 shadow-sm relative z-10">আপনি এই কয়েনটি বিক্রি করতে সিলেক্ট করেছেন</p>
-                </div>
-
-                <!-- Step-by-Step Instructions -->
-                <div class="bg-gradient-to-br from-[var(--bg-sidebar)] to-[var(--bg-main)] border border-[var(--border-color)] rounded-2xl p-4 mb-6 shadow-inner relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-[var(--accent-gold)] opacity-5 rounded-bl-full pointer-events-none"></div>
-                    <h4 class="text-[11px] font-black text-[var(--accent-gold)] mb-3 flex items-center gap-2 border-b border-[var(--border-color)] pb-2"><i class="fa-solid fa-circle-question"></i> কীভাবে বিক্রি করবেন?</h4>
-                    <ol class="text-[10px] text-[var(--text-muted)] space-y-2.5 font-bold list-decimal pl-4 pr-2">
-                        <li class="pl-1">নিচে <span class="text-[var(--accent-cyan)]">"কত K বিক্রি করবেন"</span> বক্সে আপনার কয়েনের পরিমাণ লিখুন।</li>
-                        <li class="pl-1">নিচে দেওয়া <span class="text-[var(--accent-gold)]">"ট্রান্সফার ইউজারনেম"</span> টি কপি করে, আপনার গেম থেকে ওই আইডিতে কয়েন সেন্ড করুন।</li>
-                        <li class="pl-1">কয়েন সেন্ড করার পর সাকসেসফুল মেসেজের <span class="text-[var(--error)]">স্ক্রিনশট (Screenshot)</span> এখানে আপলোড করে সাবমিট করুন।</li>
-                    </ol>
                 </div>
 
                 <div class="glass-panel rounded-3xl p-5 mb-8 shadow-xl border-t-2 border-[var(--accent-cyan)]">
