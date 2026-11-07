@@ -1133,17 +1133,10 @@
                         let scrollArea = wdContent.querySelector('.overflow-y-auto');
                         if(scrollArea) scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
                     }
-                } else if (state.selCoinId) {
-                    // সেল পেজে থাকলে ইনপুট ফাঁকা করে মেইন উইন্ডো উপরে স্ক্রল করবে
-                    let sellK = document.getElementById('sell-k');
-                    if (sellK) sellK.value = '';
-                    let sellTg = document.getElementById('sell-tg-user');
-                    if (sellTg) sellTg.value = '';
-                    calcSell();
-                    
-                    let ssInput = document.getElementById('sell-ss');
-                    if (ssInput) ssInput.value = '';
-                    
+                } else if (state.view === 'sell' || state.selCoinId) {
+                    // সেল পেজে থাকলে সফল হওয়ার পর সরাসরি হোম পেজে নিয়ে যাবে
+                    state.selCoinId = null;
+                    state.view = 'home';
                     window.isActionInProgress = false;
                     renderApp();
                     
@@ -1324,6 +1317,7 @@
 
             try {
                 if(state.view === 'home') cont.innerHTML = renderHome();
+                else if(state.view === 'sell') cont.innerHTML = renderSell();
                 else if(state.view === 'history') cont.innerHTML = renderUserHistory();
                 else if(state.view === 'profile') cont.innerHTML = renderUserProfile();
                 else if(state.view === 'admin' && (currentUser.role === 'admin' || currentUser.role.startsWith('staff'))) cont.innerHTML = renderAdmin();
@@ -1784,10 +1778,6 @@
                 </div></div>`;
             }).join('');
 
-            let selC = coins.find(x => x.id === state.selCoinId);
-            let unameDisplay = selC ? selC.username : '---';
-            let unameBtn = selC ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">${t('copy')}</span></button>` : '';
-
             let wdMethodsHtml = (pmMethods || []).filter(m => m && m.active !== false).map(m => {
                 let isBinance = String(m.name || '').toLowerCase().includes('binance');
                 let logoHtml = m.logo ? `<img src="${m.logo}" class="w-6 h-6 object-contain rounded-full">` : `<div class="w-6 h-6 bg-[var(--bg-main)] rounded-full text-[var(--text-muted)] flex items-center justify-center border border-[var(--border-color)]"><i class="fa-solid fa-bank text-[8px]"></i></div>`;
@@ -1869,14 +1859,6 @@
             }).join('');
             let activeSection = activeOrders.length > 0 ? `<div class="mt-8 mb-6"><h3 class="text-sm font-black text-white mb-3 flex items-center gap-3 border-l-4 border-l-[var(--accent-cyan)] pl-3"><i class="fa-solid fa-spinner fa-spin text-[var(--accent-cyan)]"></i> ${t('active_pend')}</h3>${activeHtml}</div>` : '';
 
-            // Optional Telegram field based on Admin settings
-            let tgFieldHtml = settings.requireTelegram ? `
-                <div class="mb-5">
-                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
-                    <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
-                </div>
-            ` : '';
-
             return `
                 <div class="glass-panel rounded-2xl p-4 mb-5 mt-2 relative overflow-hidden border-t-2 border-t-[var(--accent-gold)] shadow-lg flex items-center justify-between">
                     <div class="absolute -right-4 -bottom-4 opacity-5"><i class="fa-brands fa-ethereum text-7xl text-white"></i></div>
@@ -1903,38 +1885,7 @@
                     <div class="grid grid-cols-2 gap-4">${coinHtml}</div>
                 </div>
 
-                <div id="sell-form-box" class="glass-panel rounded-3xl p-5 mb-8 shadow-lg">
-                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide border-b border-[var(--border-color)] pb-3"><span class="w-6 h-6 rounded bg-gradient-to-br from-[var(--accent-gold)] to-[var(--accent-gold-dark)] text-[var(--bg-main)] flex items-center justify-center text-[12px] shadow-sm">2</span> <span data-i18n="order_details">${t('order_details')}</span></h3>
-
-                    <div class="mb-5">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="amt">${t('amt')}</label>
-                        <div class="relative"><input type="number" id="sell-k" oninput="calcSell()" class="w-full input-premium rounded-xl p-3.5 pr-12 font-black text-lg text-[var(--accent-cyan)] focus:ring-2 focus:ring-[var(--accent-cyan)]/20" placeholder="${t('e_g')} 5"><span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[var(--text-muted)] bg-[var(--bg-main)] w-8 h-8 rounded-lg flex items-center justify-center text-sm border border-[var(--border-color)]">K</span></div>
-                        <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner flex flex-col gap-1"></div>
-                    </div>
-                    
-                    ${tgFieldHtml}
-
-                    <div class="mb-5">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="acc">${t('acc')}</label>
-                        <div class="input-premium rounded-xl p-2.5 flex justify-between items-center bg-[var(--bg-sidebar)]"><span class="font-black text-[var(--accent-gold)] text-sm tracking-wide select-all ml-2">${unameDisplay}</span>${unameBtn}</div>
-                    </div>
-
-                    <div class="mb-6">
-                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-cloud-arrow-up text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
-                        <div class="relative group cursor-pointer">
-                            <input type="file" id="sell-ss" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleSellImageUpload(this)">
-                            <div id="ss-box" class="bg-[var(--bg-sidebar)] border-2 border-dashed border-[var(--border-color)] group-hover:border-[var(--accent-cyan)]/70 group-hover:bg-[var(--bg-main)] rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 shadow-inner">
-                                <i id="ss-icon" class="fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity drop-shadow-sm"></i>
-                                <p id="ss-filename" class="text-xs font-black text-[var(--text-muted)] truncate w-full px-2 mt-1">Tap here to select file</p>
-                                <span class="text-[9px] bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded-full text-[var(--text-muted)] mt-3 font-bold shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-image"></i> JPG, PNG, JPEG</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">${t('submit')}</span></button>
-                    
-                    ${socialDiv}
-                </div>
+                ${socialDiv}
                 
                 ${activeSection}
 
@@ -1998,10 +1949,77 @@
             `;
         }
 
+        function renderSell() {
+            let selC = coins.find(x => x.id === state.selCoinId);
+            if (!selC) { setTimeout(() => switchView('home'), 0); return ''; }
+
+            let unameDisplay = selC.username || '---';
+            let unameBtn = selC.username ? `<button type="button" onclick="copyText('${selC.username}')" class="cyan-btn px-3 py-1.5 rounded-lg text-xs font-black shadow-sm hover:shadow-md"><i class="fa-solid fa-copy"></i> <span data-i18n="copy">${t('copy')}</span></button>` : '';
+
+            let tgFieldHtml = settings.requireTelegram ? `
+                <div class="mb-5">
+                    <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="tg_label">${t('tg_label')} *</label>
+                    <input type="text" id="sell-tg-user" class="w-full input-premium rounded-xl p-3.5 font-bold text-sm text-white" placeholder="${t('e_g')} @username">
+                </div>
+            ` : '';
+
+            return `
+                <div class="mb-4 mt-2 flex items-center justify-between">
+                    <button onclick="switchView('home')" class="text-[var(--text-muted)] hover:text-white transition bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs font-bold active:scale-95 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> <span data-i18n="back">${t('back')}</span></button>
+                    <div class="flex items-center gap-2 bg-[var(--bg-sidebar)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-sm">
+                        <img src="${selC.logo || 'https://placehold.co/100'}" class="w-6 h-6 rounded-full object-cover border border-[var(--accent-gold)]">
+                        <span class="text-xs font-black text-white uppercase tracking-wider">${selC.name}</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-3xl p-5 mb-8 shadow-xl border-t-2 border-[var(--accent-cyan)]">
+                    <h3 class="font-black text-white text-sm mb-4 flex items-center gap-2 tracking-wide border-b border-[var(--border-color)] pb-3"><i class="fa-solid fa-coins text-[var(--accent-gold)] text-lg"></i> <span data-i18n="order_details">${t('order_details')}</span></h3>
+
+                    <div class="bg-[var(--bg-sidebar)] p-3 rounded-xl border border-[var(--border-color)] mb-5 flex justify-between items-center shadow-inner">
+                        <div>
+                            <p class="text-[9px] text-[var(--text-muted)] uppercase font-bold mb-0.5">Current Rate</p>
+                            <p class="text-sm font-black text-[var(--accent-cyan)]">1K = ৳${selC.price}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] text-[var(--text-muted)] uppercase font-bold mb-0.5">Limits</p>
+                            <p class="text-xs font-bold text-white">${selC.min}K - ${selC.max}K</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="amt">${t('amt')}</label>
+                        <div class="relative"><input type="number" id="sell-k" oninput="calcSell()" class="w-full input-premium rounded-xl p-3.5 pr-12 font-black text-lg text-[var(--accent-cyan)] focus:ring-2 focus:ring-[var(--accent-cyan)]/20" placeholder="${t('e_g')} 5"><span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-[var(--text-muted)] bg-[var(--bg-main)] w-8 h-8 rounded-lg flex items-center justify-center text-sm border border-[var(--border-color)]">K</span></div>
+                        <div id="sell-calc-box" class="hidden mt-3 bg-[var(--bg-sidebar)] border border-[var(--accent-gold)]/30 rounded-xl p-3 text-center text-sm font-bold text-[var(--text-main)] shadow-inner flex flex-col gap-1"></div>
+                    </div>
+                    
+                    ${tgFieldHtml}
+
+                    <div class="mb-5">
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1" data-i18n="acc">${t('acc')}</label>
+                        <div class="input-premium rounded-xl p-2.5 flex justify-between items-center bg-[var(--bg-sidebar)] shadow-inner"><span class="font-black text-[var(--accent-gold)] text-sm tracking-wide select-all ml-2">${unameDisplay}</span>${unameBtn}</div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide block mb-2 ml-1"><i class="fa-solid fa-cloud-arrow-up text-[var(--accent-cyan)]"></i> <span data-i18n="ss">${t('ss')}</span></label>
+                        <div class="relative group cursor-pointer">
+                            <input type="file" id="sell-ss" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleSellImageUpload(this)">
+                            <div id="ss-box" class="bg-[var(--bg-sidebar)] border-2 border-dashed border-[var(--border-color)] group-hover:border-[var(--accent-cyan)]/70 group-hover:bg-[var(--bg-main)] rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 shadow-inner">
+                                <i id="ss-icon" class="fa-solid fa-cloud-arrow-up text-3xl text-[var(--accent-cyan)] opacity-70 mb-2 group-hover:opacity-100 transition-opacity drop-shadow-sm"></i>
+                                <p id="ss-filename" class="text-xs font-black text-[var(--text-muted)] truncate w-full px-2 mt-1">Tap here to select file</p>
+                                <span class="text-[9px] bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded-full text-[var(--text-muted)] mt-3 font-bold shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-image"></i> JPG, PNG, JPEG</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="sell-submit-btn" onclick="submitSell()" class="w-full cyan-btn py-4 rounded-xl text-sm flex justify-center items-center gap-2 uppercase tracking-widest shadow-[0_4px_15px_rgba(53,217,242,0.3)] hover:shadow-[0_6px_20px_rgba(53,217,242,0.5)] transition active:scale-95"><i class="fa-solid fa-bolt"></i> <span data-i18n="submit">${t('submit')}</span></button>
+                </div>
+            `;
+        }
+
         function selectCoin(id) { 
             let c = coins.find(x=>x.id===id); if(!c || !c.active) return;
-            state.selCoinId = id; renderApp(); 
-            document.getElementById('sell-form-box').scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            state.selCoinId = id; 
+            switchView('sell'); 
         }
         function copyText(txt) { navigator.clipboard.writeText(txt); showToast(t('copied')); }
         
