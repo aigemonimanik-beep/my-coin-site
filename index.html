@@ -405,12 +405,12 @@
     <div id="main-ui" class="hidden min-h-screen flex-col">
         <!-- Header -->
         <header id="main-header" class="sticky top-0 z-50 glass-panel px-4 py-3 flex justify-between items-center border-b border-[var(--border-color)] bg-[var(--bg-main)] shadow-md">
-            <div class="flex items-center gap-3 cursor-pointer flex-shrink-0" onclick="switchView('home')">
+            <div class="flex items-center gap-4 cursor-pointer flex-shrink-0" onclick="switchView('home')">
                 <img id="nav-logo" src="https://placehold.co/100x100/122B45/E8C779?text=CB" class="w-10 h-10 rounded-full object-contain border-2 border-[var(--accent-gold)] shadow-[0_0_12px_rgba(232,199,121,0.4)] bg-white">
-                <h1 id="nav-title" class="text-lg sm:text-xl font-black tracking-tight gold-text whitespace-nowrap drop-shadow-md">Coin Bazar</h1>
+                <h1 id="nav-title" class="text-lg sm:text-xl font-black tracking-widest gold-text whitespace-nowrap drop-shadow-md">Coin Bazar</h1>
             </div>
             
-            <div class="flex items-center gap-1.5 ml-auto">
+            <div class="flex items-center gap-2 ml-auto">
                 <!-- Theme Switcher -->
                 <button onclick="cycleTheme()" class="bg-[var(--bg-sidebar)] w-8 h-8 rounded-full border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-cyan)] hover:border-[var(--accent-cyan)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center shadow-sm active:scale-95" title="Change Theme">
                     <i class="fa-solid fa-palette text-xs"></i>
@@ -424,8 +424,8 @@
                     <span id="notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[var(--error)] rounded-full text-[8px] font-black text-white flex items-center justify-center border border-[var(--bg-main)] shadow-sm"></span>
                 </div>
                 <!-- Menu Button -->
-                <button onclick="toggleMobileMenu()" class="bg-[var(--bg-sidebar)] h-8 px-4 rounded-full border border-[var(--border-color)] text-[var(--accent-cyan)] hover:text-white hover:border-[var(--accent-cyan)]/50 hover:bg-[var(--bg-card)] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm active:scale-95 flex-shrink-0 ml-1">
-                    <i class="fa-solid fa-bars text-xs"></i> <span class="font-black text-[10px] uppercase tracking-widest mt-[1px]">Menu</span>
+                <button onclick="toggleMobileMenu()" class="bg-gradient-to-r from-[var(--accent-cyan)] to-[#1a9bb0] h-8 px-4 rounded-full border border-transparent text-[var(--bg-main)] hover:shadow-[0_0_15px_rgba(53,217,242,0.4)] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm active:scale-95 flex-shrink-0 ml-1">
+                    <i class="fa-solid fa-bars text-sm"></i> <span class="font-black text-[11px] uppercase tracking-widest mt-[1px]">Menu</span>
                 </button>
             </div>
         </header>
@@ -1288,8 +1288,8 @@
                 currentUser.role = 'admin'; // Force role instantly for UI
                 state.view = 'admin'; // Lock view to admin instantly
             } else {
-                if (state.view === 'admin') {
-                    state.view = 'home'; // Normal URL cannot see admin view
+                if (state.view === 'admin' && currentUser.role !== 'admin' && !(currentUser.role || '').startsWith('staff')) {
+                    state.view = 'home'; // Normal URL cannot see admin view without role
                 }
             }
 
@@ -2490,6 +2490,24 @@
                         <div id="lifetime-stats-content" class="flex-1 overflow-y-auto hide-scroll space-y-4 pr-1"></div>
                     </div>
                 </div>
+
+                <!-- Role Assignment Modal -->
+                <div id="admin-role-modal" class="fixed inset-0 bg-[#071426]/90 z-[160] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="glass-panel w-full max-w-sm rounded-2xl p-6 relative shadow-[0_0_40px_rgba(232,199,121,0.1)] border-t-2 border-[var(--accent-gold)]">
+                        <button onclick="closeRoleModal()" class="absolute top-3 right-3 text-[var(--text-muted)] hover:text-white"><i class="fa-solid fa-times text-lg"></i></button>
+                        <h3 class="font-black text-[var(--accent-gold)] text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> Assign Access Role</h3>
+                        <p class="text-[10px] text-[var(--text-muted)] mb-4">Select what this user can manage in the Admin Panel.</p>
+                        <select id="quick-role-select" class="w-full input-premium p-3.5 rounded-xl text-sm font-black mb-5 shadow-inner focus:border-[var(--accent-gold)]">
+                            <option value="user">User (No Access)</option>
+                            <option value="staff_sells">Staff (Coin Sells Only)</option>
+                            <option value="staff_wds">Staff (Withdraws Only)</option>
+                            <option value="staff_both">Staff (Both Sells & Wds)</option>
+                        </select>
+                        <button id="confirm-role-btn" class="w-full gold-btn py-3.5 rounded-xl flex justify-center items-center gap-2 uppercase tracking-widest text-[11px] shadow-[0_4px_15px_rgba(232,199,121,0.3)]">
+                            <i class="fa-solid fa-check"></i> Assign Role
+                        </button>
+                    </div>
+                </div>
             `;
         }
 
@@ -3044,7 +3062,15 @@
                 if(u.role === 'admin') roleBadge = `<span class="text-[8px] bg-red-500/20 text-red-500 border border-red-500/30 px-1.5 py-0.5 rounded ml-1 font-black">ADMIN</span>`;
                 else if(u.role && u.role.startsWith('staff')) roleBadge = `<span class="text-[8px] bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 px-1.5 py-0.5 rounded ml-1 uppercase font-black">${u.role.replace('_', ' ')}</span>`;
 
-                let kickBtn = (currentUser.role === 'admin' && u.role && u.role !== 'user') ? `<button onclick="kickStaff('${u.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white px-3 py-1.5 rounded-lg text-[9px] font-black shadow-sm transition active:scale-95"><i class="fa-solid fa-user-xmark"></i> Kick</button>` : '';
+                let staffActions = '';
+                if (currentUser.role === 'admin') {
+                    if (u.role === 'user' || !u.role) {
+                        staffActions = `<button onclick="openRoleModal('${u.id}')" class="bg-[var(--accent-gold)]/10 text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 hover:bg-[var(--accent-gold)] hover:text-black px-3 py-1.5 rounded-lg text-[9px] font-black shadow-sm transition active:scale-95"><i class="fa-solid fa-user-plus"></i> Make Staff</button>`;
+                    } else if (u.id !== currentUser.id && u.role !== 'admin') {
+                        staffActions = `<button onclick="openRoleModal('${u.id}')" class="bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/30 hover:bg-[var(--accent-cyan)] hover:text-black px-3 py-1.5 rounded-lg text-[9px] font-black shadow-sm transition active:scale-95"><i class="fa-solid fa-pen"></i> Edit Role</button>
+                        <button onclick="kickStaff('${u.id}')" class="bg-[var(--error)]/10 text-[var(--error)] border border-[var(--error)]/30 hover:bg-[var(--error)] hover:text-white px-3 py-1.5 rounded-lg text-[9px] font-black shadow-sm transition active:scale-95"><i class="fa-solid fa-user-xmark"></i> Kick</button>`;
+                    }
+                }
 
                 return `
                 <div class="glass-panel p-3 rounded-xl mb-3 flex items-center justify-between border-l-4 ${u.status==='blocked'?'border-l-[var(--error)]':'border-l-[var(--accent-cyan)]'} hover:shadow-md transition hover:-translate-y-0.5">
@@ -3059,14 +3085,45 @@
                     </div>
                     <div class="flex flex-col gap-1.5 items-end">
                         <div class="flex gap-1.5">
+                            ${staffActions}
                             ${delBtn}
                             <button onclick="openUserManage('${u.id}')" class="cyan-btn px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1.5 shadow-sm relative z-50"><i class="fa-solid fa-gears"></i> Manage</button>
                         </div>
-                        ${kickBtn}
                     </div>
                 </div>
             `;
             }).join('');
+        }
+
+        let targetRoleId = null;
+        function openRoleModal(uid) {
+            targetRoleId = uid;
+            let u = users.find(x => x.id === uid);
+            if(u) {
+                document.getElementById('quick-role-select').value = u.role || 'user';
+                document.getElementById('confirm-role-btn').onclick = () => saveQuickRole();
+                document.getElementById('admin-role-modal').classList.remove('hidden');
+            }
+        }
+        function closeRoleModal() {
+            targetRoleId = null;
+            document.getElementById('admin-role-modal').classList.add('hidden');
+        }
+        async function saveQuickRole() {
+            if(!targetRoleId || currentUser.role !== 'admin') return;
+            let newRole = document.getElementById('quick-role-select').value;
+            showLoading();
+            try {
+                await db.collection('cb_users').doc(targetRoleId).update({ role: newRole });
+                let u = users.find(x => x.id === targetRoleId);
+                if(u) u.role = newRole;
+                showToast("Role assigned successfully!", "success");
+                closeRoleModal();
+                renderApp();
+            } catch (e) {
+                showToast("Failed to assign role", "error");
+            }
+            hideLoading();
         }
 
         async function kickStaff(uid) {
